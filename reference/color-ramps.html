@@ -1,0 +1,318 @@
+<title>Grow Good color ramps</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;0,800;1,400&display=swap">
+<style>
+/* Layout: one reading column of review sections; swatch rows wrap to two-up on phones. */
+:root {
+  --bg: #f0efeb; --fg: #1a1a1a; --muted: #575a55;
+  --rule: #dadbd9; --link: #2d6431; --panel: #fbfaf7;
+  --kept: #2d6431; --adjusted: #705c00; --new: #504867;
+  --font: 'Alegreya Sans', 'Gill Sans', 'Trebuchet MS', sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #1a1a1a; --fg: #f0efeb; --muted: #b9b9b2; --rule: #3a3c38; --link: #4ff062; --panel: #232422;
+  --kept: #4ff062; --adjusted: #ccb528; --new: #b4abf0; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #1a1a1a; --fg: #f0efeb; --muted: #b9b9b2; --rule: #3a3c38; --link: #4ff062; --panel: #232422;
+  --kept: #4ff062; --adjusted: #ccb528; --new: #b4abf0; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--fg); font: 400 18px/1.45 var(--font); }
+main { max-width: 1080px; margin: 0 auto; padding-block: 40px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 56px; }
+h1, h2, h3, h4 { margin: 0; text-wrap: balance; }
+h1 { font-size: 52px; line-height: 56px; font-weight: 800; }
+h2 { font-size: 32px; line-height: 36px; font-weight: 700; }
+h3 { font-size: 22px; line-height: 28px; font-weight: 700; }
+p { margin: 0; max-width: 66ch; }
+.intro { display: grid; gap: 12px; }
+.lede { font-size: 22px; line-height: 30px; }
+.muted, .meta, .was { color: var(--muted); }
+section.block { display: grid; gap: 20px; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 16px; }
+.tag { display: inline-block; font-size: 14px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: 1px 8px; border-radius: 999px; border: 1.5px solid currentColor; }
+.tag-kept { color: var(--kept) } .tag-adjusted { color: var(--adjusted) } .tag-new { color: var(--new) } .tag-chosen { color: var(--link) }
+.family { display: grid; gap: 10px; }
+.swatches { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.swatch { margin: 0; display: grid; gap: 8px; min-width: 0; }
+.chip { aspect-ratio: 4 / 3; max-width: 100%; border-radius: 6px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: inset 0 0 0 1px rgb(0 0 0 / .08); }
+.lvl { font-weight: 700; font-size: 18px; }
+.aa { font-size: 16px; font-variant-numeric: tabular-nums; }
+figcaption { display: grid; gap: 4px; font-size: 15px; line-height: 20px; justify-items: start; }
+.hex { font-variant-numeric: tabular-nums; font-weight: 500; letter-spacing: .02em; }
+.scroll { overflow-x: auto; border: 1px solid var(--rule); border-radius: 6px; }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+th, td { padding: 8px 10px; text-align: left; font-size: 15px; }
+thead th { font-weight: 700; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+.check td { text-align: center; min-width: 64px; }
+.check td .aa { display: block; font-size: 20px; font-weight: 700; }
+.check td .num { font-size: 13px; }
+.check th[scope="row"] { white-space: nowrap; font-weight: 700; }
+.migrate tbody tr + tr td { border-top: 1px solid var(--rule); }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+.card { border-radius: 8px; padding: 20px; display: grid; gap: 10px; align-content: start; }
+.card h4 { font-size: 24px; line-height: 28px; }
+.card .meta { color: inherit; opacity: .85; font-size: 14px; }
+.btn { justify-self: start; font-weight: 700; padding: 6px 14px; border-radius: 999px; }
+.ask { background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; padding: 20px; display: grid; gap: 14px; }
+.ask .swatches { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+a { color: var(--link); }
+@media (max-width: 640px) {
+  h1 { font-size: 40px; line-height: 44px; }
+  .swatches { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ask .swatches { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+</style>
+
+<main>
+  <header class="intro">
+    <p class="muted">Grow Good Gardens · decision D-021 · proposed values</p>
+    <h1>Color ramps</h1>
+    <p class="lede">Four levels per family. 100 is the lightest, 200 a bright accent of the hue, 300 and 400 dark. Every 100 reaches 4.5:1 on every family’s 300 and 400, so light text works on any dark surface.</p>
+    <div class="legend"><span><span class="tag tag-kept">Kept</span> existing value, unchanged</span><span><span class="tag tag-adjusted">Adjusted</span> existing hue, lightness moved</span><span><span class="tag tag-new">New</span> made from the family hue</span><span><span class="tag tag-chosen">Chosen</span> picked after review</span></div>
+  </header>
+
+  <section class="block" aria-labelledby="ramps">
+    <h2 id="ramps">Ramps</h2>
+    
+  <section class="family" aria-labelledby="fam-neutral">
+    <h3 id="fam-neutral">Neutral</h3>
+    <div class="swatches">
+      <figure class="swatch">
+          <div class="chip" style="background:#f0efeb;color:#1a1a1a"><span class="lvl">neutral-100</span><span class="aa">Aa 15.13</span></div>
+          <figcaption>
+            <span class="hex">#f0efeb</span>
+            <span class="tag tag-kept">Kept</span>
+            <span class="was">was neutral.X</span>
+          </figcaption>
+        </figure><figure class="swatch">
+          <div class="chip" style="background:#dadbd9;color:#1a1a1a"><span class="lvl">neutral-200</span><span class="aa">Aa 12.53</span></div>
+          <figcaption>
+            <span class="hex">#dadbd9</span>
+            <span class="tag tag-kept">Kept</span>
+            <span class="was">was neutral.XX</span>
+          </figcaption>
+        </figure><figure class="swatch">
+          <div class="chip" style="background:#575a55;color:#f0efeb"><span class="lvl">neutral-300</span><span class="aa">Aa 6.09</span></div>
+          <figcaption>
+            <span class="hex">#575a55</span>
+            <span class="tag tag-new">New</span>
+            <span class="was">no earlier value</span>
+          </figcaption>
+        </figure><figure class="swatch">
+          <div class="chip" style="background:#1a1a1a;color:#f0efeb"><span class="lvl">neutral-400</span><span class="aa">Aa 15.13</span></div>
+          <figcaption>
+            <span class="hex">#1a1a1a</span>
+            <span class="tag tag-kept">Kept</span>
+            <span class="was">was neutral.XXX</span>
+          </figcaption>
+        </figure>
+    </div>
+  </section>
+  <section class="family" aria-labelledby="fam-green">
+    <h3 id="fam-green">Green</h3>
+    <div class="swatches">
+      <figure class="swatch">
+          <div class="chip" style="background:#dee6df;color:#1a1a1a"><span class="lvl">green-100</span><span class="aa">Aa 13.67</span></div>
+          <figcaption>
+            <span class="hex">#dee6df</span>
+            <span class="tag tag-kept">Kept</span>
+            <span class="was">was green.X</span>
+          </figcaption>
+        </figure><figure class="swatch">
+          <div class="chip" style="background:#4ff062;color:#1a1a1a"><span class="lvl">green-200</span><span class="aa">Aa 11.58</span></div>
+          <figcaption>
+            <span class="hex">#4ff062</span>
+            <span class="tag tag-kept">Kept</span>
+            <span class="was">was green.XX</span>
+          </figcaption>
+        </figure><figure class="swatch">
+          <div class="chip" style="background:#2d6431;color:#f0efeb"><span class="lvl">green-300</span><span class="aa">Aa 6.13</span></div>
+          <figcaption>
+            <span class="hex">#2d6431</span>
+            <span class="tag tag-new">New</span>
+            <span class="was">no earlier value</span>
+          </figcaption>
+        </figure><figure class="swatch">
+          <div class="chip" style="background:#323431;color:#f0efeb"><span class="lvl">green-400</span><span class="aa">Aa 10.92</span></div>
+          <figcaption>
+            <span class="hex">#323431</span>
+            <span class="tag tag-kept">Kept</span>
+            <span class="was">was green.XXX</span>
+          </figcaption>
+        </figure>
+    </div>
+  </section>
+  <section class="family" aria-labelledby="fam-red">
+    <h3 id="fam-red">Red</h3>
+    <div class="swatches">
+      <figure class="swatch">
+          <div class="chip" style="background:#ffe0db;color:#1a1a1a"><span class="lvl">red-100</span><span class="aa">Aa 14.04</span></div>
+          <figcaption>
+            <span class="hex">#ffe0db</span>
+            <span class="tag tag-new">New</span>
+            <span class="was">no earlier value</span>
+          </figcaption>
+        </figure><figure class="swatch">
+          <div class="chip" style="background:#e0513e;color:#1a1a1a"><span class="lvl">red-200</span><span class="aa">Aa 4.49</span></div>
+          <figcaption>
+            <span class="hex">#e0513e</span>
+            <span class="tag tag-kept">Kept</span>
+            <span class="was">was red.X</span>
+          </figcaption>
+        </figure><figure class="swatch">
+          <div class="chip" style="background:#a93426;color:#f0efeb"><span class="lvl">red-300</span><span class="aa">Aa 5.69</span></div>
+          <figcaption>
+            <span class="hex">#a93426</span>
+            <span class="tag tag-adjusted">Adjusted</span>
+            <span class="was">was red.XX #b84233</span>
+          </figcaption>
+        </figure><figure class="swatch">
+          <div class="chip" style="background:#45231d;color:#f0efeb"><span class="lvl">red-400</span><span class="aa">Aa 12.08</span></div>
+          <figcaption>
+            <span class="hex">#45231d</span>
+            <span class="tag tag-new">New</span>
+            <span class="was">no earlier value</span>
+          </figcaption>
+        </figure>
+    </div>
+  </section>
+  <section class="family" aria-labelledby="fam-gold">
+    <h3 id="fam-gold">Gold</h3>
+    <div class="swatches">
+      <figure class="swatch">
+          <div class="chip" style="background:#ece7cf;color:#1a1a1a"><span class="lvl">gold-100</span><span class="aa">Aa 14.00</span></div>
+          <figcaption>
+            <span class="hex">#ece7cf</span>
+            <span class="tag tag-new">New</span>
+            <span class="was">no earlier value</span>
+          </figcaption>
+        </figure><figure class="swatch">
+          <div class="chip" style="background:#ccb528;color:#1a1a1a"><span class="lvl">gold-200</span><span class="aa">Aa 8.46</span></div>
+          <figcaption>
+            <span class="hex">#ccb528</span>
+            <span class="tag tag-kept">Kept</span>
+            <span class="was">was gold.X</span>
+          </figcaption>
+        </figure><figure class="swatch">
+          <div class="chip" style="background:#705c00;color:#f0efeb"><span class="lvl">gold-300</span><span class="aa">Aa 5.67</span></div>
+          <figcaption>
+            <span class="hex">#705c00</span>
+            <span class="tag tag-adjusted">Adjusted</span>
+            <span class="was">was gold.XX #877223</span>
+          </figcaption>
+        </figure><figure class="swatch">
+          <div class="chip" style="background:#332e12;color:#f0efeb"><span class="lvl">gold-400</span><span class="aa">Aa 11.85</span></div>
+          <figcaption>
+            <span class="hex">#332e12</span>
+            <span class="tag tag-new">New</span>
+            <span class="was">no earlier value</span>
+          </figcaption>
+        </figure>
+    </div>
+  </section>
+  <section class="family" aria-labelledby="fam-purple">
+    <h3 id="fam-purple">Purple</h3>
+    <div class="swatches">
+      <figure class="swatch">
+          <div class="chip" style="background:#e7e6f9;color:#1a1a1a"><span class="lvl">purple-100</span><span class="aa">Aa 14.16</span></div>
+          <figcaption>
+            <span class="hex">#e7e6f9</span>
+            <span class="tag tag-new">New</span>
+            <span class="was">no earlier value</span>
+          </figcaption>
+        </figure><figure class="swatch">
+          <div class="chip" style="background:#947cff;color:#1a1a1a"><span class="lvl">purple-200</span><span class="aa">Aa 5.46</span></div>
+          <figcaption>
+            <span class="hex">#947cff</span>
+            <span class="tag tag-chosen">Chosen</span>
+            <span class="was">was purple.X #6f63b0</span>
+          </figcaption>
+        </figure><figure class="swatch">
+          <div class="chip" style="background:#504867;color:#f0efeb"><span class="lvl">purple-300</span><span class="aa">Aa 7.41</span></div>
+          <figcaption>
+            <span class="hex">#504867</span>
+            <span class="tag tag-kept">Kept</span>
+            <span class="was">was purple.XX</span>
+          </figcaption>
+        </figure><figure class="swatch">
+          <div class="chip" style="background:#352f47;color:#f0efeb"><span class="lvl">purple-400</span><span class="aa">Aa 11.07</span></div>
+          <figcaption>
+            <span class="hex">#352f47</span>
+            <span class="tag tag-adjusted">Adjusted</span>
+            <span class="was">was purple.XXX #413b54</span>
+          </figcaption>
+        </figure>
+    </div>
+  </section>
+  </section>
+
+  <section class="ask" aria-labelledby="purple">
+    <h2 id="purple">Purple-200: option A</h2>
+    <p>The earlier purple, #6f63b0, read as a mid-tone and reached 2.48:1 on purple-400. Option A, #947cff, keeps the hue and reaches 3.99:1. Chosen by Brad Nagle, 2026-11-13.</p>
+    <div class="swatches"><figure class="swatch">
+  <div class="chip" style="background:#6f63b0;color:#f0efeb"><span class="lvl">Earlier</span><span class="aa">#6f63b0</span></div>
+  <figcaption>
+    
+    <span class="was">on purple-400: 2.48 (Fails)</span>
+    <span class="was">dark text on it: 4.47</span>
+  </figcaption>
+</figure><figure class="swatch">
+  <div class="chip" style="background:#947cff;color:#1a1a1a"><span class="lvl">Option A</span><span class="aa">#947cff</span></div>
+  <figcaption>
+    <span class="tag tag-chosen">Chosen</span>
+    <span class="was">on purple-400: 3.99 (Large only)</span>
+    <span class="was">dark text on it: 5.46</span>
+  </figcaption>
+</figure><figure class="swatch">
+  <div class="chip" style="background:#ab9eff;color:#1a1a1a"><span class="lvl">Option B</span><span class="aa">#ab9eff</span></div>
+  <figcaption>
+    
+    <span class="was">on purple-400: 5.50 (AA)</span>
+    <span class="was">dark text on it: 7.51</span>
+  </figcaption>
+</figure></div>
+  </section>
+
+  <section class="block" aria-labelledby="check">
+    <h2 id="check">The rule, checked</h2>
+    <p>Each row is a 100 set as text on each family’s 300 and 400. Lowest ratio: 5.12:1.</p>
+    <div class="scroll"><table class="check">
+      <thead><tr><th>Text</th><th scope="col">neutral-300</th><th scope="col">neutral-400</th><th scope="col">green-300</th><th scope="col">green-400</th><th scope="col">red-300</th><th scope="col">red-400</th><th scope="col">gold-300</th><th scope="col">gold-400</th><th scope="col">purple-300</th><th scope="col">purple-400</th></tr></thead>
+      <tbody><tr><th scope="row">neutral-100</th><td style="background:#575a55;color:#f0efeb"><span class="aa">Aa</span><span class="num">6.09</span></td><td style="background:#1a1a1a;color:#f0efeb"><span class="aa">Aa</span><span class="num">15.13</span></td><td style="background:#2d6431;color:#f0efeb"><span class="aa">Aa</span><span class="num">6.13</span></td><td style="background:#323431;color:#f0efeb"><span class="aa">Aa</span><span class="num">10.92</span></td><td style="background:#a93426;color:#f0efeb"><span class="aa">Aa</span><span class="num">5.69</span></td><td style="background:#45231d;color:#f0efeb"><span class="aa">Aa</span><span class="num">12.08</span></td><td style="background:#705c00;color:#f0efeb"><span class="aa">Aa</span><span class="num">5.67</span></td><td style="background:#332e12;color:#f0efeb"><span class="aa">Aa</span><span class="num">11.85</span></td><td style="background:#504867;color:#f0efeb"><span class="aa">Aa</span><span class="num">7.41</span></td><td style="background:#352f47;color:#f0efeb"><span class="aa">Aa</span><span class="num">11.07</span></td></tr><tr><th scope="row">green-100</th><td style="background:#575a55;color:#dee6df"><span class="aa">Aa</span><span class="num">5.50</span></td><td style="background:#1a1a1a;color:#dee6df"><span class="aa">Aa</span><span class="num">13.67</span></td><td style="background:#2d6431;color:#dee6df"><span class="aa">Aa</span><span class="num">5.54</span></td><td style="background:#323431;color:#dee6df"><span class="aa">Aa</span><span class="num">9.87</span></td><td style="background:#a93426;color:#dee6df"><span class="aa">Aa</span><span class="num">5.14</span></td><td style="background:#45231d;color:#dee6df"><span class="aa">Aa</span><span class="num">10.91</span></td><td style="background:#705c00;color:#dee6df"><span class="aa">Aa</span><span class="num">5.12</span></td><td style="background:#332e12;color:#dee6df"><span class="aa">Aa</span><span class="num">10.71</span></td><td style="background:#504867;color:#dee6df"><span class="aa">Aa</span><span class="num">6.69</span></td><td style="background:#352f47;color:#dee6df"><span class="aa">Aa</span><span class="num">10.00</span></td></tr><tr><th scope="row">red-100</th><td style="background:#575a55;color:#ffe0db"><span class="aa">Aa</span><span class="num">5.65</span></td><td style="background:#1a1a1a;color:#ffe0db"><span class="aa">Aa</span><span class="num">14.04</span></td><td style="background:#2d6431;color:#ffe0db"><span class="aa">Aa</span><span class="num">5.69</span></td><td style="background:#323431;color:#ffe0db"><span class="aa">Aa</span><span class="num">10.13</span></td><td style="background:#a93426;color:#ffe0db"><span class="aa">Aa</span><span class="num">5.28</span></td><td style="background:#45231d;color:#ffe0db"><span class="aa">Aa</span><span class="num">11.21</span></td><td style="background:#705c00;color:#ffe0db"><span class="aa">Aa</span><span class="num">5.26</span></td><td style="background:#332e12;color:#ffe0db"><span class="aa">Aa</span><span class="num">11.00</span></td><td style="background:#504867;color:#ffe0db"><span class="aa">Aa</span><span class="num">6.87</span></td><td style="background:#352f47;color:#ffe0db"><span class="aa">Aa</span><span class="num">10.27</span></td></tr><tr><th scope="row">gold-100</th><td style="background:#575a55;color:#ece7cf"><span class="aa">Aa</span><span class="num">5.63</span></td><td style="background:#1a1a1a;color:#ece7cf"><span class="aa">Aa</span><span class="num">14.00</span></td><td style="background:#2d6431;color:#ece7cf"><span class="aa">Aa</span><span class="num">5.67</span></td><td style="background:#323431;color:#ece7cf"><span class="aa">Aa</span><span class="num">10.11</span></td><td style="background:#a93426;color:#ece7cf"><span class="aa">Aa</span><span class="num">5.27</span></td><td style="background:#45231d;color:#ece7cf"><span class="aa">Aa</span><span class="num">11.18</span></td><td style="background:#705c00;color:#ece7cf"><span class="aa">Aa</span><span class="num">5.25</span></td><td style="background:#332e12;color:#ece7cf"><span class="aa">Aa</span><span class="num">10.97</span></td><td style="background:#504867;color:#ece7cf"><span class="aa">Aa</span><span class="num">6.86</span></td><td style="background:#352f47;color:#ece7cf"><span class="aa">Aa</span><span class="num">10.25</span></td></tr><tr><th scope="row">purple-100</th><td style="background:#575a55;color:#e7e6f9"><span class="aa">Aa</span><span class="num">5.70</span></td><td style="background:#1a1a1a;color:#e7e6f9"><span class="aa">Aa</span><span class="num">14.16</span></td><td style="background:#2d6431;color:#e7e6f9"><span class="aa">Aa</span><span class="num">5.74</span></td><td style="background:#323431;color:#e7e6f9"><span class="aa">Aa</span><span class="num">10.22</span></td><td style="background:#a93426;color:#e7e6f9"><span class="aa">Aa</span><span class="num">5.33</span></td><td style="background:#45231d;color:#e7e6f9"><span class="aa">Aa</span><span class="num">11.31</span></td><td style="background:#705c00;color:#e7e6f9"><span class="aa">Aa</span><span class="num">5.31</span></td><td style="background:#332e12;color:#e7e6f9"><span class="aa">Aa</span><span class="num">11.09</span></td><td style="background:#504867;color:#e7e6f9"><span class="aa">Aa</span><span class="num">6.93</span></td><td style="background:#352f47;color:#e7e6f9"><span class="aa">Aa</span><span class="num">10.36</span></td></tr></tbody>
+    </table></div>
+  </section>
+
+  <section class="block" aria-labelledby="use">
+    <h2 id="use">In use</h2>
+    <p>The service cards with 300 surfaces and 100 text, which fixes the red and gold cards that failed in the audit. Buttons use the 200 accent.</p>
+    <div class="cards"><article class="card" style="background:#2d6431;color:#dee6df">
+    <h4>Community projects</h4><p>Gardens for block clubs, schools and park districts.</p>
+    <span class="btn" style="background:#4ff062;color:#1a1a1a">Learn more</span>
+    <p class="meta">100 on 300: 5.54 · button text on 200: 11.58</p>
+  </article><article class="card" style="background:#504867;color:#e7e6f9">
+    <h4>Custom garden design</h4><p>A planting plan for your space, conditions and taste.</p>
+    <span class="btn" style="background:#947cff;color:#1a1a1a">Learn more</span>
+    <p class="meta">100 on 300: 6.93 · button text on 200: 5.46</p>
+  </article><article class="card" style="background:#705c00;color:#ece7cf">
+    <h4>Site assessment</h4><p>Soil, light and drainage, measured on site.</p>
+    <span class="btn" style="background:#ccb528;color:#1a1a1a">Learn more</span>
+    <p class="meta">100 on 300: 5.25 · button text on 200: 8.46</p>
+  </article><article class="card" style="background:#a93426;color:#ffe0db">
+    <h4>Contractor referrals</h4><p>Contractors we trust for the work we don’t do.</p>
+    <span class="btn" style="background:#e0513e;color:#1a1a1a">Learn more</span>
+    <p class="meta">100 on 300: 5.28 · button text on 200: 4.49</p>
+  </article></div>
+  </section>
+
+  <section class="block" aria-labelledby="migrate">
+    <h2 id="migrate">From the current Sass</h2>
+    <p>Where each current token lands. The site keeps its current values until the theme is adopted in Phase 4.</p>
+    <div class="scroll"><table class="migrate">
+      <thead><tr><th>Current</th><th>Value</th><th>New name</th><th>New value</th><th>Change</th></tr></thead>
+      <tbody><tr><td>neutral.X</td><td class="hex">#f0efeb</td><td>neutral-100</td><td class="hex">#f0efeb</td><td>Kept</td></tr><tr><td>neutral.XX</td><td class="hex">#dadbd9</td><td>neutral-200</td><td class="hex">#dadbd9</td><td>Kept</td></tr><tr><td>neutral.XXX</td><td class="hex">#1a1a1a</td><td>neutral-400</td><td class="hex">#1a1a1a</td><td>Kept</td></tr><tr><td>green.X</td><td class="hex">#dee6df</td><td>green-100</td><td class="hex">#dee6df</td><td>Kept</td></tr><tr><td>green.XX</td><td class="hex">#4ff062</td><td>green-200</td><td class="hex">#4ff062</td><td>Kept</td></tr><tr><td>green.XXX</td><td class="hex">#323431</td><td>green-400</td><td class="hex">#323431</td><td>Kept</td></tr><tr><td>red.X</td><td class="hex">#e0513e</td><td>red-200</td><td class="hex">#e0513e</td><td>Kept</td></tr><tr><td>red.XX</td><td class="hex">#b84233</td><td>red-300</td><td class="hex">#a93426</td><td>Adjusted</td></tr><tr><td>gold.X</td><td class="hex">#ccb528</td><td>gold-200</td><td class="hex">#ccb528</td><td>Kept</td></tr><tr><td>gold.XX</td><td class="hex">#877223</td><td>gold-300</td><td class="hex">#705c00</td><td>Adjusted</td></tr><tr><td>purple.X</td><td class="hex">#6f63b0</td><td>purple-200</td><td class="hex">#947cff</td><td>Chosen</td></tr><tr><td>purple.XX</td><td class="hex">#504867</td><td>purple-300</td><td class="hex">#504867</td><td>Kept</td></tr><tr><td>purple.XXX</td><td class="hex">#413b54</td><td>purple-400</td><td class="hex">#352f47</td><td>Adjusted</td></tr></tbody>
+    </table></div>
+  </section>
+
+  <p class="muted">Generated by tools/build-ramps.mjs and tools/render-color-review.mjs from the site’s Sass config. Not yet in Figma.</p>
+</main>
