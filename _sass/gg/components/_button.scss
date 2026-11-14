@@ -1,0 +1,28 @@
+// Mirrors the site's .gg_button: 42px tall, radius 60, 24px sides (D-033). Not on tokens: those three.
+.gg-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 42px;
+  padding: 0 24px;
+  border: 2px solid var(--gg-role-action-default);
+  border-radius: 60px;
+  background: var(--gg-role-action-default);
+  color: var(--gg-role-action-on-default);
+  font-size: var(--gg-type-small-size);
+  line-height: var(--gg-type-small-line);
+  font-weight: var(--gg-font-weight-bold);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color .1s ease-in, color .1s ease-in;
+
+  &:hover { background: var(--gg-role-surface-default); color: var(--gg-role-action-default); }
+  &:focus-visible { outline: 3px solid var(--gg-role-text-default); outline-offset: 3px; }
+}
+.gg-button--bright {
+  border-color: var(--gg-role-action-bright);
+  background: var(--gg-role-action-bright);
+  color: var(--gg-role-action-on-bright);
+  &:hover { background: transparent; color: var(--gg-role-action-bright); }
+  &:focus-visible { outline-color: var(--gg-role-text-inverse); }
+}

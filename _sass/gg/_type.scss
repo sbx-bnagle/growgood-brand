@@ -1,0 +1,22 @@
+// One class per type role (TYPE-002). Sizes switch between the Narrow and Wide sets at 768px,
+// or follow .gg-set-narrow / .gg-set-wide on print and social formats (D-034).
+$roles: display, h1, lead, h2, h3, h4, body, small, caption;
+
+@each $role in $roles {
+  .gg-type-#{$role} {
+    margin: 0;
+    font-family: var(--gg-font-family-sans);
+    font-size: var(--gg-type-#{$role}-size);
+    line-height: var(--gg-type-#{$role}-line);
+    font-weight: var(--gg-type-#{$role}-weight);
+  }
+}
+.gg-type-caption { font-style: italic; }
+
+// Bold labels: small at the bold weight. O-18 decides whether this becomes its own role.
+.gg-type-label {
+  margin: 0;
+  font-size: var(--gg-type-small-size);
+  line-height: var(--gg-type-small-line);
+  font-weight: var(--gg-font-weight-bold);
+}

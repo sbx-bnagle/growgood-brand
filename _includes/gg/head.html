@@ -1,0 +1,10 @@
+{%- comment -%}
+  Fonts and theme styles for the <head>. Contract: _data/components/head.yml (D-045).
+  Alegreya Sans 400, 400 italic, 700 and 800, the four styles the type tokens use.
+{%- endcomment -%}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+Sans:ital,wght@0,400;0,700;0,800;1,400&display=swap">
+{%- if include.css != "none" %}
+<link rel="stylesheet" href="{{ '/assets/gg/gg.css' | relative_url }}">
+{%- endif %}

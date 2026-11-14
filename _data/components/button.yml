@@ -1,0 +1,28 @@
+name: Button
+include: gg/button.html
+figma: Button
+summary: A link styled as the site’s pill button.
+formats: [web, flyer, social]
+decisions: [D-030, D-033]
+params:
+  - name: label
+    type: text
+    required: true
+    source: request
+    notes: A verb first, sentence case, no exclamation mark (MECH-012).
+  - name: href
+    type: url
+    required: true
+    source: request
+  - name: style
+    type: enum
+    values: [default, bright]
+    default: default
+    source: fixed
+    notes: bright on dark surfaces (D-030).
+examples:
+  - title: On a light surface
+    params: { label: Button label, href: "#" }
+  - title: On a dark surface
+    surface: inverse
+    params: { label: Button label, href: "#", style: bright }

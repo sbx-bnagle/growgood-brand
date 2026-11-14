@@ -118,3 +118,46 @@
     --gg-type-caption-line: 16px;
   }
 }
+
+/* One type set whatever the screen width: print and social formats (D-034). */
+.gg-set-narrow {
+  --gg-type-display-size: 58px;
+  --gg-type-display-line: 56px;
+  --gg-type-h1-size: 37px;
+  --gg-type-h1-line: 48px;
+  --gg-type-lead-size: var(--gg-type-h1-size);
+  --gg-type-lead-line: var(--gg-type-h1-line);
+  --gg-type-h2-size: 30px;
+  --gg-type-h2-line: 40px;
+  --gg-type-h3-size: 24px;
+  --gg-type-h3-line: 36px;
+  --gg-type-h4-size: 19px;
+  --gg-type-h4-line: 28px;
+  --gg-type-body-size: 19px;
+  --gg-type-body-line: 28px;
+  --gg-type-small-size: 15px;
+  --gg-type-small-line: 24px;
+  --gg-type-caption-size: 12px;
+  --gg-type-caption-line: 20px;
+}
+
+.gg-set-wide {
+  --gg-type-display-size: 119px;
+  --gg-type-display-line: 112px;
+  --gg-type-h1-size: 59px;
+  --gg-type-h1-line: 68px;
+  --gg-type-lead-size: var(--gg-type-h1-size);
+  --gg-type-lead-line: var(--gg-type-h1-line);
+  --gg-type-h2-size: 42px;
+  --gg-type-h2-line: 48px;
+  --gg-type-h3-size: 30px;
+  --gg-type-h3-line: 40px;
+  --gg-type-h4-size: 21px;
+  --gg-type-h4-line: 32px;
+  --gg-type-body-size: 21px;
+  --gg-type-body-line: 32px;
+  --gg-type-small-size: 15px;
+  --gg-type-small-line: 24px;
+  --gg-type-caption-size: 11px;
+  --gg-type-caption-line: 16px;
+}

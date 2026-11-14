@@ -25,6 +25,7 @@ Images live in Google Drive, not in this repo (decisions D-009, D-019).
 | asset_id | A-0001, A-0002, … Never reused. |
 | file_name, folder, drive_file_id | Where the file is. |
 | type | photo, illustration, spot, icon, logo, partner-logo |
+| style | For illustrations, spots and icons, the illustration style (D-038). For logos, the wordmark variant, such as ‘primary’, that the wordmark include asks for (D-037). Blank for photos. |
 | subjects | Comma-separated plain words: ‘prairie, pollinators, front yard’. |
 | season | spring, summer, fall, winter, any |
 | orientation, width_px, height_px | For choosing the right image for a format. |

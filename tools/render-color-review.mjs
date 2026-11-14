@@ -36,7 +36,7 @@ const purpleOptions = [
 
 const statusText = { kept: 'Kept', adjusted: 'Adjusted', new: 'New', chosen: 'Chosen' };
 const ramps = fams.map(([f, levels]) => `
-  <section class="family" aria-labelledby="fam-${f}">
+  <section class="family" aria-labeledby="fam-${f}">
     <h3 id="fam-${f}">${cap(f)}</h3>
     <div class="swatches">
       ${LEVELS.map((l) => {
@@ -168,12 +168,12 @@ a { color: var(--link); }
     <div class="legend"><span><span class="tag tag-kept">Kept</span> existing value, unchanged</span><span><span class="tag tag-adjusted">Adjusted</span> existing hue, lightness moved</span><span><span class="tag tag-new">New</span> made from the family hue</span><span><span class="tag tag-chosen">Chosen</span> picked after review</span></div>
   </header>
 
-  <section class="block" aria-labelledby="ramps">
+  <section class="block" aria-labeledby="ramps">
     <h2 id="ramps">Ramps</h2>
     ${ramps}
   </section>
 
-  <section class="ask" aria-labelledby="purple">
+  <section class="ask" aria-labeledby="purple">
     <h2 id="purple">${purpleChosen ? 'Purple-200: option A' : 'Purple-200 is a mid-tone'}</h2>
     <p>${purpleChosen
       ? `The earlier purple, ${purpleWas}, read as a mid-tone and reached ${fmt(ratio(purpleWas, hex('purple', '400')))}:1 on purple-400. Option A, ${hex('purple', '200')}, keeps the hue and reaches ${fmt(ratio(hex('purple', '200'), hex('purple', '400')))}:1. Chosen by Brad Nagle, 2026-11-13.`
@@ -181,7 +181,7 @@ a { color: var(--link); }
     <div class="swatches">${purpleRows}</div>
   </section>
 
-  <section class="block" aria-labelledby="check">
+  <section class="block" aria-labeledby="check">
     <h2 id="check">The rule, checked</h2>
     <p>Each row is a 100 set as text on each family’s 300 and 400. Lowest ratio: ${fmt(minCheck)}:1.</p>
     <div class="scroll"><table class="check">
@@ -190,13 +190,13 @@ a { color: var(--link); }
     </table></div>
   </section>
 
-  <section class="block" aria-labelledby="use">
+  <section class="block" aria-labeledby="use">
     <h2 id="use">In use</h2>
     <p>The service cards with 300 surfaces and 100 text, which fixes the red and gold cards that failed in the audit. Buttons use the 200 accent.</p>
     <div class="cards">${cards}</div>
   </section>
 
-  <section class="block" aria-labelledby="migrate">
+  <section class="block" aria-labeledby="migrate">
     <h2 id="migrate">From the current Sass</h2>
     <p>Where each current token lands. The site keeps its current values until the theme is adopted in Phase 4.</p>
     <div class="scroll"><table class="migrate">

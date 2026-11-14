@@ -1,0 +1,12 @@
+{%- comment -%}
+  The newsletter sign-up. Contract: _data/components/subscribe.yml
+  Keeps the ids the site’s script uses: js_subscribe__form and js_subscribe__email.
+{%- endcomment -%}
+<section class="gg-subscribe" id="subscribe">
+  <h2 class="gg-type-h3">{{ include.heading | default: "Email newsletter" }}</h2>
+  <form class="gg-subscribe__form" id="js_subscribe__form">
+    <label class="gg-visually-hidden" for="js_subscribe__email">Your email address</label>
+    <input class="gg-subscribe__email" id="js_subscribe__email" type="email" name="email" placeholder="Your email address" autocomplete="email" required>
+    <button class="gg-button gg-button--bright" type="submit"{% if include.sitekey %} data-sitekey="{{ include.sitekey }}" data-callback="onSubmit" data-action="submit"{% endif %}>Subscribe</button>
+  </form>
+</section>

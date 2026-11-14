@@ -1,0 +1,40 @@
+name: Card
+include: gg/card.html
+figma: Card
+summary: A linked card on an accent surface, for services and other pages.
+formats: [web]
+decisions: [D-030, D-033]
+params:
+  - name: color
+    type: enum
+    values: [green, red, gold, purple]
+    default: green
+    source: fixed
+  - name: title
+    type: text
+    required: true
+    source: request
+  - name: blurb
+    type: text
+    required: true
+    source: claims
+    notes: What the page offers, in claims.md wording.
+  - name: link
+    type: text
+    required: true
+    source: request
+    notes: The link’s label.
+  - name: dest
+    type: url
+    required: true
+    source: site
+    notes: A path on the site, without the leading slash, as the site’s card.html takes it.
+examples:
+  - title: Each color
+    params: { title: Title, blurb: Blurb, link: Link, dest: "#" }
+  - title: Red
+    params: { color: red, title: Title, blurb: Blurb, link: Link, dest: "#" }
+  - title: Gold
+    params: { color: gold, title: Title, blurb: Blurb, link: Link, dest: "#" }
+  - title: Purple
+    params: { color: purple, title: Title, blurb: Blurb, link: Link, dest: "#" }

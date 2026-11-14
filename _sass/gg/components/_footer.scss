@@ -1,0 +1,12 @@
+.gg-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gg-space-sm);
+  padding: var(--gg-space-sm) var(--gg-space-lg);
+  background: var(--gg-role-surface-inverse);
+  color: var(--gg-role-text-inverse);
+}
+.gg-footer__social { display: flex; flex-wrap: wrap; gap: var(--gg-space-xs); margin: 0; padding: 0; list-style: none; }
+.gg-footer a { color: var(--gg-role-text-inverse); }

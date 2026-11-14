@@ -1,0 +1,13 @@
+{%- comment -%} The wordmark and the site navigation. Reads site.data.nav-config.toc. Contract: _data/components/header.yml {%- endcomment -%}
+{%- assign hdr_home = "/" | relative_url -%}
+<header class="gg-header">
+  {% include gg/wordmark.html href=hdr_home %}
+  <nav class="gg-header__nav" aria-label="Main">
+    <ul class="gg-type-body">
+      {%- for item in site.data.nav-config.toc %}
+      {%- assign hdr_url = "/" | append: item.url | relative_url %}
+      <li><a href="{{ hdr_url }}"{% if page.url contains item.url %} aria-current="page"{% endif %}>{{ item.title }}</a></li>
+      {%- endfor %}
+    </ul>
+  </nav>
+</header>

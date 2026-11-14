@@ -1,0 +1,30 @@
+name: CTA block
+include: gg/cta.html
+figma: CTA block
+summary: A call to action at the foot of a page.
+formats: [web]
+decisions: [D-033]
+params:
+  - name: heading
+    type: text
+    required: false
+    default: Ready to get started?
+    source: request
+  - name: body
+    type: text
+    required: false
+    source: request
+  - name: button
+    type: text
+    required: false
+    default: Get in touch
+    source: request
+    notes: The button’s label.
+  - name: href
+    type: url
+    required: false
+    default: "#contact"
+    source: site
+examples:
+  - title: With every part
+    params: { heading: Heading, body: Body, button: Button label, href: "#" }

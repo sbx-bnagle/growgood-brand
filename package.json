@@ -12,7 +12,10 @@
     "tokens:check": "node tools/check-tokens.mjs",
     "tokens:build": "node tools/build-tokens.mjs",
     "figma:build": "node tools/build-figma-plugin.mjs",
-    "test": "npm run figma:build && node --test tests/*.test.mjs"
+    "test": "npm run figma:build && node --test tests/*.test.mjs",
+    "playbook:build": "node tools/build-playbook.mjs",
+    "components:check": "node tools/check-components.mjs",
+    "playbook:serve": "node tools/build-playbook.mjs && bundle exec jekyll serve --livereload"
   },
   "engines": {
     "node": ">=20"

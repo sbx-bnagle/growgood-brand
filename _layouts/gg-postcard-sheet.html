@@ -1,0 +1,9 @@
+---
+layout: gg-format
+format: sheet
+set: narrow
+---
+{%- comment -%} Four copies of one postcard side on a Letter sheet, two cuts (D-007). {%- endcomment -%}
+{%- for i in (1..4) %}
+<div class="gg-sheet__card">{{ content }}</div>
+{%- endfor %}

@@ -19,15 +19,10 @@ Every brand and system decision, with its date, its reason and the files it affe
 
 ## Open
 
-### O-03 How Leah approves changes
-Raised 2026-11-13. Needed by Phase 4.
-Leah is the keeper (D-011). Either she uses a GitHub account and approves pull requests directly, or she approves in the request app and the app records her approval on the pull request.
-Affects: `.github/CODEOWNERS`, review gates.
-
-### O-04 Where the request app runs
-Raised 2026-11-13. Needed by Phase 8.
-Sign-in is decided (D-010). Hosting is not. Options include Cloudflare, already used for Grow Good’s order workers, or another host. Rendering PDF and PNG needs a headless browser wherever it runs.
-Affects: Phase 8.
+### O-04 Where the playbook and the request interface are hosted
+Raised 2026-11-13; widened 2026-11-14. Needed before the playbook is deployed, at the end of Phase 4.
+The request interface is part of the playbook and needs Google sign-in (D-010, D-044), which GitHub Pages cannot provide. Options: Cloudflare Pages with Cloudflare Access for the request pages (Grow Good already uses Cloudflare for its order workers), or GitHub Pages for the public playbook with the request interface hosted elsewhere. Rendering PDF and PNG needs a headless browser wherever requests run.
+Affects: the playbook deploy, Phase 8.
 
 ### O-06 On-brand images from text (future iteration)
 Raised 2026-11-13. Needed after Phase 9.
@@ -58,6 +53,7 @@ Affects: `tokens/type.json`, `visual/typography.md`, the Button and Card compone
 - O-15 Type sizes on small screens: decided as D-027.
 - O-16 Color roles: decided as D-030.
 - O-17 Art direction for print and social templates: decided as D-035.
+- O-03 How Leah approves changes: decided as D-047.
 
 ## Active
 
@@ -114,7 +110,7 @@ Affects: `formats/social.md`.
 2026-11-13, Brad Nagle.
 The rzwc edit LoRA is not part of this iteration. Images come from the Brand Assets folder in Google Drive and are listed in the asset register. Agents use approved rows only.
 Why: the LoRA restyles an orange-screened montage, so it cannot make an image from event details alone. Its dataset also has four duplicate pairs and no caption files. A text-based approach is O-06.
-Affects: `visual/imagery.md`, `assets/README.md`, Phase 5.
+Affects: `visual/imagery.md`, `asset-library/README.md`, Phase 5.
 
 ### D-010 The request app uses Google sign-in
 2026-11-13, Brad Nagle.
@@ -175,7 +171,7 @@ Affects: `tokens/`, Phase 2.
 2026-11-13, Brad Nagle.
 Grow Good / Brand Assets holds 00 Inbox, Photography, Illustrations, Spots and icons, Logos, Partners, Retired, and the Asset register sheet.
 Why: beside the team’s existing folders, so Leah sees it without a new share.
-Affects: `assets/README.md`, Phase 5.
+Affects: `asset-library/README.md`, Phase 5.
 
 ### D-020 Alegreya Sans is the only typeface
 2026-11-13, Brad Nagle. Closes O-05.
@@ -205,7 +201,7 @@ Affects: `verbal/names-and-dates.md`, `claims.md` (C-002).
 2026-11-13, Brad Nagle. Closes O-13. Refines D-009.
 The 13 spot illustrations stay as the illustration system, alongside photographs and garden renders made with the rzwc LoRA. Brad makes the renders outside the request flow. They enter the asset library like any other image: registered, with alt text, and approved before use. Requesters cannot generate images (O-06 stays open).
 Why: the renders are among the strongest images Grow Good has. Making them by hand keeps the montage step, and the check that plants stay true, with a person.
-Affects: `visual/imagery.md`, `assets/README.md`, Phase 5.
+Affects: `visual/imagery.md`, `asset-library/README.md`, Phase 5.
 
 ### D-025 The existing logo is the provisional mark
 2026-11-13, Brad Nagle. Closes O-07.
@@ -282,3 +278,75 @@ Affects: Templates page, the Art placeholder component, `visual/imagery.md`, `fo
 Build pages and components also adds one frame per format: web event page (1440px), flyer (612×792pt), postcard front and back (306×396pt), the sheet of four, and social feed, story and event cover (D-007, D-008, D-034). Each is made of component instances and the Art placeholder, so design work on a component reaches every template. A template that exists is never changed.
 Why: the sizes and parts come straight from decisions, so a person need not set them up by hand; the design of each template stays with a person.
 Affects: `figma-plugin/`, Templates page.
+
+### D-037 The wordmark has variants, found through the asset register
+2026-11-14, Brad Nagle. Refines D-025.
+The wordmark include takes a `variant` parameter, `primary` by default, and finds its file through the approved logo row whose `style` matches, not a fixed path. The Wordmark component gets a matching Variant property. `visual/logo.md` will say which variant goes where. Adding a logo means a register row, a component variant and a rule; no template changes.
+Why: logos for different contexts are expected. A slot now costs one parameter; a retrofit later would touch every template.
+Affects: the wordmark include and component, `asset-library/README.md`, `visual/logo.md`, Phases 4 and 5.
+
+### D-038 Illustration style is a column in the asset register
+2026-11-14, Brad Nagle. Refines D-024.
+The register gets a `style` column. For illustrations, spots and icons it names the illustration style; for logos it names the wordmark variant (D-037). Values are open for now; `visual/imagery.md` and `visual/logo.md` will list them and say which to use where.
+Why: several illustration styles are expected. Adding the column while the register is empty avoids backfilling rows later.
+Affects: the asset register, `asset-library/README.md`, `visual/imagery.md`, Phase 5.
+
+### D-039 Agents read the brand files when each request runs
+2026-11-14, Brad Nagle.
+The Brand MCP server (Phase 7) and the request app (Phase 8) read the brand files, claims, tokens and component contracts from `main` when each request runs, never from a copy made when they were built or deployed.
+Why: instructions, voice, rules and designs will keep being refined after the phases. A change merged to `main` reaches the next request with no rebuild.
+Affects: Phases 7 and 8.
+
+### D-040 The site uses the theme as a remote theme, pinned to a release
+2026-11-14, Brad Nagle. Refines D-002.
+The site loads this repo with `remote_theme`, pinned to a release tag such as `v0.4.0`. A theme change reaches the site only when a site pull request moves the tag. For local work, a script links this checkout into the site, so the site can be viewed locally with the theme as it is on disk.
+Why: the live site changes only by reviewed pull request, and changes to the theme can still be seen applied before release.
+Affects: the site’s `_config.yml` and Gemfile, release tags, local preview.
+
+### D-041 Theme includes live under gg/
+2026-11-14, Brad Nagle.
+Every theme include is `_includes/gg/<name>.html`, with its styles in `_sass/gg/`.
+Why: a site file overrides a theme file of the same name. A separate folder lets the old and new includes coexist, so pages move over one at a time.
+Affects: the theme, the site migration.
+
+### D-042 Each component has a contract
+2026-11-14, Brad Nagle.
+`_data/components/<name>.yml` describes each include: its parameters with type, whether required, default, where the value must come from (the request, `claims.md`, the asset register or the site’s data), the rules it follows, and worked examples. The playbook renders the examples; the checks, the Brand MCP server and the request interface read the same file.
+Why: one description of each component, read by people, checks and agents alike.
+Affects: `_data/components/`, `system/components.md`, the playbook, Phases 6 to 8.
+
+### D-043 Web, print and social share one set of includes and layouts
+2026-11-14, Brad Nagle. Carries out D-005.
+The theme has layouts for web pages, the Letter flyer, the postcard (front, back and the sheet of four) and the three social sizes. Print and social are pages captured to PDF or PNG. Their structure follows the Figma templates now; their styling follows the designs as they are made.
+Why: one render engine for every format, so a component fix reaches every format.
+Affects: `_layouts/`, Phase 8 rendering.
+
+### D-044 The playbook is a published site, and the request interface lives in it
+2026-11-14, Brad Nagle. Refines D-004 and D-010.
+This repo is also the playbook site: it renders the brand files, the tokens and every component from its contract. It is published. The request interface (Phase 8) is part of it, behind Google sign-in; where it is hosted is O-04.
+Why: one place to read the brand and to ask for work. Sign-in protects requests, not the brand itself.
+Affects: the playbook, the deploy, Phase 8.
+
+### D-045 Fonts: Alegreya Sans 400, 400 italic, 700 and 800
+2026-11-14, Brad Nagle. Carries out D-020.
+The theme loads the four styles the type tokens use. The site stops loading Proxima Nova.
+Why: display and heading 1 are 800 and captions are italic; the site loads only 400 and 700, so the browser fakes the rest.
+Affects: the theme’s head include, the site.
+
+### D-046 The site moves to the theme in four pull requests
+2026-11-14, Brad Nagle.
+On the site repo, each with before and after screenshots: the GitHub Actions build with Enforce HTTPS turned on and no visual change; the site’s Sass pointed at the tokens; includes swapped one at a time; the remaining live-site fixes. `/dashboard/` and `/preplanned/` stay reachable but are hidden from search engines. The four `fpo.png` placeholders are replaced in Phase 5 with registered images.
+Why: the site is live; each step can be checked and rolled back on its own.
+Affects: the site repo, Phase 5.
+
+### D-047 Approvals: none while building; Leah approves in the playbook after launch
+2026-11-14, Brad Nagle. Closes O-03.
+Until launch, Brad merges without a separate approval. After launch, Leah approves in the request interface in the playbook, which records her approval. `.github/CODEOWNERS` stays as it is.
+Why: one person is building the system; the gate matters once real requests flow.
+Affects: review gates, Phase 8.
+
+### D-048 The asset library notes move to asset-library/
+2026-11-14, made in Phase 4 by Claude for Brad Nagle. Replace this entry to change it.
+`assets/README.md` is now `asset-library/README.md`. The theme’s `assets/` folder holds only files the site and the playbook serve.
+Why: everything in a theme’s `assets/` folder is copied into the site, so the notes and their Drive links would have appeared on growgoodgardens.com.
+Affects: `asset-library/README.md`, `brand/readme.md`.

@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Builds the token outputs from tokens/*.json (decision D-028).
 // Usage: node tools/build-tokens.mjs [tokens-dir]
-// Writes tokens/build/tokens.css, tokens/build/_tokens.scss and tokens/build/tokens.json.
+// Writes tokens/build/tokens.css, tokens/build/_tokens.scss and tokens/build/tokens.json, and the
+// theme's copies in _sass/gg/ (_custom-properties.scss and _tokens.scss, D-040).
 // Generated files; do not edit them by hand.
 
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
@@ -37,11 +38,13 @@ const breakpoint = literal(byPath.get('breakpoint.m'), resolved.get('breakpoint.
 
 const rootLines = [];
 const wideLines = [];
+const narrowLines = [];
 for (const t of tokens) {
   if (isWide(t)) {
     wideLines.push(`    ${cssName(asNarrow(t.path))}: ${cssValue(t)};`);
   } else if (/^type\.[^.]+\.narrow\./.test(t.path)) {
     rootLines.push(`  ${cssName(asResponsive(t.path))}: ${cssValue(t)};`);
+    narrowLines.push(`  ${cssName(asResponsive(t.path))}: ${cssValue(t)};`);
   } else {
     rootLines.push(`  ${cssName(t.path)}: ${cssValue(t)};`);
   }
@@ -58,6 +61,15 @@ const css = [
   '  :root {',
   ...wideLines.map(fixRef),
   '  }',
+  '}',
+  '',
+  '/* One type set whatever the screen width: print and social formats (D-034). */',
+  '.gg-set-narrow {',
+  ...narrowLines.map(fixRef),
+  '}',
+  '',
+  '.gg-set-wide {',
+  ...wideLines.map((l) => fixRef(l.slice(2))),
   '}',
   '',
 ].join('\n');
@@ -96,4 +108,8 @@ mkdirSync(outDir, { recursive: true });
 writeFileSync(join(outDir, 'tokens.css'), css);
 writeFileSync(join(outDir, '_tokens.scss'), scss);
 writeFileSync(join(outDir, 'tokens.json'), json);
-console.log(`built ${tokens.length} tokens into ${outDir}: tokens.css, _tokens.scss, tokens.json`);
+const themeDir = join(dir, '..', '_sass', 'gg');
+mkdirSync(themeDir, { recursive: true });
+writeFileSync(join(themeDir, '_custom-properties.scss'), css);
+writeFileSync(join(themeDir, '_tokens.scss'), scss);
+console.log(`built ${tokens.length} tokens into ${outDir}: tokens.css, _tokens.scss, tokens.json; and ${themeDir}`);

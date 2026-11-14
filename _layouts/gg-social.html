@@ -1,0 +1,9 @@
+---
+layout: gg-format
+format: social
+set: wide
+---
+{%- comment -%} Social sizes (D-008): page.size is feed (1080×1350), story (1080×1920) or cover (1920×1005). {%- endcomment -%}
+<div class="gg-social gg-social--{{ page.size | default: 'feed' }}">
+{{ content }}
+</div>

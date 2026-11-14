@@ -1,0 +1,11 @@
+name: Header
+include: gg/header.html
+figma: Header
+summary: The wordmark and the site navigation.
+formats: [web]
+decisions: [D-033]
+params: []
+data: [nav-config.toc]
+examples:
+  - title: From the site’s navigation
+    params: {}

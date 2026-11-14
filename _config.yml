@@ -1,0 +1,46 @@
+# The playbook site (D-044). This repo is also the theme the Grow Good site loads (D-040):
+# the site uses _includes/gg, _layouts/gg-*, _sass/gg and assets/gg, and ignores this file.
+
+title: Grow Good brand playbook
+description: The Grow Good Gardens brand system, its rules, tokens and components.
+baseurl: ""
+url: ""
+
+markdown: kramdown
+kramdown:
+  input: GFM
+liquid:
+  error_mode: strict
+
+plugins:
+  - jekyll-relative-links
+relative_links:
+  enabled: true
+  collections: false
+
+sass:
+  style: compressed
+  quiet_deps: true
+
+exclude:
+  - node_modules
+  - vendor
+  - tools
+  - tests
+  - figma-plugin
+  - tokens/seed
+  - audit
+  - Gemfile
+  - Gemfile.lock
+  - package.json
+  - package-lock.json
+  - AGENTS.md
+  - CLAUDE.md
+  - README.md
+  - ROADMAP.md
+
+defaults:
+  - scope: { path: "" }
+    values: { layout: gg-playbook }
+
+# Sample site data for the playbook. A real site supplies its own (see the component contracts).

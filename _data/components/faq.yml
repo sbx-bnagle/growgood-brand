@@ -1,0 +1,21 @@
+name: FAQ
+include: gg/faq.html
+figma: null
+summary: A list of FAQ items from one set in the site’s FAQ data.
+formats: [web]
+decisions: [D-033]
+params:
+  - name: set
+    type: text
+    required: true
+    source: site
+    notes: A key in the site’s _data/faqs.yml. Answers there are claims (claims.md).
+  - name: heading
+    type: text
+    required: false
+    default: FAQ
+    source: request
+data: [faqs]
+examples:
+  - title: A sample set
+    params: { set: sample, heading: Heading }

@@ -1,0 +1,52 @@
+// Print and social frames (D-007, D-008, D-034, D-043). Frames are sized in token px; print
+// shows 1px as 1pt (D-034), so print zooms each frame by 96/72 to fill the paper.
+.gg-format-body { background: var(--gg-role-border-default); }
+
+.gg-format {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gg-space-sm);
+  margin: var(--gg-space-md) auto;
+  overflow: hidden;
+  background: var(--gg-role-surface-default);
+  color: var(--gg-role-text-default);
+}
+.gg-format > .gg-art { flex: 1 1 auto; }
+
+.gg-format--flyer { width: 612px; height: 792px; padding: var(--gg-space-md); }
+.gg-format--postcard { width: 306px; height: 396px; padding: var(--gg-space-sm); }
+.gg-format--sheet {
+  display: grid;
+  grid-template-columns: 306px 306px;
+  grid-template-rows: 396px 396px;
+  gap: 0;
+  width: 612px;
+  height: 792px;
+  padding: 0;
+}
+.gg-sheet__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gg-space-sm);
+  padding: var(--gg-space-sm);
+  outline: 1px dashed var(--gg-role-border-default);
+  overflow: hidden;
+  > .gg-art { flex: 1 1 auto; }
+}
+
+.gg-format--social { padding: 0; }
+.gg-social { display: flex; flex-direction: column; gap: var(--gg-space-md); padding: var(--gg-space-lg); }
+.gg-social > .gg-art { flex: 1 1 auto; }
+.gg-social--feed { width: 1080px; height: 1350px; }
+.gg-social--story { width: 1080px; height: 1920px; padding: var(--gg-space-xl) var(--gg-space-lg); }
+.gg-social--cover { width: 1920px; height: 1005px; flex-direction: row; align-items: stretch; }
+.gg-social--cover > .gg-art { flex: 0 0 1040px; }
+.gg-social--cover > .gg-social__side { display: flex; flex-direction: column; gap: var(--gg-space-md); justify-content: center; }
+
+@media print {
+  @page { margin: 0; }
+  .gg-format-body { background: none; }
+  .gg-format { margin: 0; zoom: 1.3333333; }
+  .gg-format--flyer, .gg-format--sheet { break-after: page; }
+  .gg-sheet__card { outline: none; }
+}

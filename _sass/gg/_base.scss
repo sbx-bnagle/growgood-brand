@@ -1,0 +1,24 @@
+// Base for pages that are wholly the theme's: the playbook and the print and social formats.
+.gg-root {
+  margin: 0;
+  background: var(--gg-role-surface-default);
+  color: var(--gg-role-text-default);
+  font-family: var(--gg-font-family-sans);
+  font-size: var(--gg-type-body-size);
+  line-height: var(--gg-type-body-line);
+  font-weight: var(--gg-type-body-weight);
+  -webkit-font-smoothing: antialiased;
+
+}
+
+// Element defaults carry no weight (:where), so any component class overrides them.
+:where(.gg-root) {
+  *, *::before, *::after { box-sizing: border-box; }
+  a { color: var(--gg-role-text-link); }
+  img { max-width: 100%; height: auto; display: block; }
+}
+
+.gg-visually-hidden {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
