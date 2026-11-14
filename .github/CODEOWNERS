@@ -1,0 +1,8 @@
+# Who reviews changes to which files.
+# The keeper (Leah Fagan) approves brand content. Her GitHub account is an open
+# decision (brand/decisions.md, O-03). Until it is settled, Brad reviews every
+# change and records Leah's approval in the pull request.
+
+*                @sbx-bnagle
+/brand/          @sbx-bnagle
+/tokens/         @sbx-bnagle
