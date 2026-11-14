@@ -8,7 +8,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { parse } from 'acorn';
-import { TOKEN_FILES, toFigmaSpecs, mergeSpecs, githubHint } from '../tools/lib/tokens.mjs';
+import { TOKEN_FILES, toFigmaSpecs, mergeSpecs, githubHint, hexToRgb } from '../tools/lib/tokens.mjs';
 
 const docs = Object.fromEntries(TOKEN_FILES.map((f) => [f, JSON.parse(readFileSync(new URL(`../tokens/${f}`, import.meta.url), 'utf8'))]));
 const bundle = readFileSync(new URL('../figma-plugin/dist/code.js', import.meta.url), 'utf8');
@@ -79,6 +79,12 @@ function mockFigma(fonts = ['Alegreya Sans']) {
 
 // Values created inside the plugin's sandbox come from another realm; compare them as plain data.
 const plain = (x) => JSON.parse(JSON.stringify(x));
+
+// A color one step away from hex in the blue channel, for edits that must differ from the token files.
+const nudgeHex = (hex) => {
+  const b = parseInt(hex.slice(5, 7), 16);
+  return hex.slice(0, 5) + (b === 255 ? 254 : b + 1).toString(16).padStart(2, '0');
+};
 
 function run(mock) {
   vm.runInNewContext(bundle, { figma: mock.figma, __html__: '', console, JSON, Math, Object, Array, Map, Set, Promise, Error, Number, String, RegExp, parseInt });
@@ -153,15 +159,18 @@ test('an edit in Figma comes back as one changed value, with the repo structure 
   const mock = mockFigma();
   const send = run(mock);
   await send({ type: 'import' });
+  // New values come from the current ones, so the test holds whatever the token files say.
+  const greenNew = nudgeHex(docs['color.json'].color.green['300'].$value);
+  const h1New = docs['type.json'].type.h1.wide.size.$value.value + 1;
   const coll = (name) => mock.collections.find((c) => c.name === name);
   const green300 = mock.variables.find((x) => x.name === 'green/300' && x.variableCollectionId === coll('Color').id);
-  green300.setValueForMode(coll('Color').defaultModeId, { r: 0x30 / 255, g: 0x66 / 255, b: 0x34 / 255, a: 1 });
+  green300.setValueForMode(coll('Color').defaultModeId, hexToRgb(greenNew));
   const h1 = mock.variables.find((x) => x.name === 'type/h1/wide/size');
-  h1.setValueForMode(coll('Type').defaultModeId, 60);
+  h1.setValueForMode(coll('Type').defaultModeId, h1New);
   await send({ type: 'collect' });
   const { specs } = plain(mock.messages.filter((m) => m.type === 'collected').pop());
   const merged = mergeSpecs(docs, specs);
-  assert.deepEqual(merged.changes.map((c) => [c.path, c.to]).sort(), [['color.green.300', '#306634'], ['type.h1.wide.size', { value: 60, unit: 'px' }]]);
+  assert.deepEqual(merged.changes.map((c) => [c.path, c.to]).sort(), [['color.green.300', greenNew], ['type.h1.wide.size', { value: h1New, unit: 'px' }]]);
   // The lead still points at heading 1, so it follows the change without its own edit.
   assert.equal(merged.docs['type.json'].type.lead.wide.size.$value, '{type.h1.wide.size}');
   assert.equal(merged.docs['type.json'].type.caption.$extensions['com.growgood.fontStyle'], 'italic');
@@ -213,16 +222,20 @@ test('Send changes explains GitHub errors in plain terms', () => {
   assert.match(ui, /githubHint\(e\.github, repo, base\)/);
 });
 
-// Runs the panel's own script against a stand-in GitHub that refuses the first write, as in the first real test.
-test('the panel shows the token hint when GitHub refuses to create the branch', async () => {
+// Runs the panel's own script against a stand-in GitHub. Reads return the local token files;
+// answerWrite decides how GitHub answers each write.
+const ok = (body) => ({ ok: true, status: 200, json: async () => body });
+const refuse = (status, message) => ({ ok: false, status, statusText: 'Error', json: async () => ({ message }) });
+
+async function runPanel(edit, answerWrite) {
   const html = readFileSync(new URL('../figma-plugin/dist/ui.html', import.meta.url), 'utf8');
   const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => m[1]).join('\n;\n');
   const els = {};
-  const el = (id) => (els[id] ??= { id, value: '', textContent: '', checked: false, hidden: false, disabled: false, scrollTop: 0, scrollHeight: 0, onclick: null });
+  const el = (id) => (els[id] ??= { id, value: '', textContent: '', checked: false, hidden: true, disabled: false, scrollTop: 0, scrollHeight: 0, onclick: null });
   el('repo').value = 'sbx-bnagle/growgood-brand';
   el('base').value = 'phase-2/tokens';
   el('token').value = 'test-token';
-  const specs = toFigmaSpecs(docs).map((s) => (s.path === 'space.xs' ? { ...s, value: 16 } : s));
+  const specs = toFigmaSpecs(docs).map((s) => (s.path === edit.path ? { ...s, value: edit.value } : s));
   const requests = [];
   const ctx = {
     console, TextEncoder, TextDecoder, atob, btoa, Uint8Array, JSON, Promise, Date, Object, Array, Error, String, Number, RegExp, Math, encodeURIComponent,
@@ -230,21 +243,51 @@ test('the panel shows the token hint when GitHub refuses to create the branch', 
     parent: { postMessage: ({ pluginMessage: m }) => { if (m.type === 'collect') setTimeout(() => ctx.window.onmessage({ data: { pluginMessage: { type: 'collected', specs, skipped: [] } } })); } },
     fetch: async (url, opts) => {
       const path = url.replace('https://api.github.com', '');
-      requests.push(`${opts.method} ${path}`);
-      const ok = (body) => ({ ok: true, status: 200, json: async () => body });
-      if (path.includes('/git/ref/heads/')) return ok({ object: { sha: 'abc123' } });
+      const body = opts.body ? JSON.parse(opts.body) : undefined;
+      requests.push({ method: opts.method, path, body });
+      if (opts.method === 'GET' && path.includes('/git/ref/heads/')) return ok({ object: { sha: 'abc123' } });
       const file = path.match(/\/contents\/tokens\/([\w-]+\.json)/);
       if (opts.method === 'GET' && file) return ok({ content: Buffer.from(JSON.stringify(docs[file[1]], null, 2) + '\n').toString('base64'), sha: 'f' });
-      return { ok: false, status: 403, statusText: 'Forbidden', json: async () => ({ message: 'Resource not accessible by personal access token' }) };
+      return answerWrite(opts.method, path, body);
     },
   };
   ctx.window = ctx;
   vm.runInNewContext(scripts, ctx);
   await els.send.onclick();
-  const log = els.log.textContent;
-  assert.match(log, /space\.xs: 12px → 16px/);
+  return { log: els.log.textContent, writes: requests.filter((r) => r.method !== 'GET'), els };
+}
+
+const xsNow = docs['space.json'].space.xs.$value.value;
+
+// As in the first real test: a token that can read the repo but not write to it.
+test('the panel shows the token hint when GitHub refuses to create the branch', async () => {
+  const { log, writes, els } = await runPanel({ path: 'space.xs', value: xsNow + 4 }, () => refuse(403, 'Resource not accessible by personal access token'));
+  assert.match(log, new RegExp(`space\\.xs: ${xsNow}px → ${xsNow + 4}px`));
   assert.match(log, /Error: GitHub said 403 for \/repos\/sbx-bnagle\/growgood-brand\/git\/refs/);
   assert.match(log, /The token can read sbx-bnagle\/growgood-brand but can’t change it\./);
-  assert.equal(requests.filter((r) => !r.startsWith('GET')).length, 1, 'stops after the refused write');
+  assert.equal(writes.length, 1, 'stops after the refused write');
   assert.equal(els.send.disabled, false, 'the button is usable again');
+});
+
+test('a full send makes one branch, commits only the changed file and opens the pull request', async () => {
+  const { log, writes, els } = await runPanel({ path: 'space.xs', value: xsNow + 4 }, (method, path) =>
+    ok(path.endsWith('/pulls') ? { number: 7, html_url: 'https://github.com/sbx-bnagle/growgood-brand/pull/7' } : {}));
+  const repo = '/repos/sbx-bnagle/growgood-brand';
+  assert.deepEqual(writes.map((w) => `${w.method} ${w.path}`), [`POST ${repo}/git/refs`, `PUT ${repo}/contents/tokens/space.json`, `POST ${repo}/pulls`]);
+
+  const [ref, put, pull] = writes.map((w) => w.body);
+  const branch = ref.ref.replace('refs/heads/', '');
+  assert.match(branch, /^figma\/tokens-\d{12}$/);
+  assert.equal(ref.sha, 'abc123', 'branches from the base branch head');
+  assert.equal(put.branch, branch);
+  const expected = JSON.parse(JSON.stringify(docs['space.json']));
+  expected.space.xs.$value.value = xsNow + 4;
+  assert.equal(Buffer.from(put.content, 'base64').toString('utf8'), JSON.stringify(expected, null, 2) + '\n', 'the file changes in that one value only');
+
+  assert.equal(pull.title, 'Tokens from Figma (1 change)');
+  assert.equal(pull.head, branch);
+  assert.equal(pull.base, 'phase-2/tokens');
+  assert.match(pull.body, new RegExp(`\`space\\.xs\`: ${xsNow}px → ${xsNow + 4}px`));
+  assert.match(log, /Opened pull request #7/);
+  assert.equal(els.openpr.hidden, false, 'the Open pull request button shows');
 });
