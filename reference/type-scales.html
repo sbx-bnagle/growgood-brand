@@ -1,0 +1,292 @@
+<title>Grow Good type scales</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;0,800;1,400&display=swap">
+<style>
+/* Layout: sticky page bar; a list of sizes beside one reading column set on a 4px baseline grid.
+   Light only (dark text on a light ground), by request. */
+:root {
+  --bg: #f0efeb; --fg: #1a1a1a; --muted: #575a55; --rule: #dadbd9; --accent: #2d6431; --panel: #f8f7f3;
+  --grid: rgb(37 118 178 / .2); --grid-strong: rgb(37 118 178 / .5);
+  --font: 'Alegreya Sans', 'Gill Sans', 'Trebuchet MS', sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 16px; line-height: 1.4; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--rule); }
+.bar-inner { max-width: 1240px; margin: 0 auto; padding-block: 12px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: flex; flex-wrap: wrap; align-items: center; gap: 10px 24px; }
+.pageno { font-weight: 800; font-size: 40px; line-height: 40px; color: var(--accent); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pageno span { font-size: 18px; font-weight: 500; color: var(--muted); }
+.which { display: grid; gap: 2px; min-width: 0; flex: 1 1 300px; }
+.which h1 { margin: 0; font-size: 22px; line-height: 26px; font-weight: 700; text-wrap: balance; }
+.which p { margin: 0; color: var(--muted); font-size: 15px; line-height: 20px; max-width: 70ch; }
+.controls { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+button, select { font: inherit; font-size: 16px; line-height: 22px; color: var(--fg); background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; padding: 6px 12px; }
+button { cursor: pointer; }
+button:hover:not(:disabled), select:hover { border-color: var(--muted); }
+button:disabled { opacity: .4; cursor: default; }
+button[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.wrap { max-width: 1240px; margin: 0 auto; padding-block: 32px 96px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 40px; align-items: start; }
+aside { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 100px); display: grid; gap: 14px; }
+details summary { cursor: pointer; font-weight: 700; font-size: 16px; }
+.specimen { list-style: none; margin: 10px 0 0; padding: 0; display: grid; }
+.specimen li { display: grid; grid-template-columns: 1fr 64px 72px; gap: 0 8px; padding: 7px 0; border-top: 1px solid var(--rule); font-size: 15px; line-height: 20px; }
+.specimen li.sp-head { border-top: 0; padding-top: 0; font-size: 13px; color: var(--muted); }
+.sp-head span { text-align: right; }
+.sp-role { color: var(--muted); }
+.sp-val { font-variant-numeric: tabular-nums; text-align: right; }
+.sp-val.on { font-weight: 700; color: var(--fg); }
+.sp-val.off { font-weight: 400; color: var(--muted); }
+.col.phone { max-width: 343px; }
+.sp-note { grid-column: 1 / -1; color: var(--accent); font-size: 13px; line-height: 18px; }
+.sp-note:empty { display: none; }
+.aside-note { color: var(--muted); font-size: 14px; line-height: 19px; margin: 0; }
+
+/* The sheet carries the grid. Its top edge is the grid origin; nothing above the column adds height. */
+.sheet { min-width: 0; padding-inline: 16px; margin-inline: -16px; }
+.sheet.grid { background-image: linear-gradient(to bottom, var(--grid-strong) 0 1px, transparent 1px), linear-gradient(to bottom, var(--grid) 0 1px, transparent 1px); background-size: 100% var(--rhythm, 24px), 100% 4px; }
+.col { width: 100%; max-width: 66ch; font-size: var(--fs-body); line-height: var(--lh-body); padding: 0 0 48px; }
+.col > * { margin: 0; }
+.col > * + * { margin-top: var(--gap); }
+.col > :is(.t-h1, .t-h2) { margin-top: var(--gap-2); }
+.col > .t-h3, .col > .event { margin-top: var(--gap-15); }
+.col > :is(.t-display, .t-h1, .t-h2, .t-h3, .t-h4, .eyebrow) + * { margin-top: var(--gap-half); }
+[class*="t-"] { position: relative; }
+.t-display { font-size: var(--fs-display); line-height: var(--lh-display); font-weight: var(--fw-display); text-wrap: balance; overflow-wrap: break-word; }
+.t-h1 { font-size: var(--fs-h1); line-height: var(--lh-h1); font-weight: var(--fw-h1); text-wrap: balance; overflow-wrap: break-word; }
+.t-h2 { font-size: var(--fs-h2); line-height: var(--lh-h2); font-weight: var(--fw-h2); text-wrap: balance; }
+.t-h3 { font-size: var(--fs-h3); line-height: var(--lh-h3); font-weight: var(--fw-h3); text-wrap: balance; }
+.t-h4 { font-size: var(--fs-h4); line-height: var(--lh-h4); font-weight: var(--fw-h4); }
+.t-lead { font-size: var(--fs-lead); line-height: var(--lh-lead); font-weight: var(--fw-lead); }
+.t-body { font-size: var(--fs-body); line-height: var(--lh-body); }
+.t-small { font-size: var(--fs-small); line-height: var(--lh-small); }
+.t-caption { font-size: var(--fs-caption); line-height: var(--lh-caption); color: var(--muted); font-style: italic; }
+.bl { display: inline-block; width: 0; height: 0; vertical-align: baseline; }
+.eyebrow { text-transform: uppercase; letter-spacing: .08em; font-weight: 700; color: var(--accent); }
+.col ul { padding-left: 1.1em; }
+.col em { font-style: italic; }
+.event { box-shadow: inset 0 0 0 1px var(--rule); background: rgb(248 247 243 / .7); border-radius: 6px; padding: var(--gap-half) var(--gap); display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--gap-half); }
+.event > * { margin: 0; min-width: 0; overflow-wrap: break-word; }
+.signoff { color: var(--muted); }
+
+@media (max-width: 860px) {
+  .wrap { grid-template-columns: minmax(0, 1fr); gap: 24px; padding-block: 20px 72px; }
+  aside { position: static; }
+}
+@media (max-width: 480px) {
+  .pageno { font-size: 32px; line-height: 32px; }
+  .controls { width: 100%; }
+}
+</style>
+
+<header class="bar">
+  <div class="bar-inner">
+    <div class="pageno" id="pageno" aria-live="polite">01 <span>/ 03</span></div>
+    <div class="which">
+      <h1 id="name">Type scales</h1>
+      <p id="note">Loading the first scale.</p>
+    </div>
+    <div class="controls">
+      <button type="button" id="prev" aria-label="Previous scale">← Prev</button>
+      <button type="button" id="next" aria-label="Next scale">Next →</button>
+      <label class="sr" for="jump">Jump to a scale</label>
+      <select id="jump"></select>
+      <button type="button" id="phonebtn" aria-pressed="false">Phone set</button>
+      <button type="button" id="gridbtn" aria-pressed="true">Grid</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <aside>
+    <details open>
+      <summary>Sizes on this page</summary>
+      <ul class="specimen" id="specimen"></ul>
+    </details>
+    <p class="aside-note">Size/line height in px. Every line height rounds up to a multiple of 4px, and each block moves down by less than 4px so its baselines sit on a grid line. Strong lines mark the body line height.</p>
+    <p class="aside-note">Both sets are decided (D-026, D-027). Phone set shows the smaller one in a 343px column, the width of a 375px phone less its margins. Under 768px the page switches on its own.</p>
+    <p class="aside-note">The Grid button turns the lines off.</p>
+  </aside>
+
+  <div class="sheet grid" id="sheet">
+    <article class="col" id="col">
+      <p class="t-small eyebrow">Garden guide</p>
+      <h2 class="t-display">Plant a parkway garden</h2>
+      <p class="t-lead">The strip between the sidewalk and the curb takes full sun, road salt and foot traffic. A short list of native perennials handles all three, and feeds the bees on your block.</p>
+
+      <h3 class="t-h1">Before you dig</h3>
+      <p class="t-body">Call 811 a few days ahead so buried lines are marked. Then check the city’s rules for parkway plantings before you choose plants. Height limits near corners and driveways keep sightlines clear for drivers and for kids on bikes.</p>
+
+      <h4 class="t-h2">Read the light</h4>
+      <p class="t-body">Watch the strip on a clear day: in the morning, at noon and in the late afternoon. A parkway in the open gets sun from mid-morning on. One under a street tree may get two hours. Choose plants for the hours you count.</p>
+
+      <h5 class="t-h3">Soil</h5>
+      <p class="t-body">Parkway soil is often compacted fill. Loosen the top 8–12in and work in 2in of leaf compost. Skip it and the roots stay shallow and dry out in August. Overdo the compost and the bed settles below the curb by the second year.</p>
+
+      <h6 class="t-h4">Four plants that take a parkway</h6>
+      <ul class="t-body">
+        <li>Little bluestem (<em>Schizachyrium scoparium</em>), 2–3ft, copper in fall</li>
+        <li>Prairie dropseed (<em>Sporobolus heterolepis</em>), 2ft, fine-leaved mounds</li>
+        <li>Pale purple coneflower (<em>Echinacea pallida</em>), 3ft, flowers in early summer</li>
+        <li>Wild strawberry (<em>Fragaria virginiana</em>), 6in, a groundcover for the edges</li>
+      </ul>
+      <p class="t-caption">Spacing for a 6ft parkway: 12–18in on center, grasses toward the middle.</p>
+
+      <h5 class="t-h3">Plant in early fall</h5>
+      <p class="t-body">Early fall, once the first street trees start to color. The roots keep growing while the tops slow down, and the plants come up strong in spring. Water twice a week for the first month.</p>
+
+      <div class="event">
+        <p class="t-small eyebrow">Example event</p>
+        <h5 class="t-h3">Parkway planting day</h5>
+        <p class="t-lead">Saturday, May 16, 10:00am–noon</p>
+        <p class="t-body">Bring a trowel. We bring the plants and show you the spacing.</p>
+        <p class="t-small signoff">Example copy for reviewing type. Not a real event.</p>
+      </div>
+
+      <p class="t-small signoff">Grow Good Gardens, Chicagoland and the Upper Midwest.</p>
+    </article>
+  </div>
+</div>
+
+<script>
+(() => {
+  const GRID = 4;
+  const ROLES = ['display', 'h1', 'h2', 'h3', 'h4', 'lead', 'body', 'small', 'caption'];
+  const LABEL = { display: 'Display', h1: 'Heading 1', h2: 'Heading 2', h3: 'Heading 3', h4: 'Heading 4', lead: 'Lead', body: 'Body', small: 'Small', caption: 'Caption' };
+  // Where each role sits on a ratio scale. FINAL (D-026) drops Heading 1 to Heading 4 one step;
+  // display stays at the top and the lead takes the Heading 1 step, in regular weight.
+  const STEP = { display: 5, h1: 4, h2: 3, h3: 2, h4: 1, lead: 1, body: 0, small: -1, caption: -2 };
+  const FINAL = { display: 5, h1: 3, h2: 2, h3: 1, h4: 0, lead: 3, body: 0, small: -1, caption: -2 };
+  const WEIGHT = { display: 800, h1: 800, h2: 700, h3: 700, h4: 700, lead: 400, body: 400, small: 400, caption: 400 };
+  const CAP = { display: 0.2, h1: 0.16, lead: 0.16 }; // largest size as a share of the column width
+  const snap = (v) => Math.ceil(v / GRID - 1e-9) * GRID;
+  const lhRule = (s) => snap(s * (s <= 24 ? 1.45 : s <= 40 ? 1.25 : 1.1));
+  // Two sets with the same role positions: wide is decision D-026, under 768px is decision D-027.
+  const BREAK = 768;
+  const SETS = {
+    wide: { key: 'wide', ratio: 1.414, base: 21, steps: FINAL, displayLh: (s) => snap(s) - 8 },
+    phone: { key: 'phone', ratio: 1.25, base: 19, steps: FINAL, displayLh: (s) => snap((s * 112) / 119) },
+  };
+  const PAGES = [
+    { name: 'Grow Good type scale',
+      note: '768px and up: an augmented fourth (1.414) on a 21px body (D-026). Under 768px: a major third (1.25) on a 19px body, same roles (D-027).' },
+  ];
+  const COUNT = PAGES.length;
+  let forcePhone = false;
+  const activeSet = () => (forcePhone || window.innerWidth < BREAK ? SETS.phone : SETS.wide);
+
+  const $ = (id) => document.getElementById(id);
+  const col = $('col'), sheet = $('sheet');
+  const pad = (n) => String(n).padStart(2, '0');
+  const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
+  let page = 0; // index into PAGES; shown as page + 1
+  let grid = store.get('gg-type-grid') !== 'off';
+  if (COUNT === 1) ['prev', 'next', 'jump'].forEach((id) => { $(id).hidden = true; });
+
+  PAGES.forEach((p, i) => {
+    const o = document.createElement('option');
+    o.value = i; o.textContent = `${pad(i + 1)}  ${p.name}`;
+    $('jump').appendChild(o);
+  });
+
+  // A zero-height marker at the start of each text block sits on its first baseline.
+  const blocks = [...col.querySelectorAll('[class*="t-"]')];
+  blocks.forEach((el) => (el.tagName === 'UL' ? el.firstElementChild : el).insertAdjacentHTML('afterbegin', '<i class="bl" aria-hidden="true"></i>'));
+
+  function scaleFor(set, width) {
+    const out = {};
+    for (const r of ROLES) {
+      const size = Math.round(set.base * set.ratio ** set.steps[r]);
+      const shown = CAP[r] ? Math.min(size, Math.floor(width * CAP[r])) : size;
+      const lh = r === 'display' ? set.displayLh(shown) : lhRule(shown);
+      out[r] = { size, shown, lh, w: WEIGHT[r] };
+    }
+    return out;
+  }
+
+  function render() {
+    const p = PAGES[page];
+    const set = activeSet();
+    col.classList.toggle('phone', set.key === 'phone' && window.innerWidth >= BREAK);
+    const sc = scaleFor(set, col.clientWidth || 600);
+    const nominal = { wide: scaleFor(SETS.wide, Infinity), phone: scaleFor(SETS.phone, Infinity) };
+    for (const r of ROLES) {
+      col.style.setProperty(`--fs-${r}`, `${sc[r].shown}px`);
+      col.style.setProperty(`--lh-${r}`, `${sc[r].lh}px`);
+      col.style.setProperty(`--fw-${r}`, sc[r].w);
+    }
+    const R = sc.body.lh;
+    col.style.setProperty('--gap', `${R}px`);
+    col.style.setProperty('--gap-half', `${Math.max(GRID, Math.round(R / 2 / GRID) * GRID)}px`);
+    col.style.setProperty('--gap-15', `${snap(R * 1.5)}px`);
+    col.style.setProperty('--gap-2', `${R * 2}px`);
+    sheet.style.setProperty('--rhythm', `${R}px`);
+    sheet.classList.toggle('grid', grid);
+    $('gridbtn').setAttribute('aria-pressed', String(grid));
+
+    $('pageno').innerHTML = `${pad(page + 1)} <span>/ ${pad(COUNT)}</span>`;
+    $('name').textContent = p.name;
+    $('note').textContent = `${p.note} Showing the ${set.key === 'phone' ? 'set under 768px' : 'wide set'}.`;
+    $('jump').value = String(page);
+    $('prev').disabled = page === 0;
+    $('next').disabled = page === COUNT - 1;
+    const narrow = window.innerWidth < BREAK;
+    $('phonebtn').setAttribute('aria-pressed', String(set.key === 'phone'));
+    $('phonebtn').disabled = narrow;
+    const cls = (k) => (k === set.key ? 'sp-val on' : 'sp-val off');
+    $('specimen').innerHTML = `<li class="sp-head"><span></span><span>Wide</span><span>Under 768</span></li>` + ROLES.map((r) => {
+      const w = nominal.wide[r], ph = nominal.phone[r], now = sc[r];
+      const notes = [];
+      if (r === 'lead') notes.push('same size as Heading 1, regular weight');
+      if (now.shown < now.size) notes.push(`shown at ${now.shown}px to fit this column`);
+      return `<li><span class="sp-role">${LABEL[r]}</span><span class="${cls('wide')}">${w.size}/${w.lh}</span><span class="${cls('phone')}">${ph.size}/${ph.lh}</span><span class="sp-note">${notes.join('. ')}</span></li>`;
+    }).join('');
+    requestAnimationFrame(align);
+  }
+
+  // Move each block down by less than 4px so its first baseline lands on a grid line.
+  // Line heights are multiples of 4, so every later line in the block lands too.
+  function align() {
+    const origin = sheet.getBoundingClientRect().top;
+    for (const el of blocks) {
+      const marker = el.querySelector('.bl');
+      const current = parseFloat(el.style.top) || 0;
+      const y = marker.getBoundingClientRect().top - current - origin;
+      el.style.top = `${(((-y % GRID) + GRID) % GRID).toFixed(2)}px`;
+    }
+  }
+
+  function go(i) {
+    const n = Math.max(0, Math.min(COUNT - 1, i));
+    if (location.hash !== `#p${pad(n + 1)}`) location.hash = `p${pad(n + 1)}`;
+    else { page = n; render(); }
+  }
+  function fromHash() {
+    const m = /^#p(\d{2})$/.exec(location.hash);
+    page = m ? Math.max(0, Math.min(COUNT - 1, Number(m[1]) - 1)) : 0;
+    render();
+  }
+
+  $('prev').addEventListener('click', () => go(page - 1));
+  $('next').addEventListener('click', () => go(page + 1));
+  $('jump').addEventListener('change', (e) => go(Number(e.target.value)));
+  $('gridbtn').addEventListener('click', () => { grid = !grid; store.set('gg-type-grid', grid ? 'on' : 'off'); render(); });
+  $('phonebtn').addEventListener('click', () => { forcePhone = !forcePhone; render(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.target.closest('select, input, textarea') || e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.key === 'ArrowRight') { e.preventDefault(); go(page + 1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); go(page - 1); }
+  });
+  let pending = 0;
+  window.addEventListener('resize', () => { cancelAnimationFrame(pending); pending = requestAnimationFrame(render); });
+  window.addEventListener('hashchange', fromHash);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => requestAnimationFrame(align));
+  fromHash();
+})();
+</script>

@@ -22,7 +22,7 @@ Read this file first. Then open only the files the job needs.
 | Job | Read |
 |---|---|
 | Every job | `decisions.md` (Open section), `claims.md`, `system/request-ladder.md` |
-| Any customer-facing copy | `verbal/voice.md`, `verbal/mechanics.md`, `verbal/vocabulary.md` |
+| Any customer-facing copy | `verbal/voice.md`, `verbal/mechanics.md`, `verbal/names-and-dates.md`, `verbal/vocabulary.md` |
 | Web page | the copy files, `formats/web-page.md`, `visual/layout.md`, `system/components.md`, `system/accessibility.md` |
 | Flyer | the copy files, `formats/flyer.md`, `visual/typography.md`, `visual/color.md`, `visual/imagery.md` |
 | Postcard | the copy files, `formats/postcard.md`, `visual/typography.md`, `visual/color.md`, `visual/imagery.md` |
@@ -38,13 +38,15 @@ Keeper for every file: Leah Fagan. Maintainer for every file: Brad Nagle.
 |---|---|---|---|---|
 | `story.md` | Who Grow Good is, what it offers, where | open | STORY | planned |
 | `verbal/audiences.yml` | Who Grow Good talks to | open | AUD | planned |
-| `verbal/voice.md` | How Grow Good sounds | mixed | VOICE | planned |
-| `verbal/mechanics.md` | Punctuation, spelling, units, case | fixed | MECH | planned |
+| `verbal/voice.md` | How Grow Good sounds | mixed | VOICE | draft |
+| `verbal/mechanics.md` | Punctuation, spelling, units, case | fixed | MECH | draft |
+| `verbal/spelling.yml` | US spelling stems and garden word choice, read by the linter | fixed | MECH | draft |
+| `verbal/names-and-dates.md` | Business name, region, event dates and times | fixed | NAMES | draft |
 | `verbal/vocabulary.md` | Preferred and banned terms | fixed | VOCAB | planned |
 | `claims.md` | Every fact allowed in public | fixed | CLAIM | draft |
 | `visual/logo.md` | Wordmark use, clear space, minimum size | fixed | LOGO | planned |
 | `visual/color.md` | Palette, pairings, contrast | fixed | COLOR | planned |
-| `visual/typography.md` | Typefaces, type styles, baseline | fixed | TYPE | planned |
+| `visual/typography.md` | Alegreya Sans, the type scale, the 4px baseline | fixed | TYPE | draft |
 | `visual/layout.md` | Grid, spacing, breakpoints | mixed | LAYOUT | planned |
 | `visual/imagery.md` | Choosing photos and illustrations, alt text | mixed | IMG | planned |
 | `visual/spots-and-icons.md` | Animated spot illustrations, icon font | mixed | SPOT | planned |

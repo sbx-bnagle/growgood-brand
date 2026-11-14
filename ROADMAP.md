@@ -3,7 +3,7 @@
 | # | Phase | Output | Needs from Brad and Leah | Gate | Status |
 |---|---|---|---|---|---|
 | 0 | Scope | Decisions log, repo, asset folder | Step 1 and 2 answers | Brad signs off | done |
-| 1 | Brand canon | Inventory of site and Drive materials; brand files v0.1 with rule IDs | Creative calls, claims, examples marked on or off brand | Leah approves each file | next |
+| 1 | Brand canon | Inventory of site and Drive materials; brand files v0.1 with rule IDs | Creative calls, claims, examples marked on or off brand | Leah approves each file | in progress: audit done, see `audit/phase-1-report.md` |
 | 2 | Tokens | Sass values extracted to DTCG JSON; GG Tokens plugin seeds Figma Variables and exports changes as PRs | Figma file on Starter (D-017); typeface (O-05); token naming review | Token PR review | |
 | 3 | Figma library | Foundations, components, templates for web, flyer, postcard, social | Design direction and critique | Design review | |
 | 4 | Theme and playbook | Jekyll includes with contracts; Sass from tokens; playbook site; site moved to Actions build and the theme | Review of the playbook | Visual QA | |
@@ -21,6 +21,7 @@
 
 ## Backlog
 
+- Logo refinement, as a branding project. The existing logo is the provisional mark (D-025).
 - Text-to-image model for on-brand images (LoRA or another approach). See decisions O-06.
 - Revisit the rzwc edit LoRA for restyling supplied garden photos.
 - Agent-drafted code PRs from Figma component changes, beyond token values.

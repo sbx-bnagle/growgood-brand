@@ -29,19 +29,28 @@ Raised 2026-11-13. Needed by Phase 8.
 Sign-in is decided (D-010). Hosting is not. Options include Cloudflare, already used for Grow Good’s order workers, or another host. Rendering PDF and PNG needs a headless browser wherever it runs.
 Affects: Phase 8.
 
-### O-05 Typeface
-Raised 2026-11-13. Needed by Phase 2.
-The site’s styles use Alegreya Sans only. Proxima Nova (400, 600) loads from Typekit on every page but no style uses it. Keep Alegreya Sans alone, give Proxima Nova a role, or choose again. Figma, print and social must all have the face available.
-Affects: `brand/visual/typography.md`, tokens.
-
 ### O-06 On-brand images from text (future iteration)
 Raised 2026-11-13. Needed after Phase 9.
 A model that makes on-brand images from a text request: a text-to-image LoRA trained on approved illustrations, reference-image generation, or the rzwc edit LoRA with automatic orange screening of supplied photos.
 Affects: `brand/visual/imagery.md`, MCP tools, request ladder.
 
+### O-12 Audiences
+Raised 2026-11-13 in the Phase 1 audit. Needed by Phase 1 sign-off.
+The Customer Profiles doc names four audiences with no detail yet: new homeowner, retiree with a hobby, gardener looking to up their game, eco-conscious. The site names homeowners, renters and community groups. Agree the list, and one line each on what they need from Grow Good.
+Affects: `verbal/audiences.yml`.
+Brad is taking this to Leah. Claude can draft from the site and the Drive docs when asked.
+
 ### Closed
 - O-01 Figma plan: decided as D-017.
 - O-02 Figma-to-repo export method: decided as D-018.
+- O-05 Typeface: decided as D-020.
+- O-07 Wordmark: decided as D-025.
+- O-08 Palette roles and names, O-09 Accessible accent pairs: decided as D-021.
+- O-10 Voice in promotional copy: decided as D-022.
+- O-11 Names, places and dates: decided as D-023.
+- O-13 Art direction: decided as D-024.
+- O-14 Type scale: decided as D-026.
+- O-15 Type sizes on small screens: decided as D-027.
 
 ## Active
 
@@ -160,3 +169,55 @@ Affects: `tokens/`, Phase 2.
 Grow Good / Brand Assets holds 00 Inbox, Photography, Illustrations, Spots and icons, Logos, Partners, Retired, and the Asset register sheet.
 Why: beside the team’s existing folders, so Leah sees it without a new share.
 Affects: `assets/README.md`, Phase 5.
+
+### D-020 Alegreya Sans is the only typeface
+2026-11-13, Brad Nagle. Closes O-05.
+Every format uses Alegreya Sans. The unused Proxima Nova load comes off the site in Phase 4. The type scale is still open (O-14).
+Why: the site is built on it, it is free, and it is available in Figma, print and social.
+Affects: `visual/typography.md`, tokens.
+
+### D-021 Color ramps: four levels per hue
+2026-11-13, Brad Nagle. Closes O-08 and O-09.
+Each color family has four levels, named family-100 to family-400. 100 is the lightest. 200 is a bright accent of the hue. 300 and 400 are dark. Every 100 must reach 4.5:1 on every family’s 300 and 400, so light text works on any dark surface. Existing values are kept where they meet the rule, and adjusted in lightness only where they do not. Neutral has no hue to accent, so neutral-200 is proposed as the existing light gray. Purple-200 is #947cff (option A on the color ramps page), replacing #6f63b0, which read as a mid-tone.
+Why: the hues are right; the gaps were in the range. A fixed contrast rule makes the accent card problem (O-09) a property of the palette rather than a case-by-case fix.
+Affects: tokens, `visual/color.md`, Phase 2.
+
+### D-022 One voice: flat, a little warmer, no exclamation marks or emoji
+2026-11-13, Brad Nagle. Closes O-10.
+The flat voice applies to every format, written as a neighbor who knows plants. No emoji. No exclamation marks. An event headline is the event’s name.
+Why: one voice is easier to hold than two. Warmth comes from ‘we’, from local detail and from facts about plants, not from punctuation.
+Affects: `verbal/voice.md`, `verbal/mechanics.md`, `lint-copy`.
+
+### D-023 Names, places and dates
+2026-11-13, Brad Nagle. Closes O-11.
+‘Grow Good Gardens’ on first mention, ‘Grow Good’ after. ‘Upper Midwest’, capitalized. Event dates and times as ‘Saturday, May 16, 10:00am–noon’.
+Why: one form of each, so every format and every tool writes them the same way.
+Affects: `verbal/names-and-dates.md`, `claims.md` (C-002).
+
+### D-024 Imagery: spots, photographs and LoRA renders supplied as assets
+2026-11-13, Brad Nagle. Closes O-13. Refines D-009.
+The 13 spot illustrations stay as the illustration system, alongside photographs and garden renders made with the rzwc LoRA. Brad makes the renders outside the request flow. They enter the asset library like any other image: registered, with alt text, and approved before use. Requesters cannot generate images (O-06 stays open).
+Why: the renders are among the strongest images Grow Good has. Making them by hand keeps the montage step, and the check that plants stay true, with a person.
+Affects: `visual/imagery.md`, `assets/README.md`, Phase 5.
+
+### D-025 The existing logo is the provisional mark
+2026-11-13, Brad Nagle. Closes O-07.
+Grow Good has a logo that is not yet on the site. It is the starting point, and the mark in use until a branding project refines it. Its files go in Brand Assets / Logos.
+Why: every format needs a mark now. Refining it is design work for a person (LADDER-003), not a system decision.
+Affects: `visual/logo.md`, every format, roadmap backlog.
+
+### D-026 Type scale: an edited augmented fourth on a 21px body
+2026-11-13, Brad Nagle. Closes O-14.
+Ratio 1.414 (augmented fourth) from a 21px body. Heading 1 to heading 4 sit one step lower than on the plain scale. The lead is the heading 1 size in regular weight. The display line height is 8px under its size. Every line height is a multiple of 4px.
+Size/line height in px: display 119/112, heading 1 59/68, lead 59/68, heading 2 42/48, heading 3 30/40, heading 4 21/32, body 21/32, small 15/24, caption 11/16.
+Weights as reviewed: display and heading 1 at 800, heading 2 to 4 at 700, lead, body, small and caption at 400.
+Why: chosen by Brad after comparing 36 common scales on a 4px grid, then a shortlist of three, then three adjustments.
+Affects: `visual/typography.md`, tokens, Phase 2. Sizes under 768px: D-027.
+
+### D-027 Type under 768px: the same roles on a major third from a 19px body
+2026-11-13, Brad Nagle. Closes O-15.
+Below 768px, the current site’s breakpoint, a second, smaller set replaces D-026. Same role positions and weights, on a major third (ratio 1.25) from a 19px body. The lead stays the heading 1 size in regular weight. The display keeps the wide set’s line height to size proportion, rounded up to the grid. Every line height is a multiple of 4px.
+Size/line height in px: display 58/56, heading 1 37/48, lead 37/48, heading 2 30/40, heading 3 24/36, heading 4 19/28, body 19/28, small 15/24, caption 12/20.
+Why: the wide display (119px) and heading 1 (59px) cannot fit a phone column. Confirmed by Brad after reviewing the set at phone width on the type scale reference.
+Affects: `visual/typography.md`, tokens, Phase 2.
+

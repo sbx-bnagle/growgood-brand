@@ -1,0 +1,80 @@
+# US spelling and garden word choice. Read by the copy linter (MECH-010, MECH-011).
+# Stems match at the start of a word, case-insensitive, so ‘colour’ also catches
+# ‘colours’ and ‘colourful’. ‘except’ lists correct US words that share the stem.
+
+id: verbal.spelling
+title: US spelling and word choice
+owner: leah-fagan
+maintainer: brad-nagle
+status: draft
+version: 0.1.0
+last_reviewed: 2026-11-13
+lane: fixed
+rule_prefix: MECH
+decisions: [D-013]
+
+stems:
+  # -our to -or
+  - { uk: colour, us: color }
+  - { uk: neighbour, us: neighbor }
+  - { uk: favour, us: favor }
+  - { uk: behaviour, us: behavior }
+  - { uk: labour, us: labor }
+  - { uk: odour, us: odor }
+  - { uk: vigour, us: vigor }
+  - { uk: harbour, us: harbor }
+  - { uk: humour, us: humor }
+  # -ise and -yse to -ize and -yze
+  - { uk: fertilis, us: fertiliz }
+  - { uk: recognis, us: recogniz }
+  - { uk: organise, us: organize }
+  - { uk: organising, us: organizing }
+  - { uk: organisation, us: organization }
+  - { uk: realise, us: realize }
+  - { uk: realising, us: realizing }
+  - { uk: realisation, us: realization }
+  - { uk: analyse, us: analyze }
+  - { uk: analysing, us: analyzing }
+  # -re to -er
+  - { uk: centre, us: center }
+  - { uk: metre, us: meter }
+  - { uk: litre, us: liter }
+  # doubled l before a suffix
+  - { uk: travell, us: travel }
+  - { uk: cancell, us: cancel, except: [cancellation] }
+  - { uk: labell, us: label }
+  - { uk: fuell, us: fuel }
+  - { uk: modell, us: model }
+  - { uk: bevell, us: bevel }
+  - { uk: shrivell, us: shrivel }
+  - { uk: unravell, us: unravel }
+  # -ce to -se (nouns)
+  - { uk: defence, us: defense }
+  - { uk: offence, us: offense }
+  - { uk: licence, us: license }
+  # other pairs
+  - { uk: grey, us: gray, except: [greyhound] }
+  - { uk: mould, us: mold }
+  - { uk: catalogue, us: catalog }
+  - { uk: programme, us: program }
+  - { uk: storey, us: story }
+  - { uk: ageing, us: aging }
+  - { uk: judgement, us: judgment }
+  - { uk: enquir, us: inquir }
+  - { uk: kerb, us: curb }
+  - { uk: plough, us: plow }
+  - { uk: draught, us: draft }
+  - { uk: sceptic, us: skeptic }
+  - { uk: aluminium, us: aluminum }
+  - { uk: speciality, us: specialty }
+  - { uk: practise, us: practice }
+  - { uk: tyre, us: tire }
+  - { uk: sulphur, us: sulfur }
+
+word_choice:
+  - { avoid: autumn, use: fall }
+  - { avoid: whilst, use: while }
+  - { avoid: amongst, use: among }
+  - { avoid: learnt, use: learned }
+  - { avoid: spelt, use: spelled, note: ‘spelt’ is also a grain; check before changing }
+  - { avoid: towards, use: toward }
