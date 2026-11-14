@@ -161,7 +161,8 @@
         '',
         'The Tokens workflow checks these values against D-021, TYPE-003, TYPE-004 and O-16, then rebuilds `tokens/build`. Leah approves before merge.',
       ].join('\n');
-      const pr = await api(token, `/repos/${repo}/pulls`, { method: 'POST', body: { title: `Tokens from Figma (${merged.changes.length + merged.added.length} changes)`, head: branch, base: base, body: body } });
+      const count = merged.changes.length + merged.added.length;
+      const pr = await api(token, `/repos/${repo}/pulls`, { method: 'POST', body: { title: `Tokens from Figma (${count} ${count === 1 ? 'change' : 'changes'})`, head: branch, base: base, body: body } });
       prUrl = pr.html_url;
       log(`Opened pull request #${pr.number}: ${prUrl}`);
       $('openpr').hidden = false;
