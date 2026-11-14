@@ -1,0 +1,76 @@
+{
+  "$description": "Color primitives: five families, four levels each (D-021). 100 lightest, 200 bright accent, 300 and 400 dark. Seeded from the site Sass; after seeding, Figma is where values change (D-012).",
+  "color": {
+    "$type": "color",
+    "neutral": {
+      "100": {
+        "$value": "#f0efeb"
+      },
+      "200": {
+        "$value": "#dadbd9"
+      },
+      "300": {
+        "$value": "#575a55"
+      },
+      "400": {
+        "$value": "#1a1a1a"
+      }
+    },
+    "green": {
+      "100": {
+        "$value": "#dee6df"
+      },
+      "200": {
+        "$value": "#4ff062"
+      },
+      "300": {
+        "$value": "#2d6431"
+      },
+      "400": {
+        "$value": "#323431"
+      }
+    },
+    "red": {
+      "100": {
+        "$value": "#ffe0db"
+      },
+      "200": {
+        "$value": "#e0513e"
+      },
+      "300": {
+        "$value": "#a93426"
+      },
+      "400": {
+        "$value": "#45231d"
+      }
+    },
+    "gold": {
+      "100": {
+        "$value": "#ece7cf"
+      },
+      "200": {
+        "$value": "#ccb528"
+      },
+      "300": {
+        "$value": "#705c00"
+      },
+      "400": {
+        "$value": "#332e12"
+      }
+    },
+    "purple": {
+      "100": {
+        "$value": "#e7e6f9"
+      },
+      "200": {
+        "$value": "#947cff"
+      },
+      "300": {
+        "$value": "#504867"
+      },
+      "400": {
+        "$value": "#352f47"
+      }
+    }
+  }
+}

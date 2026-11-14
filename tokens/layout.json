@@ -1,0 +1,134 @@
+{
+  "$description": "Breakpoints and grids from the site Sass. breakpoint.m (768px) switches the type sets (D-027).",
+  "breakpoint": {
+    "$type": "dimension",
+    "s": {
+      "$value": {
+        "value": 640,
+        "unit": "px"
+      }
+    },
+    "m": {
+      "$value": {
+        "value": 768,
+        "unit": "px"
+      }
+    },
+    "l": {
+      "$value": {
+        "value": 1024,
+        "unit": "px"
+      }
+    }
+  },
+  "grid": {
+    "16": {
+      "columns": {
+        "$type": "number",
+        "$value": 16
+      },
+      "gutter": {
+        "$type": "dimension",
+        "$value": {
+          "value": 24,
+          "unit": "px"
+        }
+      },
+      "margin": {
+        "$type": "dimension",
+        "$value": {
+          "value": 80,
+          "unit": "px"
+        }
+      },
+      "maxWidth": {
+        "$type": "dimension",
+        "$value": {
+          "value": 1240,
+          "unit": "px"
+        }
+      }
+    },
+    "mobile": {
+      "columns": {
+        "$type": "number",
+        "$value": 16
+      },
+      "gutter": {
+        "$type": "dimension",
+        "$value": {
+          "value": 20,
+          "unit": "px"
+        }
+      },
+      "margin": {
+        "$type": "dimension",
+        "$value": {
+          "value": 20,
+          "unit": "px"
+        }
+      },
+      "maxWidth": {
+        "$type": "dimension",
+        "$value": {
+          "value": 1240,
+          "unit": "px"
+        }
+      }
+    },
+    "full": {
+      "columns": {
+        "$type": "number",
+        "$value": 16
+      },
+      "gutter": {
+        "$type": "dimension",
+        "$value": {
+          "value": 20,
+          "unit": "px"
+        }
+      },
+      "margin": {
+        "$type": "dimension",
+        "$value": {
+          "value": 0,
+          "unit": "px"
+        }
+      },
+      "maxWidth": {
+        "$type": "dimension",
+        "$value": {
+          "value": 1800,
+          "unit": "px"
+        }
+      }
+    },
+    "selected": {
+      "columns": {
+        "$type": "number",
+        "$value": 12
+      },
+      "gutter": {
+        "$type": "dimension",
+        "$value": {
+          "value": 24,
+          "unit": "px"
+        }
+      },
+      "margin": {
+        "$type": "dimension",
+        "$value": {
+          "value": 12,
+          "unit": "px"
+        }
+      },
+      "maxWidth": {
+        "$type": "dimension",
+        "$value": {
+          "value": 2100,
+          "unit": "px"
+        }
+      }
+    }
+  }
+}
