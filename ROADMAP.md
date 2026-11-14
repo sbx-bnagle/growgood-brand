@@ -4,7 +4,7 @@
 |---|---|---|---|---|---|
 | 0 | Scope | Decisions log, repo, asset folder | Step 1 and 2 answers | Brad signs off | done |
 | 1 | Brand canon | Inventory of site and Drive materials; brand files v0.1 with rule IDs | Creative calls, claims, examples marked on or off brand | Leah approves each file | done, except Leah’s claims check and audiences (O-12) |
-| 2 | Tokens | Sass values extracted to DTCG JSON; GG Tokens plugin seeds Figma Variables and exports changes as PRs | Figma file on Starter (D-017); color roles (O-16) | Token PR review | in progress: tokens, build, checks and plugin built; loaded into Figma and checked 2026-11-13 (112 of 112 variables, 18 of 18 text styles); Send changes untested until the tokens are on a pushed branch; O-16 open |
+| 2 | Tokens | Sass values extracted to DTCG JSON; GG Tokens plugin seeds Figma Variables and exports changes as PRs | Figma file on Starter (D-017); color roles (O-16) | Token PR review | in progress: tokens, build, checks and plugin built; loaded into Figma and checked 2026-11-13 (112 of 112 variables, 18 of 18 text styles); Send changes tested end to end 2026-11-13 (pull request #1, closed unmerged); in review; O-16 open |
 | 3 | Figma library | Foundations, components, templates for web, flyer, postcard, social | Design direction and critique | Design review | |
 | 4 | Theme and playbook | Jekyll includes with contracts; Sass from tokens; playbook site; site moved to Actions build and the theme | Review of the playbook | Visual QA | |
 | 5 | Asset library | Drive folders and register populated; sync of approved assets for agents | Images, alt text, usage rights | Leah approves each asset | |
