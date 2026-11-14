@@ -15,6 +15,7 @@ Images live in Google Drive, not in this repo (decisions D-009, D-019).
 | Spots and icons | Animated spot illustrations and icons |
 | Logos | Grow Good wordmark files |
 | Partners | Partner and sponsor logos |
+| Art direction | References for D-035: English craft, hippie modernism, hand drawn. For people designing templates. Never placed in a design. |
 | Retired | Assets no longer in use. Kept for the record. |
 
 ## Register columns
@@ -37,3 +38,4 @@ Images live in Google Drive, not in this repo (decisions D-009, D-019).
 1. Use only rows with status ‘approved’ and usage_rights other than ‘unknown’.
 2. Use the alt_text from the register. Do not write new alt text for a registered image.
 3. If no approved image fits, the request goes to ‘brief a person’ (LADDER-003).
+4. Never place anything from Art direction in a design. Those files are references, not assets.

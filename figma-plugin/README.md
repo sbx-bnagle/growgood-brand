@@ -26,6 +26,18 @@ It also creates 18 text styles: `Wide/…` for 768px and up, and `Narrow/…` fo
 
 Loading again updates values in place and deletes nothing. After token changes land in the repo, pull, run `npm run figma:build`, then Load tokens.
 
+## Build pages and components
+
+Plugins, Development, GG Tokens, then Build pages and components. Load tokens first. It sets up three pages (D-032):
+
+| Page | What the plugin puts there |
+|---|---|
+| Foundations | One frame, rebuilt every time from this file’s variables: color swatches, each D-030 role pair with its contrast, both type sets, spacing, breakpoints and grids |
+| Components | Wordmark, Button, Card, CTA block, Hero, Header, Footer, FAQ item, Subscribe, Event details (Wide and Narrow), Art placeholder, Image with spot (D-033). Colors, spacing and text styles are bound to the tokens; properties are named after the include parameters. |
+| Templates | Web event page, flyer, postcard front and back, the sheet of four, and social feed, story and event cover, at their sizes, made of component instances (D-036) |
+
+Building again rebuilds Foundations and adds only what is missing. A component or template that exists is never changed, so design them by hand from here (D-031). To get a fresh copy of one, delete it and build again.
+
 ## Send changes to GitHub
 
 1. Make a fine-grained token on GitHub: Settings, Developer settings, Fine-grained tokens, Generate new token. Repository access: only `sbx-bnagle/growgood-brand`. Permissions: Contents read and write, Pull requests read and write.

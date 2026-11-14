@@ -7,7 +7,7 @@ Color, type, spacing and layout values, shared by the Figma file, this repo’s 
 | File | Holds | Decisions |
 |---|---|---|
 | `color.json` | Five color families, four levels each | D-021 |
-| `color-roles.json` | Roles (surface, text, action, accent) that point at the primitives | O-16, proposed |
+| `color-roles.json` | Roles (surface, text, action, accent) that point at the primitives | D-030 |
 | `type.json` | Alegreya Sans, weights, and both size sets | D-020, D-026, D-027 |
 | `space.json` | Spacing on the 4px baseline, as the site Sass has it | D-012 |
 | `layout.json` | Breakpoints and grids from the site Sass | D-027 uses `breakpoint.m` |
@@ -22,7 +22,7 @@ The files are DTCG JSON, two-space indented with one trailing newline. That is t
 npm run tokens:check
 ```
 
-Checks the tokens against their rules: structure and references, D-021 (contrast and order), O-16 (role pairs), TYPE-003 (4px line heights and spacing), TYPE-004 (lead matches heading 1), size order and minimum leading.
+Checks the tokens against their rules: structure and references, D-021 (contrast and order), D-030 (role pairs), TYPE-003 (4px line heights and spacing), TYPE-004 (lead matches heading 1), size order and minimum leading.
 
 ```bash
 npm run tokens:build

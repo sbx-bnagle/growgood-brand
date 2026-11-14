@@ -7,75 +7,12 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
+import { mockFigma, runPlugin } from './mock-figma.mjs';
 import { parse } from 'acorn';
 import { TOKEN_FILES, toFigmaSpecs, mergeSpecs, githubHint, hexToRgb } from '../tools/lib/tokens.mjs';
 
 const docs = Object.fromEntries(TOKEN_FILES.map((f) => [f, JSON.parse(readFileSync(new URL(`../tokens/${f}`, import.meta.url), 'utf8'))]));
 const bundle = readFileSync(new URL('../figma-plugin/dist/code.js', import.meta.url), 'utf8');
-
-function mockFigma(fonts = ['Alegreya Sans']) {
-  let n = 0;
-  const id = (p) => `${p}:${++n}`;
-  const collections = [];
-  const variables = [];
-  const textStyles = [];
-  const storage = {};
-  const messages = [];
-  const loaded = new Set();
-  const okValue = (type, v) => {
-    if (v && v.type === 'VARIABLE_ALIAS') return variables.some((x) => x.id === v.id);
-    if (type === 'COLOR') return ['r', 'g', 'b'].every((k) => typeof v[k] === 'number' && v[k] >= 0 && v[k] <= 1);
-    if (type === 'FLOAT') return typeof v === 'number' && Number.isFinite(v);
-    if (type === 'STRING') return typeof v === 'string';
-    return false;
-  };
-  const figma = {
-    showUI() {},
-    notify() {},
-    openExternal(url) { messages.push({ type: 'external', url }); },
-    closePlugin() {},
-    ui: { postMessage: (m) => messages.push(m), onmessage: null },
-    clientStorage: { getAsync: async (k) => storage[k], setAsync: async (k, v) => { storage[k] = v; } },
-    variables: {
-      getLocalVariableCollectionsAsync: async () => collections.slice(),
-      getLocalVariablesAsync: async () => variables.slice(),
-      createVariableCollection(name) {
-        const modeId = id('mode');
-        const c = { id: id('collection'), name, modes: [{ modeId, name: 'Mode 1' }], defaultModeId: modeId,
-          renameMode(mid, nm) { this.modes.find((m) => m.modeId === mid).name = nm; } };
-        collections.push(c);
-        return c;
-      },
-      createVariable(name, collection, resolvedType) {
-        if (typeof collection !== 'object') throw new Error('createVariable needs the collection object');
-        const v = { id: id('variable'), name, resolvedType, variableCollectionId: collection.id, valuesByMode: {}, description: '', scopes: [],
-          setValueForMode(modeId, value) {
-            if (!okValue(resolvedType, value)) throw new Error(`bad ${resolvedType} value for ${name}: ${JSON.stringify(value)}`);
-            this.valuesByMode[modeId] = value;
-          },
-          remove() { variables.splice(variables.indexOf(this), 1); } };
-        variables.push(v);
-        return v;
-      },
-      createVariableAlias: (v) => ({ type: 'VARIABLE_ALIAS', id: v.id }),
-    },
-    getLocalTextStylesAsync: async () => textStyles.slice(),
-    createTextStyle() {
-      let fontName = null;
-      const style = { id: id('style'), name: '', description: '', bound: {},
-        get fontName() { return fontName; },
-        set fontName(f) { if (!loaded.has(`${f.family}|${f.style}`)) throw new Error(`font not loaded: ${f.family} ${f.style}`); fontName = f; },
-        setBoundVariable(field, variable) { this.bound[field] = variable.id; } };
-      textStyles.push(style);
-      return style;
-    },
-    loadFontAsync: async (f) => {
-      if (!fonts.includes(f.family)) throw new Error(`font unavailable: ${f.family}`);
-      loaded.add(`${f.family}|${f.style}`);
-    },
-  };
-  return { figma, collections, variables, textStyles, messages, storage };
-}
 
 // Values created inside the plugin's sandbox come from another realm; compare them as plain data.
 const plain = (x) => JSON.parse(JSON.stringify(x));
@@ -86,10 +23,7 @@ const nudgeHex = (hex) => {
   return hex.slice(0, 5) + (b === 255 ? 254 : b + 1).toString(16).padStart(2, '0');
 };
 
-function run(mock) {
-  vm.runInNewContext(bundle, { figma: mock.figma, __html__: '', console, JSON, Math, Object, Array, Map, Set, Promise, Error, Number, String, RegExp, parseInt });
-  return (msg) => mock.figma.ui.onmessage(msg);
-}
+const run = runPlugin;
 
 test('the plugin bundle is ES2017, and the check would catch newer syntax', () => {
   assert.doesNotThrow(() => parse(bundle, { ecmaVersion: 2017, sourceType: 'script' }));
@@ -178,7 +112,7 @@ test('an edit in Figma comes back as one changed value, with the repo structure 
 });
 
 test('a missing font stops the load with a readable error', async () => {
-  const mock = mockFigma([]);
+  const mock = mockFigma({ fonts: ['Inter'] });
   const send = run(mock);
   await send({ type: 'import' });
   const err = mock.messages.find((m) => m.type === 'error');
@@ -290,4 +224,25 @@ test('a full send makes one branch, commits only the changed file and opens the 
   assert.match(pull.body, new RegExp(`\`space\\.xs\`: ${xsNow}px → ${xsNow + 4}px`));
   assert.match(log, /Opened pull request #7/);
   assert.equal(els.openpr.hidden, false, 'the Open pull request button shows');
+});
+
+test('the panel reports a library build line by line', () => {
+  const html = readFileSync(new URL('../figma-plugin/dist/ui.html', import.meta.url), 'utf8');
+  const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => m[1]).join('\n;\n');
+  const els = {};
+  const el = (id) => (els[id] ??= { id, value: '', textContent: '', checked: false, hidden: true, disabled: true, scrollTop: 0, scrollHeight: 0, onclick: null });
+  const ctx = { console, JSON, Object, Array, String, Number, RegExp, Math, Promise, Date, Error, encodeURIComponent, TextEncoder, TextDecoder, atob, btoa, Uint8Array, document: { getElementById: el }, parent: { postMessage() {} } };
+  ctx.window = ctx;
+  vm.runInNewContext(scripts, ctx);
+  ctx.window.onmessage({ data: { pluginMessage: { type: 'library-built', result: {
+    pages: { renamed: ['Page 1 → Foundations'], created: ['Components', 'Templates'] },
+    foundations: { rebuilt: false, failingPairs: 0 },
+    components: { created: ['Button'], kept: ['Card'] },
+    templates: { created: ['Flyer / Letter'], kept: [] },
+  } } } });
+  assert.equal(els.log.textContent, [
+    'Renamed page Page 1 → Foundations.', 'Added page Components.', 'Added page Templates.', 'Built Foundations.',
+    'Added components: Button.', 'Left as they are: Card.', 'Added templates: Flyer / Letter.', '',
+  ].join('\n'));
+  assert.equal(els.build.disabled, false);
 });

@@ -1,5 +1,5 @@
 {
-  "$description": "Color roles, the second tier over the primitives (O-08 recommendation, accepted). Each role points at a primitive. Proposed mapping, open as O-16.",
+  "$description": "Color roles, the second tier over the primitives. Each role points at a primitive. Mapping confirmed as D-030; expect adjustments in Phase 3.",
   "role": {
     "$type": "color",
     "surface": {

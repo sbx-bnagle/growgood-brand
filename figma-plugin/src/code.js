@@ -182,6 +182,10 @@ figma.ui.onmessage = async function (msg) {
       const result = await importTokens();
       post('imported', { result: result, status: await status() });
       figma.notify('Tokens loaded: ' + result.total + ' variables, ' + result.styles + ' text styles');
+    } else if (msg.type === 'build-library') {
+      const result = await buildLibrary();
+      post('library-built', { result: result });
+      figma.notify('Library built: Foundations, ' + result.components.created.length + ' new components, ' + result.templates.created.length + ' new templates');
     } else if (msg.type === 'collect') {
       const collected = await collectSpecs();
       post('collected', collected);
