@@ -1,0 +1,23 @@
+name: Wordmark
+include: gg/wordmark.html
+figma: Wordmark
+summary: The Grow Good mark, chosen by variant from the approved logo rows of the asset register.
+formats: [web, flyer, postcard, social]
+decisions: [D-025, D-037]
+rules: [NAMES-001]
+params:
+  - name: variant
+    type: enum
+    values: [primary]
+    default: primary
+    source: assets
+    notes: Matches the style column of a logo row. New variants arrive as register rows (D-037).
+  - name: href
+    type: url
+    required: false
+    source: site
+    notes: Set to link the mark home.
+data: [assets.logos]
+examples:
+  - title: Primary
+    params: {}

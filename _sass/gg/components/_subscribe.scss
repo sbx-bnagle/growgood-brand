@@ -1,0 +1,22 @@
+.gg-subscribe {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gg-space-sm);
+  padding: var(--gg-space-md);
+  background: var(--gg-role-surface-inverse);
+  color: var(--gg-role-text-inverse);
+}
+.gg-subscribe__form { display: flex; flex-wrap: wrap; gap: var(--gg-space-xs); align-items: center; }
+.gg-subscribe__email {
+  height: 42px;
+  min-width: 16em;
+  padding: 0 24px;
+  border: 2px solid var(--gg-role-text-inverse);
+  border-radius: 60px;
+  background: transparent;
+  color: var(--gg-role-text-inverse);
+  font: inherit;
+  font-size: var(--gg-type-small-size);
+  &::placeholder { color: var(--gg-role-text-inverse); opacity: .8; }
+  &:focus-visible { outline: 3px solid var(--gg-role-action-bright); outline-offset: 2px; }
+}

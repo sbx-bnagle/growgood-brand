@@ -1,0 +1,15 @@
+{%- comment -%} An event: its name, then what, when, where, cost (VOICE-010). Contract: _data/components/event-details.yml {%- endcomment -%}
+{%- assign ev_link = include.link -%}
+{%- assign ev_href = include.href -%}
+<div class="gg-event">
+  <h2 class="gg-type-h2">{{ include.name }}</h2>
+  <p class="gg-type-body">{{ include.what }}</p>
+  <dl class="gg-type-body">
+    <dt>When</dt><dd class="gg-event__when">{{ include.when }}</dd>
+    <dt>Where</dt><dd>{{ include.where }}</dd>
+    <dt>Cost</dt><dd>{{ include.cost }}</dd>
+  </dl>
+  {%- if ev_link and ev_href %}
+  {% include gg/button.html label=ev_link href=ev_href %}
+  {%- endif %}
+</div>

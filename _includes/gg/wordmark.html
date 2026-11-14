@@ -1,0 +1,10 @@
+{%- comment -%} The mark, by variant (D-025, D-037). Contract: _data/components/wordmark.yml {%- endcomment -%}
+{%- assign wm_variant = include.variant | default: "primary" -%}
+{%- assign wm_logo = site.data.assets.logos | where: "style", wm_variant | first -%}
+{%- if include.href %}<a class="gg-wordmark" href="{{ include.href }}">{% else %}<span class="gg-wordmark">{% endif -%}
+{%- if wm_logo -%}
+<img src="{{ wm_logo.url | relative_url }}" alt="{{ wm_logo.alt | default: 'Grow Good Gardens' }}"{% if wm_logo.width %} width="{{ wm_logo.width }}" height="{{ wm_logo.height }}"{% endif %}>
+{%- else -%}
+<span class="gg-wordmark__text gg-type-h4">Grow Good Gardens</span>
+{%- endif -%}
+{%- if include.href %}</a>{% else %}</span>{% endif -%}

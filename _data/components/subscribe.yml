@@ -1,0 +1,20 @@
+name: Subscribe
+include: gg/subscribe.html
+figma: Subscribe
+summary: The newsletter sign-up, on a dark surface.
+formats: [web]
+decisions: [D-030, D-033]
+params:
+  - name: heading
+    type: text
+    required: false
+    default: Email newsletter
+    source: request
+  - name: sitekey
+    type: text
+    required: false
+    source: site
+    notes: The site’s reCAPTCHA site key. The site’s script handles the form by its ids.
+examples:
+  - title: Sign-up
+    params: { heading: Email newsletter }

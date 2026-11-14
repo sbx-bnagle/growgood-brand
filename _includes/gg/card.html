@@ -1,0 +1,8 @@
+{%- comment -%} A linked card on an accent surface. Contract: _data/components/card.yml {%- endcomment -%}
+{%- assign card_color = include.color | default: "green" -%}
+{%- assign card_href = "/" | append: include.dest | relative_url -%}
+<a class="gg-card gg-card--{{ card_color }}" href="{{ card_href }}">
+  <h2 class="gg-type-h3">{{ include.title }}</h2>
+  <p class="gg-type-body">{{ include.blurb }}</p>
+  <span class="gg-card__link gg-type-label">{{ include.link }}</span>
+</a>

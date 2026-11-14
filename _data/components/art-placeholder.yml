@@ -1,0 +1,10 @@
+name: Art placeholder
+include: gg/art-placeholder.html
+figma: Art placeholder
+summary: Holds the place of the art in print and social formats until the art direction is in.
+formats: [flyer, postcard, social]
+decisions: [D-035]
+params: []
+examples:
+  - title: Placeholder
+    params: {}

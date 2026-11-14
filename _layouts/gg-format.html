@@ -1,0 +1,24 @@
+---
+---
+{%- comment -%}
+  A print or social format: one fixed-size frame, captured to PDF or PNG (D-005, D-043).
+  Set by the child layout: format (flyer, postcard, sheet, social-feed, social-story, social-cover)
+  and set (wide or narrow type, D-034).
+{%- endcomment -%}
+{%- assign format = page.format | default: layout.format -%}
+{%- assign set = page.set | default: layout.set | default: "wide" -%}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>{{ page.title | default: format }}</title>
+  {% include gg/head.html %}
+</head>
+<body class="gg-root gg-format-body">
+  <div class="gg-format gg-format--{{ format }} gg-set-{{ set }}">
+    {{ content }}
+  </div>
+</body>
+</html>

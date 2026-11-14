@@ -1,0 +1,6 @@
+# Sample for the playbook, read by gg/faq.html. A site’s answers come from claims.md.
+sample:
+  - q: Question
+    a: Answer
+  - q: Another question
+    a: Another answer

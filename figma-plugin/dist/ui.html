@@ -22,19 +22,19 @@
 <h1>GG Tokens</h1>
 <p id="status">Reading this file…</p>
 
-<section aria-labelledby="load-h">
+<section aria-labeledby="load-h">
   <h2 id="load-h">Load tokens into this file</h2>
   <p>Creates or updates the Color, Color roles, Type, Space and Layout variable collections and 18 text styles from the token files bundled with this plugin. Safe to run again: it updates in place and deletes nothing.</p>
   <button type="button" id="import">Load tokens</button>
 </section>
 
-<section aria-labelledby="build-h">
+<section aria-labeledby="build-h">
   <h2 id="build-h">Build the library pages</h2>
   <p>Sets up the Foundations, Components and Templates pages. Rebuilds the Foundations frame from this file’s variables, and adds any component or template that isn’t there yet. Components and templates that exist are never changed, so design work on them is safe. Load tokens first.</p>
   <button type="button" id="build">Build pages and components</button>
 </section>
 
-<section aria-labelledby="send-h">
+<section aria-labeledby="send-h">
   <h2 id="send-h">Send changes to GitHub</h2>
   <p>Compares the variables in this file with the token files on GitHub and opens a pull request with any changed values. The Tokens check runs on it before anything merges.</p>
   <label for="repo">Repository <span>owner/name</span><input type="text" id="repo" value="sbx-bnagle/growgood-brand" autocomplete="off" spellcheck="false"></label>

@@ -1,0 +1,15 @@
+name: Hero
+include: gg/hero.html
+figma: Hero
+summary: The wordmark and a deck in the lead style, at the top of the home page.
+formats: [web]
+decisions: [D-033]
+rules: [TYPE-004]
+params:
+  - name: deck
+    type: text
+    required: true
+    source: claims
+examples:
+  - title: Deck
+    params: { deck: Deck }

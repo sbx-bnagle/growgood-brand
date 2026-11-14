@@ -1,0 +1,27 @@
+// Mirrors _includes/card.html: an accent surface with inverse text (D-030). Not on tokens: radius 20.
+.gg-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gg-space-xs);
+  min-height: 160px;
+  padding: var(--gg-space-md);
+  border-radius: 20px;
+  background: var(--gg-role-accent-green);
+  color: var(--gg-role-text-inverse);
+  text-decoration: none;
+}
+.gg-card--red { background: var(--gg-role-accent-red); }
+.gg-card--gold { background: var(--gg-role-accent-gold); }
+.gg-card--purple { background: var(--gg-role-accent-purple); }
+.gg-card__link {
+  align-self: flex-start;
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  height: 42px;
+  padding: 0 24px;
+  border: 2px solid currentColor;
+  border-radius: 60px;
+}
+a.gg-card:hover .gg-card__link { background: var(--gg-role-text-inverse); color: var(--gg-role-text-default); }
+a.gg-card:focus-visible { outline: 3px solid var(--gg-role-text-default); outline-offset: 3px; }

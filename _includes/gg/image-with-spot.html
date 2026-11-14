@@ -1,0 +1,12 @@
+{%- comment -%} A photograph with a spot over it (D-024). Contract: _data/components/image-with-spot.yml {%- endcomment -%}
+{%- assign img_position = include.position | default: "top-left" -%}
+<figure class="gg-image-spot gg-image-spot--{{ img_position }}">
+  {%- if include.image %}
+  <img class="gg-image-spot__photo" src="{{ include.image | relative_url }}" alt="{{ include.alt }}">
+  {%- else %}
+  <div class="gg-image-spot__photo gg-image-spot__empty" role="img" aria-label="Photo placeholder"><span class="gg-type-small">Photo</span></div>
+  {%- endif %}
+  {%- if include.spot %}
+  <img class="gg-image-spot__spot" src="{{ include.spot | relative_url }}" alt="">
+  {%- endif %}
+</figure>

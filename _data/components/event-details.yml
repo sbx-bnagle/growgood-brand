@@ -1,0 +1,46 @@
+name: Event details
+include: gg/event-details.html
+figma: Event details
+summary: An event’s name, then what, when, where and cost, with a link.
+formats: [web, flyer, postcard, social]
+decisions: [D-033, D-034]
+rules: [VOICE-010, NAMES-003, NAMES-004, NAMES-005, NAMES-006]
+params:
+  - name: name
+    type: text
+    required: true
+    source: request
+    notes: The headline is the event’s name (VOICE-010).
+  - name: what
+    type: text
+    required: true
+    source: request
+    notes: One sentence.
+  - name: when
+    type: text
+    required: true
+    source: request
+    notes: As NAMES-005 writes it.
+  - name: where
+    type: text
+    required: true
+    source: request
+    notes: As people say the place, then the address once (NAMES-006).
+  - name: cost
+    type: text
+    required: true
+    source: request
+  - name: link
+    type: text
+    required: false
+    source: request
+    notes: The link’s label. Leave out for print.
+  - name: href
+    type: url
+    required: false
+    source: request
+examples:
+  - title: With a link, for the web
+    params: { name: Event name, what: "What it is, in one sentence", when: "Day, date and time", where: Place, cost: Cost, link: Button label, href: "#" }
+  - title: Without a link, for print
+    params: { name: Event name, what: "What it is, in one sentence", when: "Day, date and time", where: Place, cost: Cost }

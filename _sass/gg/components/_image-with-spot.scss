@@ -1,0 +1,7 @@
+// D-024: a photograph with an animated spot laid over it.
+.gg-image-spot { position: relative; margin: 0; }
+.gg-image-spot__photo { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--gg-role-border-default); }
+.gg-image-spot__spot { position: absolute; width: 20%; height: auto; }
+.gg-image-spot--top-left .gg-image-spot__spot { top: 5%; left: 5%; }
+.gg-image-spot--bottom-right .gg-image-spot__spot { right: 5%; bottom: 5%; }
+.gg-image-spot__empty { display: grid; place-items: center; color: var(--gg-role-text-muted); }

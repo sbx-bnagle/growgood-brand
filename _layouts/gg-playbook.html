@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% if page.title %}{{ page.title }} · {% endif %}{{ site.title }}</title>
+  {% include gg/head.html css="none" %}
+  <link rel="stylesheet" href="{{ '/playbook/playbook.css' | relative_url }}">
+</head>
+<body class="gg-root pb">
+  <a class="pb-skip" href="#main">Skip to content</a>
+  <header class="pb-header">
+    <a class="pb-header__title" href="{{ '/' | relative_url }}">Grow Good brand playbook</a>
+    <nav class="pb-nav" aria-label="Playbook">
+      <a href="{{ '/brand/readme.html' | relative_url }}"{% if page.url contains '/brand/' %} aria-current="page"{% endif %}>Brand</a>
+      <a href="{{ '/playbook/components/' | relative_url }}"{% if page.url contains '/components/' %} aria-current="page"{% endif %}>Components</a>
+      <a href="{{ '/playbook/tokens.html' | relative_url }}"{% if page.url contains '/tokens' %} aria-current="page"{% endif %}>Tokens</a>
+      <a href="{{ '/playbook/formats/' | relative_url }}"{% if page.url contains '/formats/' %} aria-current="page"{% endif %}>Formats</a>
+    </nav>
+  </header>
+  <main id="main" class="pb-main">
+    {{ content }}
+  </main>
+</body>
+</html>

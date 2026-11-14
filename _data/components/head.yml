@@ -1,0 +1,14 @@
+name: Head
+include: gg/head.html
+figma: null
+summary: Loads Alegreya Sans in the four styles the type tokens use, and the theme stylesheet.
+formats: [web, flyer, postcard, social]
+decisions: [D-045]
+params:
+  - name: css
+    type: enum
+    values: [link, none]
+    default: link
+    source: fixed
+    notes: none when the page imports the theme Sass into its own stylesheet.
+examples: []

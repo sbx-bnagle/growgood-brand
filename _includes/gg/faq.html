@@ -1,0 +1,9 @@
+{%- comment -%} FAQ items from one set of site.data.faqs. Contract: _data/components/faq.yml {%- endcomment -%}
+<section class="gg-faq">
+  <h2 class="gg-type-h2">{{ include.heading | default: "FAQ" }}</h2>
+  <ul class="gg-faq__list">
+    {%- for item in site.data.faqs[include.set] %}
+    <li>{% include gg/faq-item.html question=item.q answer=item.a %}</li>
+    {%- endfor %}
+  </ul>
+</section>

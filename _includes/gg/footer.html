@@ -1,0 +1,9 @@
+{%- comment -%} The copyright line and the social links. Reads site.data.social. Contract: _data/components/footer.yml {%- endcomment -%}
+<footer class="gg-footer">
+  <p class="gg-type-small">{{ include.copyright }}</p>
+  <ul class="gg-footer__social gg-type-small">
+    {%- for link in site.data.social %}
+    <li><a href="{{ link.url }}">{{ link.name }}</a></li>
+    {%- endfor %}
+  </ul>
+</footer>

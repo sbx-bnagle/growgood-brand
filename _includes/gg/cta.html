@@ -1,0 +1,10 @@
+{%- comment -%} A call to action at the foot of a page. Contract: _data/components/cta.yml {%- endcomment -%}
+{%- assign cta_button = include.button | default: "Get in touch" -%}
+{%- assign cta_href = include.href | default: "#contact" -%}
+<section class="gg-cta">
+  <h2 class="gg-type-h2">{{ include.heading | default: "Ready to get started?" }}</h2>
+  {%- if include.body %}
+  <p class="gg-type-body">{{ include.body }}</p>
+  {%- endif %}
+  {% include gg/button.html label=cta_button href=cta_href %}
+</section>

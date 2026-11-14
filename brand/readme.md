@@ -27,7 +27,7 @@ Read this file first. Then open only the files the job needs.
 | Flyer | the copy files, `formats/flyer.md`, `visual/typography.md`, `visual/color.md`, `visual/imagery.md` |
 | Postcard | the copy files, `formats/postcard.md`, `visual/typography.md`, `visual/color.md`, `visual/imagery.md` |
 | Social post | the copy files, `formats/social.md`, `visual/color.md`, `visual/imagery.md` |
-| Choosing an image | `visual/imagery.md`, then approved rows in the asset register (`../assets/README.md`) |
+| Choosing an image | `visual/imagery.md`, then approved rows in the asset register (`../asset-library/README.md`) |
 | Changing a brand file | `decisions.md`, `system/review.md`, `_template.md` |
 
 ## Index
@@ -54,7 +54,7 @@ Keeper for every file: Leah Fagan. Maintainer for every file: Brad Nagle.
 | `formats/flyer.md` | Letter flyer for an office printer | fixed | FLY | planned |
 | `formats/postcard.md` | Quarter-Letter card, four to a sheet | fixed | CARD | planned |
 | `formats/social.md` | Feed, story and event cover | fixed | SOC | planned |
-| `system/components.md` | Include contracts and how to compose them | fixed | COMP | planned |
+| `system/components.md` | Include contracts and how to compose them | fixed | COMP | draft |
 | `system/accessibility.md` | WCAG 2.2 AA targets for every format | fixed | A11Y | planned |
 | `system/review.md` | Review gates G1 to G3, who approves what | fixed | REV | planned |
 | `system/request-ladder.md` | Make, adapt, brief a person, stop and ask | fixed | LADDER | draft |

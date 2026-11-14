@@ -1,0 +1,6 @@
+// VOICE-010: the event's name, then what, when, where, cost (D-033).
+.gg-event { display: flex; flex-direction: column; align-items: flex-start; gap: var(--gg-space-xs); }
+.gg-event dl { display: contents; margin: 0; }
+.gg-event dt { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.gg-event dd { margin: 0; }
+.gg-event__when { font-weight: var(--gg-font-weight-bold); }

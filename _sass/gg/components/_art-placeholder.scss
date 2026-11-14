@@ -1,0 +1,14 @@
+// Holds the place of the art direction (D-035) until the references and art exist.
+.gg-art {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gg-space-xxs);
+  min-height: 160px;
+  padding: var(--gg-space-md);
+  border: 1px solid var(--gg-role-border-default);
+  background: var(--gg-role-surface-tint);
+  text-align: center;
+}
+.gg-art__note { color: var(--gg-role-text-muted); }

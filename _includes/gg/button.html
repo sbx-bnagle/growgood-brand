@@ -1,0 +1,3 @@
+{%- comment -%} A link as the site’s pill button. Contract: _data/components/button.yml {%- endcomment -%}
+{%- assign btn_style = include.style | default: "default" -%}
+<a class="gg-button{% if btn_style == 'bright' %} gg-button--bright{% endif %}" href="{{ include.href }}">{{ include.label }}</a>

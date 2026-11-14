@@ -1,0 +1,15 @@
+name: Footer
+include: gg/footer.html
+figma: Footer
+summary: The copyright line and the social links.
+formats: [web]
+decisions: [D-008, D-033]
+params:
+  - name: copyright
+    type: text
+    required: true
+    source: claims
+data: [social]
+examples:
+  - title: From the site’s social data
+    params: { copyright: Copyright line }

@@ -1,0 +1,8 @@
+# Sample for the playbook: the site’s own navigation (its _data/nav-config.yml), read by gg/header.html.
+toc:
+  - title: Services
+    url: services
+  - title: Journal
+    url: journal
+  - title: About
+    url: about
