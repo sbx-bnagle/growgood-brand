@@ -212,6 +212,39 @@ function figmaFontStyle(weight, italic) {
   return 'Regular';
 }
 
+// Send changes: a plain next step for the GitHub errors people are likely to hit.
+// info is { status, path, message } from the failed request. Returns '' when there is nothing to add.
+function githubHint(info, repo, base) {
+  const status = info && info.status;
+  const path = (info && info.path) || '';
+  const message = (info && info.message) || '';
+  const name = repo.split('/')[1] || repo;
+  if (status === 401) {
+    return 'GitHub did not accept the access token. It may be mistyped, expired or deleted. Make a new one and paste it into Access token.';
+  }
+  if (status === 403 && /not accessible by/i.test(message)) {
+    return 'The token can read ' + repo + ' but can’t change it. On GitHub, go to Settings, Developer settings, Fine-grained tokens, and edit this token. ' +
+      'Under Repository access, choose Only select repositories and pick ' + name + '. ' +
+      'Under Repository permissions, set Contents and Pull requests to Read and write. Then send again.';
+  }
+  if (status === 403 && /rate limit/i.test(message)) {
+    return 'GitHub’s request limit was reached. Wait a few minutes, then send again.';
+  }
+  if (status === 404 && path.indexOf('/git/ref/heads/') !== -1) {
+    return 'Couldn’t find the branch ' + base + ' in ' + repo + '. Check Base branch and the repository name. If the repository is private, the token also needs access to it.';
+  }
+  if (status === 404 && path.indexOf('/contents/tokens/') !== -1) {
+    return 'The token files aren’t on ' + base + '. Set Base branch to a branch that has tokens/*.json.';
+  }
+  if (status === 404) {
+    return 'Couldn’t find ' + repo + ', or the token can’t see it. Check the repository name and the token’s repository access.';
+  }
+  if (status === 422 && /reference already exists/i.test(message)) {
+    return 'A branch with this name already exists. Wait a minute, then send again.';
+  }
+  return '';
+}
+
 // GG Tokens, main thread. tools/build-figma-plugin.mjs bundles this file after TOKENS (the
 // repo's token files) and tools/lib/tokens.mjs. ES2017 only: the Figma sandbox is older JS.
 

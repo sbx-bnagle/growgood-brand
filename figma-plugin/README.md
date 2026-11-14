@@ -36,6 +36,8 @@ Loading again updates values in place and deletes nothing. After token changes l
 
 It does not rename, delete or restructure tokens, and it does not send text styles back: those are built from the type tokens.
 
+If GitHub refuses a step, the panel logs GitHub’s error, then a line saying what to change. The most common one is a token that can read the repo but not write to it. Since the repo is public, any token can read it. Writing needs Contents and Pull requests set to Read and write, for this repo only.
+
 ## Development
 
 - `src/code.js`: runs inside Figma. ES2017 only.

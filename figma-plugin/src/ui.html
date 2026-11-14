@@ -97,7 +97,9 @@
     if (!res.ok) {
       let message = res.statusText;
       try { message = (await res.json()).message || message; } catch (e) { /* no body */ }
-      throw new Error(`GitHub said ${res.status} for ${path}: ${message}`);
+      const err = new Error(`GitHub said ${res.status} for ${path}: ${message}`);
+      err.github = { status: res.status, path: path, message: message };
+      throw err;
     }
     return res.status === 204 ? null : res.json();
   }
@@ -165,6 +167,8 @@
       $('openpr').hidden = false;
     } catch (e) {
       log(`Error: ${e.message}`);
+      const hint = e.github ? githubHint(e.github, repo, base) : '';
+      if (hint) log(hint);
     } finally {
       $('send').disabled = false;
     }

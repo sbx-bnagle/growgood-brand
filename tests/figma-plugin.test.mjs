@@ -8,7 +8,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { parse } from 'acorn';
-import { TOKEN_FILES, toFigmaSpecs, mergeSpecs } from '../tools/lib/tokens.mjs';
+import { TOKEN_FILES, toFigmaSpecs, mergeSpecs, githubHint } from '../tools/lib/tokens.mjs';
 
 const docs = Object.fromEntries(TOKEN_FILES.map((f) => [f, JSON.parse(readFileSync(new URL(`../tokens/${f}`, import.meta.url), 'utf8'))]));
 const bundle = readFileSync(new URL('../figma-plugin/dist/code.js', import.meta.url), 'utf8');
@@ -192,4 +192,59 @@ test('only GitHub links open externally', async () => {
   await send({ type: 'open', url: 'https://example.com/x' });
   await send({ type: 'open', url: 'https://github.com/sbx-bnagle/growgood-brand/pull/1' });
   assert.deepEqual(mock.messages.filter((m) => m.type === 'external').map((m) => m.url), ['https://github.com/sbx-bnagle/growgood-brand/pull/1']);
+});
+
+test('Send changes explains GitHub errors in plain terms', () => {
+  const repo = 'sbx-bnagle/growgood-brand';
+  // The error from the first real test: a token that can read the public repo but not write to it.
+  const write = githubHint({ status: 403, path: `/repos/${repo}/git/refs`, message: 'Resource not accessible by personal access token' }, repo, 'phase-2/tokens');
+  assert.match(write, /can’t change it/);
+  assert.match(write, /Only select repositories and pick growgood-brand/);
+  assert.match(write, /Contents and Pull requests to Read and write/);
+  assert.match(githubHint({ status: 401, path: '/x', message: 'Bad credentials' }, repo, 'main'), /did not accept the access token/);
+  assert.match(githubHint({ status: 404, path: `/repos/${repo}/git/ref/heads/main`, message: 'Not Found' }, repo, 'main'), /Couldn’t find the branch main/);
+  assert.match(githubHint({ status: 404, path: `/repos/${repo}/contents/tokens/color.json?ref=main`, message: 'Not Found' }, repo, 'main'), /token files aren’t on main/);
+  assert.match(githubHint({ status: 422, path: `/repos/${repo}/git/refs`, message: 'Reference already exists' }, repo, 'main'), /already exists/);
+  assert.equal(githubHint({ status: 500, path: '/x', message: 'Server Error' }, repo, 'main'), '');
+
+  // The panel carries the helper and logs it after the error line.
+  const ui = readFileSync(new URL('../figma-plugin/dist/ui.html', import.meta.url), 'utf8');
+  assert.match(ui, /function githubHint\(/);
+  assert.match(ui, /githubHint\(e\.github, repo, base\)/);
+});
+
+// Runs the panel's own script against a stand-in GitHub that refuses the first write, as in the first real test.
+test('the panel shows the token hint when GitHub refuses to create the branch', async () => {
+  const html = readFileSync(new URL('../figma-plugin/dist/ui.html', import.meta.url), 'utf8');
+  const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => m[1]).join('\n;\n');
+  const els = {};
+  const el = (id) => (els[id] ??= { id, value: '', textContent: '', checked: false, hidden: false, disabled: false, scrollTop: 0, scrollHeight: 0, onclick: null });
+  el('repo').value = 'sbx-bnagle/growgood-brand';
+  el('base').value = 'phase-2/tokens';
+  el('token').value = 'test-token';
+  const specs = toFigmaSpecs(docs).map((s) => (s.path === 'space.xs' ? { ...s, value: 16 } : s));
+  const requests = [];
+  const ctx = {
+    console, TextEncoder, TextDecoder, atob, btoa, Uint8Array, JSON, Promise, Date, Object, Array, Error, String, Number, RegExp, Math, encodeURIComponent,
+    document: { getElementById: el },
+    parent: { postMessage: ({ pluginMessage: m }) => { if (m.type === 'collect') setTimeout(() => ctx.window.onmessage({ data: { pluginMessage: { type: 'collected', specs, skipped: [] } } })); } },
+    fetch: async (url, opts) => {
+      const path = url.replace('https://api.github.com', '');
+      requests.push(`${opts.method} ${path}`);
+      const ok = (body) => ({ ok: true, status: 200, json: async () => body });
+      if (path.includes('/git/ref/heads/')) return ok({ object: { sha: 'abc123' } });
+      const file = path.match(/\/contents\/tokens\/([\w-]+\.json)/);
+      if (opts.method === 'GET' && file) return ok({ content: Buffer.from(JSON.stringify(docs[file[1]], null, 2) + '\n').toString('base64'), sha: 'f' });
+      return { ok: false, status: 403, statusText: 'Forbidden', json: async () => ({ message: 'Resource not accessible by personal access token' }) };
+    },
+  };
+  ctx.window = ctx;
+  vm.runInNewContext(scripts, ctx);
+  await els.send.onclick();
+  const log = els.log.textContent;
+  assert.match(log, /space\.xs: 12px → 16px/);
+  assert.match(log, /Error: GitHub said 403 for \/repos\/sbx-bnagle\/growgood-brand\/git\/refs/);
+  assert.match(log, /The token can read sbx-bnagle\/growgood-brand but can’t change it\./);
+  assert.equal(requests.filter((r) => !r.startsWith('GET')).length, 1, 'stops after the refused write');
+  assert.equal(els.send.disabled, false, 'the button is usable again');
 });
