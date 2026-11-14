@@ -242,3 +242,28 @@ export function githubHint(info, repo, base) {
   }
   return '';
 }
+
+// D-030: each text or action role and the surface it sits on, with the contrast it needs (WCAG 2.x).
+// Read by tokens:check and by the Foundations page the plugin builds.
+export const ROLE_PAIRS = [
+  ['role.text.default', 'role.surface.default', 4.5], ['role.text.default', 'role.surface.tint', 4.5],
+  ['role.text.muted', 'role.surface.default', 4.5], ['role.text.muted', 'role.surface.tint', 4.5],
+  ['role.text.link', 'role.surface.default', 4.5], ['role.text.link', 'role.surface.tint', 4.5],
+  ['role.text.inverse', 'role.surface.inverse', 4.5],
+  ['role.action.on-default', 'role.action.default', 4.5], ['role.action.on-bright', 'role.action.bright', 4.5],
+  ['role.action.bright', 'role.surface.inverse', 3], ['role.action.default', 'role.surface.default', 3],
+  ['role.text.inverse', 'role.accent.green', 4.5], ['role.text.inverse', 'role.accent.red', 4.5],
+  ['role.text.inverse', 'role.accent.gold', 4.5], ['role.text.inverse', 'role.accent.purple', 4.5],
+];
+
+// WCAG 2.x contrast between two #rrggbb colors.
+export function contrastRatio(hexA, hexB) {
+  const lum = function (hex) {
+    const c = hexToRgb(hex);
+    const lin = function (v) { return v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
+    return 0.2126 * lin(c.r) + 0.7152 * lin(c.g) + 0.0722 * lin(c.b);
+  };
+  const a = lum(hexA);
+  const b = lum(hexB);
+  return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+}

@@ -5,7 +5,7 @@
 
 import { readFileSync, appendFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { TOKEN_FILES, flatten, resolveAll } from './lib/tokens.mjs';
+import { TOKEN_FILES, flatten, resolveAll, ROLE_PAIRS } from './lib/tokens.mjs';
 import { ratio, luminance } from './lib/color.mjs';
 
 const dir = process.argv[2] ?? 'tokens';
@@ -57,21 +57,11 @@ for (const f of families) {
   else fail('D-021', `${f} is out of light-to-dark order`);
 }
 
-// ---- color roles: O-16 (proposed) ---------------------------------------------------------
-const PAIRS = [
-  ['role.text.default', 'role.surface.default', 4.5], ['role.text.default', 'role.surface.tint', 4.5],
-  ['role.text.muted', 'role.surface.default', 4.5], ['role.text.muted', 'role.surface.tint', 4.5],
-  ['role.text.link', 'role.surface.default', 4.5], ['role.text.link', 'role.surface.tint', 4.5],
-  ['role.text.inverse', 'role.surface.inverse', 4.5],
-  ['role.action.on-default', 'role.action.default', 4.5], ['role.action.on-bright', 'role.action.bright', 4.5],
-  ['role.action.bright', 'role.surface.inverse', 3], ['role.action.default', 'role.surface.default', 3],
-  ['role.text.inverse', 'role.accent.green', 4.5], ['role.text.inverse', 'role.accent.red', 4.5],
-  ['role.text.inverse', 'role.accent.gold', 4.5], ['role.text.inverse', 'role.accent.purple', 4.5],
-];
-for (const [fg, bg, min] of PAIRS) {
+// ---- color roles: D-030 --------------------------------------------------------------------
+for (const [fg, bg, min] of ROLE_PAIRS) {
   const r = ratio(get(fg), get(bg));
   const what = `${fg.slice(5)} on ${bg.slice(5)}: ${r.toFixed(2)}:1 (needs ${min})`;
-  r >= min ? pass('O-16', what) : fail('O-16', what);
+  r >= min ? pass('D-030', what) : fail('D-030', what);
 }
 
 // ---- type: TYPE-003, TYPE-004, order ------------------------------------------------------

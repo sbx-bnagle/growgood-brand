@@ -40,10 +40,10 @@ The Customer Profiles doc names four audiences with no detail yet: new homeowner
 Affects: `verbal/audiences.yml`.
 Brad is taking this to Leah. Claude can draft from the site and the Drive docs when asked.
 
-### O-16 Color roles
-Raised 2026-11-13 in Phase 2. Needed by Phase 3.
-The two-tier naming from O-08 is accepted; the role mapping is proposed in `tokens/color-roles.json`. Surface: default neutral-100, tint green-100, inverse green-400. Text: default neutral-400, muted neutral-300, inverse neutral-100, link green-300. Border: neutral-200. Action: default green-300 with neutral-100 text; bright green-200 with neutral-400 text, for dark surfaces. Accent: each family’s 300, with neutral-100 text. Every pairing passes the `tokens:check` contrast checks. Confirm or adjust.
-Affects: `tokens/color-roles.json`, `visual/color.md`, Phase 3.
+### O-18 A label text style for buttons
+Raised 2026-11-13 in Phase 3. Needed by the Phase 3 design review.
+The site’s buttons use small bold, which has no text style, so the Button component overrides Small with Bold. Either add a label role to the type tokens (size and line height of small, weight bold), or keep the override.
+Affects: `tokens/type.json`, `visual/typography.md`, the Button and Card components.
 
 ### Closed
 - O-01 Figma plan: decided as D-017.
@@ -56,6 +56,8 @@ Affects: `tokens/color-roles.json`, `visual/color.md`, Phase 3.
 - O-13 Art direction: decided as D-024.
 - O-14 Type scale: decided as D-026.
 - O-15 Type sizes on small screens: decided as D-027.
+- O-16 Color roles: decided as D-030.
+- O-17 Art direction for print and social templates: decided as D-035.
 
 ## Active
 
@@ -238,3 +240,45 @@ Five variable collections (Color, Color roles, Type, Space, Layout), one mode ea
 Why: Starter allows one mode per collection. Sending values only keeps descriptions, extensions and structure in the reviewed repo, and keeps each pull request to the values that moved.
 Affects: `figma-plugin/`, `tools/lib/tokens.mjs`, `.github/workflows/tokens.yml`.
 
+
+### D-030 Color roles
+2026-11-13, Brad Nagle. Closes O-16. Confirmed for now; expect adjustments once Phase 3 components use the roles.
+Roles point at primitives (`tokens/color-roles.json`). Surface: default neutral-100, tint green-100, inverse green-400. Text: default neutral-400, muted neutral-300, inverse neutral-100, link green-300. Border: neutral-200. Action: default green-300 with neutral-100 text; bright green-200 with neutral-400 text, for dark surfaces. Accent: each family’s 300, with neutral-100 text.
+Why: every pairing passes the `tokens:check` contrast checks, and components can name a role instead of a primitive, so a change to the mapping reaches every component at once.
+Affects: `tokens/color-roles.json`, `visual/color.md`, Phase 3.
+
+### D-031 The Figma library is built by the plugin, then by hand
+2026-11-13, Brad Nagle.
+GG Tokens builds the Foundations page and a bare frame for each component from the tokens: structure, text styles, color roles and spacing bound to variables, and properties named after the include parameters. Brad designs the components from there, and the templates are built from the components. The plugin rebuilds Foundations whenever asked, and never replaces a component that already exists.
+Why: Starter has no libraries and a small Figma connector quota, so building through the connector would use up the month. The plugin has no limit and keeps the foundations in step with the tokens. Design stays with a person.
+Affects: `figma-plugin/`, the GG Design System file.
+
+### D-032 Three pages: Foundations, Components, Templates
+2026-11-13, Brad Nagle.
+Everything lives in the GG Design System file, on three pages.
+Why: Starter allows three pages per file in a team folder, and components can only be used in the file they live in.
+Affects: the GG Design System file.
+
+### D-033 First component set
+2026-11-13, Brad Nagle.
+Button, Card, CTA block, Hero, Header, Footer, FAQ item, Subscribe, Event details, Wordmark, and Image with spot. Each web component mirrors a Jekyll include, with Figma properties named after its parameters. Event details is new: name, what, when, where, cost and link, in VOICE-010 order, for every format. Unused and app-like includes wait.
+Why: these cover the four request formats. One contract per component serves Figma, the theme (Phase 4) and agents alike.
+Affects: Components page, `system/components.md`, Phase 4.
+
+### D-034 Type sizes in print and social
+2026-11-13, Brad Nagle.
+Flyers use the Wide set, with 1px as 1pt on a 612×792pt Letter page. Postcards use the Narrow set on a 306×396pt card. Social posts use the Wide set on their 1080px canvases (D-008).
+Why: one type scale everywhere. A Letter flyer reads at a distance like a wide screen; a postcard is held close, like a phone.
+Affects: `formats/flyer.md`, `formats/postcard.md`, `formats/social.md`, Templates page.
+
+### D-035 Art direction: English craft, hippie modernism, hand drawn
+2026-11-13, Brad Nagle. Closes O-17.
+Print and social templates blend three Branding Ref headings: English craft, hippie modernism, and hand drawn. Until the references are in, every template holds the Art placeholder component in their place. Brad collects the references in Brand Assets / Art direction.
+Why: the direction is set; the references that define it in practice come next.
+Affects: Templates page, the Art placeholder component, `visual/imagery.md`, `formats/flyer.md`, `formats/postcard.md`, `formats/social.md`.
+
+### D-036 The plugin scaffolds the templates
+2026-11-13, made in Phase 3 by Claude for Brad Nagle. Refines D-031. Replace this entry to change it.
+Build pages and components also adds one frame per format: web event page (1440px), flyer (612×792pt), postcard front and back (306×396pt), the sheet of four, and social feed, story and event cover (D-007, D-008, D-034). Each is made of component instances and the Art placeholder, so design work on a component reaches every template. A template that exists is never changed.
+Why: the sizes and parts come straight from decisions, so a person need not set them up by hand; the design of each template stays with a person.
+Affects: `figma-plugin/`, Templates page.

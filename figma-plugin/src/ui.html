@@ -27,6 +27,12 @@
   <button type="button" id="import">Load tokens</button>
 </section>
 
+<section aria-labelledby="build-h">
+  <h2 id="build-h">Build the library pages</h2>
+  <p>Sets up the Foundations, Components and Templates pages. Rebuilds the Foundations frame from this file’s variables, and adds any component or template that isn’t there yet. Components and templates that exist are never changed, so design work on them is safe. Load tokens first.</p>
+  <button type="button" id="build">Build pages and components</button>
+</section>
+
 <section aria-labelledby="send-h">
   <h2 id="send-h">Send changes to GitHub</h2>
   <p>Compares the variables in this file with the token files on GitHub and opens a pull request with any changed values. The Tokens check runs on it before anything merges.</p>
@@ -67,11 +73,22 @@
       if (r.unbound) log(`${r.unbound} text style fields could not be bound to variables in this Figma version; their values are set.`);
       $('status').textContent = statusText(msg.status);
       $('import').disabled = false;
+    } else if (msg.type === 'library-built') {
+      const r = msg.result;
+      r.pages.renamed.forEach((p) => log(`Renamed page ${p}.`));
+      r.pages.created.forEach((p) => log(`Added page ${p}.`));
+      log(`${r.foundations.rebuilt ? 'Rebuilt' : 'Built'} Foundations.${r.foundations.failingPairs ? ` ${r.foundations.failingPairs} color role pairs fail D-030: see the Color roles section.` : ''}`);
+      if (r.components.created.length) log(`Added components: ${r.components.created.join(', ')}.`);
+      if (r.components.kept.length) log(`Left as they are: ${r.components.kept.join(', ')}.`);
+      if (r.templates.created.length) log(`Added templates: ${r.templates.created.join(', ')}.`);
+      if (r.templates.kept.length) log(`Templates left as they are: ${r.templates.kept.join(', ')}.`);
+      $('build').disabled = false;
     } else if (msg.type === 'collected') {
       if (waitingForSpecs) waitingForSpecs(msg);
     } else if (msg.type === 'error') {
       log(`Error: ${msg.message}`);
       $('import').disabled = false;
+      $('build').disabled = false;
       $('send').disabled = false;
     }
   };
@@ -80,6 +97,12 @@
     $('import').disabled = true;
     log('Loading tokens…');
     send({ type: 'import' });
+  };
+
+  $('build').onclick = () => {
+    $('build').disabled = true;
+    log('Building the library pages…');
+    send({ type: 'build-library' });
   };
 
   // ---- GitHub ----------------------------------------------------------------------------
@@ -159,7 +182,7 @@
         ...(merged.added.length ? ['', '### New tokens', ...merged.added.map((p) => `- \`${p}\``)] : []),
         ...(merged.missing.length ? ['', '### In the repo but not in Figma (left as they are)', ...merged.missing.map((p) => `- \`${p}\``)] : []),
         '',
-        'The Tokens workflow checks these values against D-021, TYPE-003, TYPE-004 and O-16, then rebuilds `tokens/build`. Leah approves before merge.',
+        'The Tokens workflow checks these values against D-021, D-030, TYPE-003 and TYPE-004, then rebuilds `tokens/build`. Leah approves before merge.',
       ].join('\n');
       const count = merged.changes.length + merged.added.length;
       const pr = await api(token, `/repos/${repo}/pulls`, { method: 'POST', body: { title: `Tokens from Figma (${count} ${count === 1 ? 'change' : 'changes'})`, head: branch, base: base, body: body } });
