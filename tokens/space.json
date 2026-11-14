@@ -1,0 +1,54 @@
+{
+  "$description": "Spacing on the 4px baseline, as the site Sass has it ($spacing). Names kept from the Sass for now.",
+  "space": {
+    "$type": "dimension",
+    "x": {
+      "$value": {
+        "value": 0,
+        "unit": "px"
+      }
+    },
+    "xxs": {
+      "$value": {
+        "value": 4,
+        "unit": "px"
+      }
+    },
+    "xs": {
+      "$value": {
+        "value": 12,
+        "unit": "px"
+      }
+    },
+    "sm": {
+      "$value": {
+        "value": 20,
+        "unit": "px"
+      }
+    },
+    "md": {
+      "$value": {
+        "value": 32,
+        "unit": "px"
+      }
+    },
+    "lg": {
+      "$value": {
+        "value": 80,
+        "unit": "px"
+      }
+    },
+    "xl": {
+      "$value": {
+        "value": 136,
+        "unit": "px"
+      }
+    },
+    "xxl": {
+      "$value": {
+        "value": 156,
+        "unit": "px"
+      }
+    }
+  }
+}

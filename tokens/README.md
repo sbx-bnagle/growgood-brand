@@ -1,41 +1,62 @@
 # Tokens
 
-Color, type, spacing and layout values, shared by Figma, this theme and the live site.
+Color, type, spacing and layout values, shared by the Figma file, this repo’s theme and the live site.
 
-## Where values are decided
+## Files
 
-The site’s current Sass values (`growgood/_sass/config/`) seed Figma once. After that, Figma is where values are decided and refined (decision D-012). This folder holds the exported values as DTCG JSON. Nobody edits it by hand.
+| File | Holds | Decisions |
+|---|---|---|
+| `color.json` | Five color families, four levels each | D-021 |
+| `color-roles.json` | Roles (surface, text, action, accent) that point at the primitives | O-16, proposed |
+| `type.json` | Alegreya Sans, weights, and both size sets | D-020, D-026, D-027 |
+| `space.json` | Spacing on the 4px baseline, as the site Sass has it | D-012 |
+| `layout.json` | Breakpoints and grids from the site Sass | D-027 uses `breakpoint.m` |
+| `build/` | Generated: `tokens.css`, `_tokens.scss`, `tokens.json` | D-028 |
+| `seed/` | Where the values came from: `from-sass.json`, `color-ramps.json`. Kept for history. | D-012, D-021 |
+
+The files are DTCG JSON, two-space indented with one trailing newline. That is the layout the Figma plugin writes, and `tokens:check` enforces it, so a pull request from Figma shows only the values that changed.
+
+## Commands
+
+```bash
+npm run tokens:check
+```
+
+Checks the tokens against their rules: structure and references, D-021 (contrast and order), O-16 (role pairs), TYPE-003 (4px line heights and spacing), TYPE-004 (lead matches heading 1), size order and minimum leading.
+
+```bash
+npm run tokens:build
+```
+
+Writes `build/`. CSS custom properties are named `--gg-…`; type sizes use the narrow set by default and switch to the wide set at `breakpoint.m`. Sass gets `$gg-…` variables plus `$gg-colors` and `$gg-type` maps. `tokens.json` is flat and resolved, for agents and the MCP server.
+
+```bash
+npm test
+```
+
+Rebuilds the Figma plugin and tests it against a mock of the Figma API.
 
 ## Pipeline: Figma to the live site
 
 ```
-Figma: GG Design System, Variables
-  │  Export button in the GG Tokens development plugin (decision D-018)
+Figma: GG Design System (Starter)
+  │  GG Tokens plugin
+  │    Load tokens: repo → Figma variables and text styles
+  │    Send changes: Figma variable values → pull request (decision D-029)
   ▼
-PR on growgood-brand: tokens/*.json changed
-  │  checks: DTCG schema valid
-  │          renamed or removed tokens flagged (breaking change)
-  │          declared color pairs pass WCAG AA contrast
-  │          Style Dictionary build to Sass and CSS custom properties
-  │          stylelint: theme Sass uses tokens, no raw values
-  │          playbook build and visual diff of every component
-  │  gate:   keeper approves the visual diff
+Pull request on growgood-brand, changing tokens/*.json
+  │  Tokens workflow (.github/workflows/tokens.yml):
+  │    tokens:check, every failure named by its rule
+  │    tokens:build and the plugin bundle, committed back to the pull request
+  │    plugin tests
+  │  gate: Leah approves
   ▼
-merge, then release tag (semver: value change = patch, new token = minor,
-renamed or removed token = major)
-  │
+merge to main, then a release tag (Phase 4)
   ▼
-PR on growgood: bump the theme to the new tag (opened automatically)
-  │  checks: Jekyll build, link check, axe on key pages, visual diff of site pages
-  │  gate:   merge = publish
+Pull request on growgood bumping the theme: site build, link check, accessibility, visual diff
+  │  gate: merge = publish
   ▼
-GitHub Pages deploy (GitHub Actions build, decision D-003)
+GitHub Pages deploy (GitHub Actions build, D-003)
 ```
 
-Component changes in Figma (structure, not values) follow the same checks, but the PR is drafted by an agent reading the Figma component through the Figma connector, then reviewed by the maintainer. Values sync automatically. Structure is agent-assisted.
-
-## Files (Phase 2)
-
-- `seed/from-sass.json`: values extracted from the current site, used once to seed Figma.
-- `color.json`, `type.json`, `space.json`, `layout.json`: exported from Figma.
-- `build/`: generated Sass and CSS. Not committed by hand.
+Values flow from Figma. Names, structure, descriptions and new groups change here, by pull request, and reach Figma the next time the plugin is rebuilt and Load tokens runs.

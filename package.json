@@ -8,12 +8,17 @@
     "tokens:seed": "node tools/extract-sass-tokens.mjs ../growgood tokens/seed/from-sass.json",
     "contrast": "node tools/contrast.mjs",
     "tokens:ramps": "node tools/build-ramps.mjs && node tools/render-color-review.mjs",
-    "lint:copy": "node tools/lint-copy.mjs"
+    "lint:copy": "node tools/lint-copy.mjs",
+    "tokens:check": "node tools/check-tokens.mjs",
+    "tokens:build": "node tools/build-tokens.mjs",
+    "figma:build": "node tools/build-figma-plugin.mjs",
+    "test": "npm run figma:build && node --test tests/*.test.mjs"
   },
   "engines": {
     "node": ">=20"
   },
   "devDependencies": {
+    "acorn": "^8.19.0",
     "yaml": "^2.9.1"
   }
 }

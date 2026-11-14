@@ -1,0 +1,13 @@
+{
+  "name": "GG Tokens",
+  "id": "gg-tokens-dev",
+  "api": "1.0.0",
+  "main": "dist/code.js",
+  "ui": "dist/ui.html",
+  "editorType": ["figma"],
+  "documentAccess": "dynamic-page",
+  "networkAccess": {
+    "allowedDomains": ["https://api.github.com"],
+    "reasoning": "Reads the token files in the growgood-brand repo and opens a pull request with the changes made in Figma."
+  }
+}

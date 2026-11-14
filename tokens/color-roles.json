@@ -1,0 +1,80 @@
+{
+  "$description": "Color roles, the second tier over the primitives (O-08 recommendation, accepted). Each role points at a primitive. Proposed mapping, open as O-16.",
+  "role": {
+    "$type": "color",
+    "surface": {
+      "default": {
+        "$value": "{color.neutral.100}",
+        "$description": "Page background"
+      },
+      "tint": {
+        "$value": "{color.green.100}",
+        "$description": "Pale green sections"
+      },
+      "inverse": {
+        "$value": "{color.green.400}",
+        "$description": "Dark footer and contact band"
+      }
+    },
+    "text": {
+      "default": {
+        "$value": "{color.neutral.400}",
+        "$description": "Body and headings on light surfaces"
+      },
+      "muted": {
+        "$value": "{color.neutral.300}",
+        "$description": "Captions, sign-offs, secondary text"
+      },
+      "inverse": {
+        "$value": "{color.neutral.100}",
+        "$description": "Text on dark surfaces and 300 accents"
+      },
+      "link": {
+        "$value": "{color.green.300}",
+        "$description": "Links on light surfaces"
+      }
+    },
+    "border": {
+      "default": {
+        "$value": "{color.neutral.200}",
+        "$description": "Rules and outlines"
+      }
+    },
+    "action": {
+      "default": {
+        "$value": "{color.green.300}",
+        "$description": "Buttons on light surfaces"
+      },
+      "on-default": {
+        "$value": "{color.neutral.100}",
+        "$description": "Text on action.default"
+      },
+      "bright": {
+        "$value": "{color.green.200}",
+        "$description": "Buttons on dark surfaces"
+      },
+      "on-bright": {
+        "$value": "{color.neutral.400}",
+        "$description": "Text on action.bright"
+      }
+    },
+    "accent": {
+      "green": {
+        "$value": "{color.green.300}",
+        "$description": "Card and panel surfaces, with text.inverse"
+      },
+      "red": {
+        "$value": "{color.red.300}",
+        "$description": "Card and panel surfaces, with text.inverse"
+      },
+      "gold": {
+        "$value": "{color.gold.300}",
+        "$description": "Card and panel surfaces, with text.inverse"
+      },
+      "purple": {
+        "$value": "{color.purple.300}",
+        "$description": "Card and panel surfaces, with text.inverse"
+      }
+    }
+  }
+}

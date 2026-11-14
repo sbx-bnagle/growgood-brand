@@ -40,6 +40,11 @@ The Customer Profiles doc names four audiences with no detail yet: new homeowner
 Affects: `verbal/audiences.yml`.
 Brad is taking this to Leah. Claude can draft from the site and the Drive docs when asked.
 
+### O-16 Color roles
+Raised 2026-11-13 in Phase 2. Needed by Phase 3.
+The two-tier naming from O-08 is accepted; the role mapping is proposed in `tokens/color-roles.json`. Surface: default neutral-100, tint green-100, inverse green-400. Text: default neutral-400, muted neutral-300, inverse neutral-100, link green-300. Border: neutral-200. Action: default green-300 with neutral-100 text; bright green-200 with neutral-400 text, for dark surfaces. Accent: each family’s 300, with neutral-100 text. Every pairing passes the `tokens:check` contrast checks. Confirm or adjust.
+Affects: `tokens/color-roles.json`, `visual/color.md`, Phase 3.
+
 ### Closed
 - O-01 Figma plan: decided as D-017.
 - O-02 Figma-to-repo export method: decided as D-018.
@@ -220,4 +225,16 @@ Below 768px, the current site’s breakpoint, a second, smaller set replaces D-0
 Size/line height in px: display 58/56, heading 1 37/48, lead 37/48, heading 2 30/40, heading 3 24/36, heading 4 19/28, body 19/28, small 15/24, caption 12/20.
 Why: the wide display (119px) and heading 1 (59px) cannot fit a phone column. Confirmed by Brad after reviewing the set at phone width on the type scale reference.
 Affects: `visual/typography.md`, tokens, Phase 2.
+
+### D-028 Token outputs come from a small build script in this repo
+2026-11-13, made in Phase 2 by Claude for Brad Nagle. Replace this entry to change it.
+`tools/build-tokens.mjs` writes `tokens/build`: CSS custom properties, Sass variables and maps, and flat JSON. Style Dictionary is not used.
+Why: 112 tokens, and the type sets need a media query that Style Dictionary would need a custom format for anyway. The same token library is bundled into the Figma plugin, so the build and the plugin cannot read the files differently.
+Affects: `tokens/build`, `tokens/README.md`.
+
+### D-029 How tokens map to Figma, and back
+2026-11-13, made in Phase 2 by Claude for Brad Nagle. Replace this entry to change it.
+Five variable collections (Color, Color roles, Type, Space, Layout), one mode each, named Value. Variable names drop the file’s root (color.green.300 becomes Color / green/300). References become aliases, so roles follow primitives and the lead follows heading 1. Eighteen text styles, Wide and Narrow, bound to the size and line height variables. Load tokens updates in place and deletes nothing. Send changes merges values only into the repo files and opens a pull request from a `figma/tokens-<time>` branch; the Tokens workflow checks it and commits rebuilt outputs. Names and structure change in the repo.
+Why: Starter allows one mode per collection. Sending values only keeps descriptions, extensions and structure in the reviewed repo, and keeps each pull request to the values that moved.
+Affects: `figma-plugin/`, `tools/lib/tokens.mjs`, `.github/workflows/tokens.yml`.
 
