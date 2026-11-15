@@ -25,3 +25,13 @@ The live site is a separate repo, [sbx-bnagle/growgood](https://github.com/sbx-b
 - Agents: `AGENTS.md`.
 - Plan: `ROADMAP.md`.
 - Decisions and open questions: `brand/decisions.md`.
+
+## See the theme on the site, locally
+
+With the site checked out next to this repo (`../growgood`):
+
+```bash
+npm run site:serve
+```
+
+This links the theme files on disk into the site and serves it at http://localhost:4200, so theme changes show before they are released (D-040). `npm run site:unlink` puts the site back on the released theme. The links are never committed.
