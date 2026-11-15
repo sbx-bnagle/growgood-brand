@@ -15,7 +15,10 @@
     "test": "npm run figma:build && node --test tests/*.test.mjs",
     "playbook:build": "node tools/build-playbook.mjs",
     "components:check": "node tools/check-components.mjs",
-    "playbook:serve": "node tools/build-playbook.mjs && bundle exec jekyll serve --livereload"
+    "playbook:serve": "node tools/build-playbook.mjs && bundle exec jekyll serve --livereload",
+    "site:link": "node tools/link-site.mjs",
+    "site:unlink": "node tools/link-site.mjs --unlink",
+    "site:serve": "node tools/link-site.mjs && cd ../growgood && bundle exec jekyll serve --livereload --port 4200"
   },
   "engines": {
     "node": ">=20"
