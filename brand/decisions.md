@@ -35,10 +35,10 @@ The Customer Profiles doc names four audiences with no detail yet: new homeowner
 Affects: `verbal/audiences.yml`.
 Brad is taking this to Leah. Claude can draft from the site and the Drive docs when asked.
 
-### O-18 A label text style for buttons
-Raised 2026-11-13 in Phase 3. Needed by the Phase 3 design review.
-The site’s buttons use small bold, which has no text style, so the Button component overrides Small with Bold. Either add a label role to the type tokens (size and line height of small, weight bold), or keep the override.
-Affects: `tokens/type.json`, `visual/typography.md`, the Button and Card components.
+### O-18 A label text style
+Raised 2026-11-13 in Phase 3; narrowed 2026-11-14 by D-049. Needed by the Phase 3 design review.
+Buttons, nav and form labels use Heading 4 (D-049). What remains are the site’s small bold labels: small at the bold weight, which has no text style. Either add a label role to the type tokens (size and line height of small, weight bold), or keep the bold override.
+Affects: `tokens/type.json`, `visual/typography.md`, the site’s xs bold labels.
 
 ### Closed
 - O-01 Figma plan: decided as D-017.
@@ -350,3 +350,15 @@ Affects: review gates, Phase 8.
 `assets/README.md` is now `asset-library/README.md`. The theme’s `assets/` folder holds only files the site and the playbook serve.
 Why: everything in a theme’s `assets/` folder is copied into the site, so the notes and their Drive links would have appeared on growgoodgardens.com.
 Affects: `asset-library/README.md`, `brand/readme.md`.
+
+### D-049 The site’s type styles map onto the type roles
+2026-11-14, Brad Nagle. Carries out D-026 and D-027 on the site.
+Each site style takes a role’s size, line height and weight, as the type scale defines them: xl to display, lg bold to h1, lg regular to lead, md to h2, md2 to h3, sm bold to h4, sm regular to body, xs regular to small, and xs bold to small in bold (O-18). Buttons, nav and form labels are sm bold, so they are Heading 4, body size in bold; the theme’s button and card link, and the Figma Button and Event details, follow. The site keeps its baseline offsets; the values switch through custom properties, which removes the Dart Sass pin.
+Why: the site’s styles are steps, and the type roles are steps; mapping step to step keeps every page’s hierarchy. Weights come from the type scale exploration, as Brad chose.
+Affects: the site’s `_sass/config/_type.scss`, the theme’s button, card and subscribe styles, the Figma Button and Event details, O-18.
+
+### D-050 The site moves in five steps, and HTTPS is enforced at Cloudflare
+2026-11-14, made in Phase 4 by Claude for Brad Nagle. Refines D-046. Replace this entry to change it.
+Type is its own step, after color, spacing and layout: the build, the Sass on the tokens, the type, the include swaps, and the live-site fixes. growgoodgardens.com runs through Cloudflare, which holds its HTTPS certificate, so GitHub cannot enforce HTTPS; Cloudflare’s Always Use HTTPS does instead.
+Why: the type change touches every page and reviews best on its own. GitHub refused to enforce HTTPS without its own certificate.
+Affects: the site migration, Cloudflare settings.

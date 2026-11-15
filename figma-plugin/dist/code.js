@@ -601,7 +601,7 @@ function variantSet(components, name, page) {
   return set;
 }
 
-// A pill with a label: the site's gg_button shape (height 42, radius 60, 24px sides).
+// A pill with a label: the site's gg_button shape (height 42, radius 60, 24px sides), label in h4.
 async function pill(ctx, node, label, fillPath, textPath, outline) {
   node.resize(120, 42);
   node.layoutMode = 'HORIZONTAL';
@@ -612,7 +612,7 @@ async function pill(ctx, node, label, fillPath, textPath, outline) {
   node.paddingLeft = node.paddingRight = 24;
   node.cornerRadius = 60;
   if (outline) { node.fills = []; strokeWith(node, ctx, textPath, 2); } else fillWith(node, ctx, fillPath);
-  return text(ctx, node, label, 'small', textPath, { bold: true, name: 'Label' });
+  return text(ctx, node, label, 'h4', textPath, { name: 'Label' });
 }
 
 const COMPONENTS = [
@@ -644,7 +644,7 @@ const COMPONENTS = [
       const set = variantSet(parts.map(function (p) { return p.c; }), 'Button', page);
       const key = set.addComponentProperty('label', 'TEXT', 'Button label');
       parts.forEach(function (p) { p.t.componentPropertyReferences = { characters: key }; });
-      describe(set, ['Mirrors .gg_button. Style: Default on light surfaces, Bright on dark ones (D-030).', 'Label is small bold, which has no text style yet. Not on tokens: height 42, radius 60, sides 24.']);
+      describe(set, ['Mirrors .gg_button. Style: Default on light surfaces, Bright on dark ones (D-030).', 'Label in Heading 4, body size in bold, as on the site (D-049). Not on tokens: height 42, radius 60, sides 24.']);
       return set;
     },
   },
@@ -776,14 +776,14 @@ const COMPONENTS = [
   {
     name: 'Event details',
     build: async function (ctx, page, made) {
-      const fields = [['name', 'Event name', 'h2'], ['what', 'What it is, in one sentence', 'body'], ['when', 'Day, date and time', 'body'], ['where', 'Place', 'body'], ['cost', 'Cost', 'body']];
+      const fields = [['name', 'Event name', 'h2'], ['what', 'What it is, in one sentence', 'body'], ['when', 'Day, date and time', 'h4'], ['where', 'Place', 'body'], ['cost', 'Cost', 'body']];
       const parts = [];
       for (const set of ['wide', 'narrow']) {
         const c = figma.createComponent();
         stackOf(c, 'Set=' + TEXT_SETS[set], 'VERTICAL', set === 'wide' ? 480 : 270);
         bindSpace(c, ['itemSpacing'], ctx, 'space.xs');
         const nodes = {};
-        for (const f of fields) nodes[f[0]] = await text(ctx, c, f[1], f[2], 'role.text.default', { set: set, fill: true, bold: f[0] === 'when' });
+        for (const f of fields) nodes[f[0]] = await text(ctx, c, f[1], f[2], 'role.text.default', { set: set, fill: true });
         exposeButton(c, made, 'Default');
         parts.push(nodes);
         parts[parts.length - 1].component = c;

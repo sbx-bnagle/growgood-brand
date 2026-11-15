@@ -16,7 +16,7 @@
   background: transparent;
   color: var(--gg-role-text-inverse);
   font: inherit;
-  font-size: var(--gg-type-small-size);
+  font-size: var(--gg-type-h4-size);
   &::placeholder { color: var(--gg-role-text-inverse); opacity: .8; }
   &:focus-visible { outline: 3px solid var(--gg-role-action-bright); outline-offset: 2px; }
 }

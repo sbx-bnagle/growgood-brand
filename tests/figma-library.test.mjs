@@ -123,13 +123,12 @@ test('components: the first set, with properties named after the include paramet
   assert.equal(instances(comps.Header)[0].mainComponent, comps.Wordmark);
   assert.ok(COMPONENTS.every((name) => comps[name].description.length > 0), 'every component says what it mirrors');
 
-  // Bold labels lose their style in Figma, so their size and line height stay on the type tokens (O-18).
+  // Button labels are Heading 4, body size in bold, as on the site (D-049): a text style, no override.
   const label = walk(comps.Button.children[0]).find((x) => x.type === 'TEXT');
+  assert.equal(mock.textStyles.find((s) => s.id === label.textStyleId).name, 'Wide/Heading 4');
   assert.equal(label.fontName.style, 'Bold');
-  assert.equal(label.textStyleId, '');
-  const varName = (b) => mock.variables.find((v) => v.id === b.id).name;
-  assert.equal(varName(label.boundVariables.fontSize), 'type/small/wide/size');
-  assert.equal(varName(label.boundVariables.lineHeight), 'type/small/wide/line');
+  const when = walk(comps['Event details'].children[0]).find((x) => x.type === 'TEXT' && x.characters === 'Day, date and time');
+  assert.equal(mock.textStyles.find((s) => s.id === when.textStyleId).name, 'Wide/Heading 4');
 
   const spacing = mock.variables.find((v) => v.name === 'md' && mock.collections.find((c) => c.id === v.variableCollectionId).name === 'Space');
   assert.equal(comps.Card.children[0].boundVariables.paddingLeft.id, spacing.id);
