@@ -15,7 +15,7 @@ Every include in the theme, rendered from its contract (D-042). Build pages, fly
   <li><a href="event-details.html"><strong>Event details</strong></a><br><span class="gg-type-small">An event’s name, then what, when, where and cost, with a link.</span></li>
   <li><a href="faq-item.html"><strong>FAQ item</strong></a><br><span class="gg-type-small">One question that opens to its answer; faq.js handles the opening.</span></li>
   <li><a href="faq.html"><strong>FAQ</strong></a><br><span class="gg-type-small">The FAQ items from one set of the site’s FAQ data. Needs assets/js/faq.js on the page.</span></li>
-  <li><a href="footer.html"><strong>Footer</strong></a><br><span class="gg-type-small">The copyright line and the social links, as icons.</span></li>
+  <li><a href="footer.html"><strong>Footer</strong></a><br><span class="gg-type-small">The copyright line and the social links, as icons named by their `name` for screen readers.</span></li>
   <li><a href="head.html"><strong>Head</strong></a><br><span class="gg-type-small">Loads Alegreya Sans in the four styles the type tokens use, and the theme stylesheet.</span></li>
   <li><a href="header.html"><strong>Header</strong></a><br><span class="gg-type-small">The masthead, the navigation, and the mobile menu with its contact button.</span></li>
   <li><a href="hero.html"><strong>Hero</strong></a><br><span class="gg-type-small">The wordmark and a deck in the lead style, at the top of the home page.</span></li>

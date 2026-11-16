@@ -1,7 +1,7 @@
 name: Footer
 include: gg/footer.html
 figma: Footer
-summary: The copyright line and the social links, as icons.
+summary: The copyright line and the social links, as icons named by their `name` for screen readers.
 formats: [web]
 decisions: [D-008, D-033, D-051]
 preview: site
