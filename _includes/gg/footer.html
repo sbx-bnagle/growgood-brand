@@ -1,7 +1,8 @@
 {%- comment -%}
   The copyright line and the social links. Reads site.copyright and site.data.social (name,
-  url, class). Contract: _data/components/footer.yml. Markup only: the site loads its own
-  scripts after it. The site's markup and styles (D-051).
+  url, class). Each icon link takes its name from `name`, so screen readers announce it.
+  Contract: _data/components/footer.yml. Markup only: the site loads its own scripts after it.
+  The site's markup and styles (D-051).
 {%- endcomment -%}
 <footer>
 	<div class='footer__text'>
@@ -9,7 +10,7 @@
 		<span class='copyright'>{{ include.copyright | default: site.copyright }}</span>
 		<ul class='social'>
 			{%- for link in site.data.social %}
-			<li><a href='{{ link.url }}' class='{{ link.class }}' target='BLANK'>&nbsp;</a></li>
+			<li><a href='{{ link.url }}' class='{{ link.class }}' target='BLANK' rel='noopener' aria-label='{{ link.name }}'>&nbsp;</a></li>
 			{%- endfor %}
 		</ul>
 	</div>

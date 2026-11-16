@@ -5,7 +5,7 @@ title: "Footer"
 
 # Footer
 
-The copyright line and the social links, as icons.
+The copyright line and the social links, as icons named by their `name` for screen readers.
 
 Include `gg/footer.html` · Figma: Footer · Formats: web · Decisions: D-008, D-033, D-051 · Reads site data: `social`
 
