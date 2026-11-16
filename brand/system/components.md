@@ -17,6 +17,8 @@ decisions: [D-033, D-041, D-042, D-043]
 
 How pages, flyers, postcards and social posts are put together from the theme’s includes, and what each include accepts. Each include has a contract in `_data/components/`; the playbook shows every one with worked examples.
 
+Six of them are the site’s own components, carried by the theme with the site’s styles in `_sass/gg/site/` (D-051): CTA, card, FAQ and FAQ item, subscribe, header and footer. Their contracts say `preview: site`.
+
 ## Rules
 
 **COMP-001.** Build every format from the includes in `_includes/gg/` and the layouts in `_layouts/`. Do not write new markup for something an include already does.

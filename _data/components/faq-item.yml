@@ -1,9 +1,11 @@
 name: FAQ item
 include: gg/faq-item.html
 figma: FAQ item
-summary: One question that opens to its answer.
+summary: One question that opens to its answer; faq.js handles the opening.
 formats: [web]
-decisions: [D-033]
+decisions: [D-033, D-051]
+preview: site
+preview_height: 140
 params:
   - name: question
     type: text
@@ -13,6 +15,11 @@ params:
     type: text
     required: true
     source: claims
+  - name: id
+    type: text
+    required: true
+    source: site
+    notes: Unique on the page; the answer’s id is faq- followed by it.
 examples:
   - title: Question and answer
-    params: { question: Question, answer: Answer }
+    params: { question: Question, answer: Answer, id: sample-1 }

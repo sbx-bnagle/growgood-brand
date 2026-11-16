@@ -5,18 +5,18 @@ title: "CTA block"
 
 # CTA block
 
-A call to action at the foot of a page.
+The call to action at the foot of a service page.
 
-Include `gg/cta.html` · Figma: CTA block · Formats: web · Decisions: D-033
+Include `gg/cta.html` · Figma: CTA block · Formats: web · Decisions: D-033, D-051
 
-The contract is `_data/components/cta.yml` (COMP-002). Sources are explained in [Components](../../brand/system/components.md).
+The contract is `_data/components/cta.yml` (COMP-002). Sources are explained in [Components](../../brand/system/components.md). This is one of the site’s own components, carried by the theme with the site’s styles (D-051); the examples show it as it renders on the site.
 
 ## Parameters
 
 | Parameter | Type | Required | Default | Source | Notes |
 |---|---|---|---|---|---|
 | `heading` | text | no | Ready to get started? | request |  |
-| `body` | text | no |  | request |  |
+| `body` | text | no | The site’s ‘we’re flexible’ line | request |  |
 | `button` | text | no | Get in touch | request | The button’s label. |
 | `href` | url | no | #contact | site |  |
 
@@ -24,9 +24,7 @@ The contract is `_data/components/cta.yml` (COMP-002). Sources are explained in 
 
 ### With every part
 
-<div class="pb-example"><div class="pb-example__stage">
-{% include gg/cta.html heading="Heading" body="Body" button="Button label" href="#" %}
-</div></div>
+<div class="pb-example"><iframe class="pb-example__frame" src="../previews/cta-1.html" title="CTA block: With every part" height="360" loading="lazy"></iframe></div>
 
 ```liquid
 {% raw %}{% include gg/cta.html heading="Heading" body="Body" button="Button label" href="#" %}{% endraw %}

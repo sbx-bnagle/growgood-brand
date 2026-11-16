@@ -5,26 +5,24 @@ title: "Subscribe"
 
 # Subscribe
 
-The newsletter sign-up, on a dark surface.
+The newsletter sign-up, on a dark band. Needs newsletter.js and float-label.js on the page.
 
-Include `gg/subscribe.html` · Figma: Subscribe · Formats: web · Decisions: D-030, D-033
+Include `gg/subscribe.html` · Figma: Subscribe · Formats: web · Decisions: D-030, D-033, D-051
 
-The contract is `_data/components/subscribe.yml` (COMP-002). Sources are explained in [Components](../../brand/system/components.md).
+The contract is `_data/components/subscribe.yml` (COMP-002). Sources are explained in [Components](../../brand/system/components.md). This is one of the site’s own components, carried by the theme with the site’s styles (D-051); the examples show it as it renders on the site.
 
 ## Parameters
 
 | Parameter | Type | Required | Default | Source | Notes |
 |---|---|---|---|---|---|
 | `heading` | text | no | Email newsletter | request |  |
-| `sitekey` | text | no |  | site | The site’s reCAPTCHA site key. The site’s script handles the form by its ids. |
+| `sitekey` | text | no | site.recaptcha_sitekey | site | The site’s reCAPTCHA site key. |
 
 ## Examples
 
 ### Sign-up
 
-<div class="pb-example"><div class="pb-example__stage">
-{% include gg/subscribe.html heading="Email newsletter" %}
-</div></div>
+<div class="pb-example"><iframe class="pb-example__frame" src="../previews/subscribe-1.html" title="Subscribe: Sign-up" height="120" loading="lazy"></iframe></div>
 
 ```liquid
 {% raw %}{% include gg/subscribe.html heading="Email newsletter" %}{% endraw %}

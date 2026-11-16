@@ -1,5 +1,12 @@
-{%- comment -%} One question that opens to its answer. Contract: _data/components/faq-item.yml {%- endcomment -%}
-<details class="gg-faq-item">
-  <summary class="gg-type-h4">{{ include.question }}</summary>
-  <div class="gg-type-body">{{ include.answer }}</div>
-</details>
+{%- comment -%}
+  One question that opens to its answer. Contract: _data/components/faq-item.yml
+  faq.js opens and closes it by the faq_q and faq_a classes. The site's markup and styles (D-051).
+{%- endcomment -%}
+      <li>
+        <div class="faq_q" aria-expanded="false" aria-controls="faq-{{ include.id }}">
+          {{ include.question }}
+        </div>
+        <div class="faq_a hidden" id="faq-{{ include.id }}">
+          {{ include.answer }}
+        </div>
+      </li>

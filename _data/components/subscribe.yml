@@ -1,9 +1,12 @@
 name: Subscribe
 include: gg/subscribe.html
 figma: Subscribe
-summary: The newsletter sign-up, on a dark surface.
+summary: The newsletter sign-up, on a dark band. Needs newsletter.js and float-label.js on the page.
 formats: [web]
-decisions: [D-030, D-033]
+decisions: [D-030, D-033, D-051]
+preview: site
+preview_bare: true
+preview_height: 120
 params:
   - name: heading
     type: text
@@ -13,8 +16,9 @@ params:
   - name: sitekey
     type: text
     required: false
+    default: site.recaptcha_sitekey
     source: site
-    notes: The site’s reCAPTCHA site key. The site’s script handles the form by its ids.
+    notes: The site’s reCAPTCHA site key.
 examples:
   - title: Sign-up
     params: { heading: Email newsletter }

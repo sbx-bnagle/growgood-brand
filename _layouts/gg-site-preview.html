@@ -1,0 +1,27 @@
+<!doctype html>
+{%- comment -%}
+  A component as it renders on the site: the site's styles from the theme's site layer (D-051)
+  inside the site's content grid. The playbook shows these pages in frames.
+{%- endcomment -%}
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>{{ page.title }}</title>
+  {% include gg/head.html css="none" %}
+  <link rel="stylesheet" href="{{ '/assets/gg/site.css' | relative_url }}">
+</head>
+<body>
+  {%- if page.bare %}
+  {{ content }}
+  {%- else %}
+  <div class="content-wrapper">
+    {{ content }}
+  </div>
+  {%- endif %}
+  {%- if page.script %}
+  <script src="{{ page.script | relative_url }}"></script>
+  {%- endif %}
+</body>
+</html>

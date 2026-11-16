@@ -34,3 +34,4 @@
 .pb-swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: var(--gg-space-sm); padding: 0; list-style: none; }
 .pb-swatch__chip { height: 72px; border: 1px solid var(--gg-role-border-default); }
 .pb-frame { border: 1px solid var(--gg-role-border-default); background: var(--gg-role-border-default); }
+.pb-example__frame { display: block; width: 100%; border: 1px solid var(--gg-role-border-default); background: var(--gg-role-surface-default); }

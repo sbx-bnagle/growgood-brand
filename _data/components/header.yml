@@ -1,11 +1,19 @@
 name: Header
 include: gg/header.html
 figma: Header
-summary: The wordmark and the site navigation.
+summary: The masthead, the navigation, and the mobile menu with its contact button.
 formats: [web]
-decisions: [D-033]
-params: []
+decisions: [D-033, D-051]
+preview: site
+preview_bare: true
+preview_height: 160
+params:
+  - name: masthead
+    type: text
+    required: false
+    default: site.title
+    source: site
 data: [nav-config.toc]
 examples:
   - title: From the site’s navigation
-    params: {}
+    params: { masthead: Grow Good Gardens }

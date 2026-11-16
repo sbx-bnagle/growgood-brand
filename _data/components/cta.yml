@@ -1,9 +1,11 @@
 name: CTA block
 include: gg/cta.html
 figma: CTA block
-summary: A call to action at the foot of a page.
+summary: The call to action at the foot of a service page.
 formats: [web]
-decisions: [D-033]
+decisions: [D-033, D-051]
+preview: site
+preview_height: 360
 params:
   - name: heading
     type: text
@@ -13,6 +15,7 @@ params:
   - name: body
     type: text
     required: false
+    default: The site’s ‘we’re flexible’ line
     source: request
   - name: button
     type: text
