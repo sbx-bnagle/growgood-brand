@@ -1,4 +1,5 @@
 // Mirrors the site's .gg_button: 42px tall, radius 60, 24px sides (D-033). Not on tokens: those three.
+// The label is Heading 4, body size in bold, as on the site (D-049).
 .gg-button {
   display: inline-flex;
   align-items: center;
@@ -9,9 +10,9 @@
   border-radius: 60px;
   background: var(--gg-role-action-default);
   color: var(--gg-role-action-on-default);
-  font-size: var(--gg-type-small-size);
-  line-height: var(--gg-type-small-line);
-  font-weight: var(--gg-font-weight-bold);
+  font-size: var(--gg-type-h4-size);
+  line-height: var(--gg-type-h4-line);
+  font-weight: var(--gg-type-h4-weight);
   text-decoration: none;
   white-space: nowrap;
   transition: background-color .1s ease-in, color .1s ease-in;
