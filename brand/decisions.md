@@ -19,11 +19,6 @@ Every brand and system decision, with its date, its reason and the files it affe
 
 ## Open
 
-### O-04 Where the playbook and the request interface are hosted
-Raised 2026-11-13; widened 2026-11-14. Needed before the playbook is deployed, at the end of Phase 4.
-The request interface is part of the playbook and needs Google sign-in (D-010, D-044), which GitHub Pages cannot provide. Options: Cloudflare Pages with Cloudflare Access for the request pages (Grow Good already uses Cloudflare for its order workers), or GitHub Pages for the public playbook with the request interface hosted elsewhere. Rendering PDF and PNG needs a headless browser wherever requests run.
-Affects: the playbook deploy, Phase 8.
-
 ### O-06 On-brand images from text (future iteration)
 Raised 2026-11-13. Needed after Phase 9.
 A model that makes on-brand images from a text request: a text-to-image LoRA trained on approved illustrations, reference-image generation, or the rzwc edit LoRA with automatic orange screening of supplied photos.
@@ -54,6 +49,7 @@ Affects: `tokens/type.json`, `visual/typography.md`, the site’s xs bold labels
 - O-16 Color roles: decided as D-030.
 - O-17 Art direction for print and social templates: decided as D-035.
 - O-03 How Leah approves changes: decided as D-047.
+- O-04 Where the playbook and the request interface are hosted: decided as D-052.
 
 ## Active
 
@@ -368,3 +364,9 @@ Affects: the site migration, Cloudflare settings.
 The site’s Sass foundation (plumber, mixins, functions, the token-based config, reset, typography and base) and six of its components (CTA, card, FAQ and FAQ item, subscribe, header, footer) move into the theme as they are: Sass in `_sass/gg/site/`, markup in `_includes/gg/`. The site imports the same partials from the theme in the same order, so its CSS is unchanged. These includes keep the site’s classes and the ids its scripts use, read the site’s data (navigation, FAQ, social links, copyright, reCAPTCHA key), and replace the stand-ins from Phase 4. The playbook shows them in frames that load the site’s styles. The theme’s own `gg-` styles stay for the print and social formats and the components the site does not have yet.
 Why: porting the site’s look into new CSS risked drift; moving the real Sass makes the swap provably free of visual change, and the theme now holds the brand as the site shows it.
 Affects: `_sass/gg/site/`, `_includes/gg/`, `_data/components/`, the playbook, the site’s `main.scss` and layouts.
+
+### D-052 The playbook is hosted on Cloudflare Pages; Cloudflare Access puts the request pages behind Google sign-in
+2026-11-16, Brad Nagle. Closes O-04. Refines D-044.
+The playbook builds in GitHub Actions, as the Playbook check already does, and deploys to the Cloudflare Pages project `growgood-playbook`, served at playbook.growgoodgardens.com: `main` to production, each pull request to a preview address of its own. The brand pages stay public. The request pages (Phase 8) live under `/request/`, behind a Cloudflare Access application that signs people in with their Google account. Who may sign in is settled in Phase 8.
+Why: growgoodgardens.com, its order Worker and its newsletter Worker already run on Cloudflare, and Access gives Google sign-in with no server of our own. GitHub Pages cannot require sign-in.
+Affects: `.github/workflows/playbook.yml`, Cloudflare (the Pages project, its custom domain, Access), Phase 8.
