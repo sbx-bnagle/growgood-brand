@@ -1,12 +1,38 @@
 {%- comment -%}
   The newsletter sign-up. Contract: _data/components/subscribe.yml
-  Keeps the ids the site’s script uses: js_subscribe__form and js_subscribe__email.
+  Keeps the ids newsletter.js and float-label.js use. The reCAPTCHA site key comes from
+  site.recaptcha_sitekey unless passed. The site's markup and styles (D-051).
 {%- endcomment -%}
-<section class="gg-subscribe" id="subscribe">
-  <h2 class="gg-type-h3">{{ include.heading | default: "Email newsletter" }}</h2>
-  <form class="gg-subscribe__form" id="js_subscribe__form">
-    <label class="gg-visually-hidden" for="js_subscribe__email">Your email address</label>
-    <input class="gg-subscribe__email" id="js_subscribe__email" type="email" name="email" placeholder="Your email address" autocomplete="email" required>
-    <button class="gg-button gg-button--bright" type="submit"{% if include.sitekey %} data-sitekey="{{ include.sitekey }}" data-callback="onSubmit" data-action="submit"{% endif %}>Subscribe</button>
-  </form>
-</section>
+<div class='subscribe' id='subscribe'>
+  <div id='js_subscribe__text' class='subscribe__text'>
+
+    <h2 class='subscribe__title'>{{ include.heading | default: 'Email newsletter' }}</h2>
+
+    <form
+      class = 'subscribe__form'
+      id = 'js_subscribe__form'
+    >
+
+      <input 
+        id='js_subscribe__email' 
+        type="email" 
+        name="email" 
+        class='subscribe__email js_float-label' 
+      >
+      <label class='floater js_unfloat'>Your email address</label>
+      
+      <button 
+        type='submit'
+        data-sitekey='{{ include.sitekey | default: site.recaptcha_sitekey }}'
+        data-callback='onSubmit' 
+        data-action='submit'
+      >Subscribe</button>
+
+    </form>
+
+  </div>
+</div>
+
+
+
+

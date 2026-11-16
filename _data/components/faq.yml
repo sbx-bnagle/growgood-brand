@@ -1,9 +1,11 @@
 name: FAQ
 include: gg/faq.html
 figma: null
-summary: A list of FAQ items from one set in the site’s FAQ data.
+summary: The FAQ items from one set of the site’s FAQ data. Needs assets/js/faq.js on the page.
 formats: [web]
-decisions: [D-033]
+decisions: [D-033, D-051]
+preview: site
+preview_height: 300
 params:
   - name: set
     type: text

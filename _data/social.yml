@@ -1,11 +1,16 @@
 # Sample for the playbook, read by gg/footer.html. The site’s footer links (claims C-016, C-017).
 - name: Instagram
+  class: instagram
   url: https://www.instagram.com/growgood_gardens/
 - name: Facebook
+  class: facebook
   url: https://www.facebook.com/profile.php?id=61582029068083
+- name: YouTube
+  class: youtube
+  url: https://www.youtube.com/channel/UCz8u8EUhjmwLa2hrjlgTd0g
 - name: TikTok
+  class: tiktok
   url: https://www.tiktok.com/@growgood_gardens
 - name: Pinterest
+  class: pinterest
   url: https://www.pinterest.com/growgood_gardens/
-- name: YouTube
-  url: https://www.youtube.com/channel/UCz8u8EUhjmwLa2hrjlgTd0g

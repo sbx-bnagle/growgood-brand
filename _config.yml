@@ -43,4 +43,7 @@ defaults:
   - scope: { path: "" }
     values: { layout: gg-playbook }
 
-# Sample site data for the playbook. A real site supplies its own (see the component contracts).
+# Sample site settings for the playbook's component previews. A real site supplies its own (see
+# the component contracts).
+copyright: "&copy; Grow Good, Chicago"
+recaptcha_sitekey: ""

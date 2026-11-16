@@ -20,8 +20,12 @@ const liquidValue = (v) => `"${String(v).replace(/"/g, '&quot;')}"`;
 export const includeTag = (c, params) => `{% include ${c.include}${Object.entries(params || {}).map(([k, v]) => ` ${k}=${liquidValue(v)}`).join('')} %}`;
 
 // ---- components ------------------------------------------------------------------------------
+// A contract with `preview: site` is one of the site's own components (D-051): its examples render
+// in frames, on pages that load the site's styles (layout gg-site-preview).
 rmSync('playbook/components', { recursive: true, force: true });
+rmSync('playbook/previews', { recursive: true, force: true });
 mkdirSync('playbook/components', { recursive: true });
+mkdirSync('playbook/previews', { recursive: true });
 for (const c of contracts) {
   const meta = [
     `Include \`${c.include}\``,
@@ -35,10 +39,16 @@ for (const c of contracts) {
     ? ['| Parameter | Type | Required | Default | Source | Notes |', '|---|---|---|---|---|---|',
       ...c.params.map((p) => `| \`${p.name}\` | ${p.type}${p.values ? `: ${p.values.join(', ')}` : ''} | ${p.required ? 'yes' : 'no'} | ${cell(p.default)} | ${p.source} | ${cell(p.notes)} |`)].join('\n')
     : 'None.';
-  const examples = (c.examples || []).map((ex) => {
+  const examples = (c.examples || []).map((ex, i) => {
     const tag = includeTag(c, ex.params);
     const surface = ex.surface && ex.surface !== 'default' ? ` pb-example__stage--${ex.surface}` : '';
-    return `### ${ex.title}\n\n<div class="pb-example"><div class="pb-example__stage${surface}">\n${tag}\n</div></div>\n\n\`\`\`liquid\n{% raw %}${tag}{% endraw %}\n\`\`\``;
+    let stage = `<div class="pb-example"><div class="pb-example__stage${surface}">\n${tag}\n</div></div>`;
+    if (c.preview === 'site') {
+      const file = `${c.slug}-${i + 1}.html`;
+      writeFileSync(`playbook/previews/${file}`, page({ title: `${c.name}: ${ex.title}`, layout: 'gg-site-preview', ...(c.preview_bare ? { bare: true } : {}) }, tag));
+      stage = `<div class="pb-example"><iframe class="pb-example__frame" src="../previews/${file}" title="${c.name}: ${ex.title}" height="${c.preview_height || 360}" loading="lazy"></iframe></div>`;
+    }
+    return `### ${ex.title}\n\n${stage}\n\n\`\`\`liquid\n{% raw %}${tag}{% endraw %}\n\`\`\``;
   }).join('\n\n') || 'No examples: this include goes in the page head.';
   writeFileSync(`playbook/components/${c.slug}.md`, page({ title: c.name }, `
 # ${c.name}
@@ -47,7 +57,7 @@ ${c.summary}
 
 ${meta}
 
-The contract is \`_data/components/${c.slug}.yml\` (COMP-002). Sources are explained in [Components](../../brand/system/components.md).
+The contract is \`_data/components/${c.slug}.yml\` (COMP-002). Sources are explained in [Components](../../brand/system/components.md).${c.preview === 'site' ? ' This is one of the site’s own components, carried by the theme with the site’s styles (D-051); the examples show it as it renders on the site.' : ''}
 
 ## Parameters
 

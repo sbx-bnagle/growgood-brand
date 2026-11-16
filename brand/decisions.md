@@ -362,3 +362,9 @@ Affects: the site’s `_sass/config/_type.scss`, the theme’s button, card and 
 Type is its own step, after color, spacing and layout: the build, the Sass on the tokens, the type, the include swaps, and the live-site fixes. growgoodgardens.com runs through Cloudflare, which holds its HTTPS certificate, so GitHub cannot enforce HTTPS; Cloudflare’s Always Use HTTPS does instead.
 Why: the type change touches every page and reviews best on its own. GitHub refused to enforce HTTPS without its own certificate.
 Affects: the site migration, Cloudflare settings.
+
+### D-051 The theme carries the site’s own components and their Sass
+2026-11-15, Brad Nagle. Refines D-041 and D-043.
+The site’s Sass foundation (plumber, mixins, functions, the token-based config, reset, typography and base) and six of its components (CTA, card, FAQ and FAQ item, subscribe, header, footer) move into the theme as they are: Sass in `_sass/gg/site/`, markup in `_includes/gg/`. The site imports the same partials from the theme in the same order, so its CSS is unchanged. These includes keep the site’s classes and the ids its scripts use, read the site’s data (navigation, FAQ, social links, copyright, reCAPTCHA key), and replace the stand-ins from Phase 4. The playbook shows them in frames that load the site’s styles. The theme’s own `gg-` styles stay for the print and social formats and the components the site does not have yet.
+Why: porting the site’s look into new CSS risked drift; moving the real Sass makes the swap provably free of visual change, and the theme now holds the brand as the site shows it.
+Affects: `_sass/gg/site/`, `_includes/gg/`, `_data/components/`, the playbook, the site’s `main.scss` and layouts.

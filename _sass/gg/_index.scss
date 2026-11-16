@@ -1,17 +1,13 @@
-// The Grow Good theme styles (D-040, D-041). Everything is scoped to gg- classes, so the site's
+// The Grow Good theme styles (D-040, D-041) for the playbook and the print and social formats.
+// The site's own components (CTA, card, FAQ, subscribe, header, footer) are styled by the site
+// layer in gg/site/ (D-051). Everything is scoped to gg- classes, so the site's
 // own styles and these can live side by side while pages move over. Use: @use "gg/index";
 @use "custom-properties";
 @use "base";
 @use "type";
 @use "components/wordmark";
 @use "components/button";
-@use "components/card";
-@use "components/cta";
 @use "components/hero";
-@use "components/header";
-@use "components/footer";
-@use "components/faq";
-@use "components/subscribe";
 @use "components/event-details";
 @use "components/image-with-spot";
 @use "components/art-placeholder";

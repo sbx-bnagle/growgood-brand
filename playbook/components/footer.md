@@ -5,25 +5,23 @@ title: "Footer"
 
 # Footer
 
-The copyright line and the social links.
+The copyright line and the social links, as icons.
 
-Include `gg/footer.html` · Figma: Footer · Formats: web · Decisions: D-008, D-033 · Reads site data: `social`
+Include `gg/footer.html` · Figma: Footer · Formats: web · Decisions: D-008, D-033, D-051 · Reads site data: `social`
 
-The contract is `_data/components/footer.yml` (COMP-002). Sources are explained in [Components](../../brand/system/components.md).
+The contract is `_data/components/footer.yml` (COMP-002). Sources are explained in [Components](../../brand/system/components.md). This is one of the site’s own components, carried by the theme with the site’s styles (D-051); the examples show it as it renders on the site.
 
 ## Parameters
 
 | Parameter | Type | Required | Default | Source | Notes |
 |---|---|---|---|---|---|
-| `copyright` | text | yes |  | claims |  |
+| `copyright` | text | no | site.copyright | claims |  |
 
 ## Examples
 
 ### From the site’s social data
 
-<div class="pb-example"><div class="pb-example__stage">
-{% include gg/footer.html copyright="Copyright line" %}
-</div></div>
+<div class="pb-example"><iframe class="pb-example__frame" src="../previews/footer-1.html" title="Footer: From the site’s social data" height="140" loading="lazy"></iframe></div>
 
 ```liquid
 {% raw %}{% include gg/footer.html copyright="Copyright line" %}{% endraw %}

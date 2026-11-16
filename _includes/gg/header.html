@@ -1,13 +1,57 @@
-{%- comment -%} The wordmark and the site navigation. Reads site.data.nav-config.toc. Contract: _data/components/header.yml {%- endcomment -%}
-{%- assign hdr_home = "/" | relative_url -%}
-<header class="gg-header">
-  {% include gg/wordmark.html href=hdr_home %}
-  <nav class="gg-header__nav" aria-label="Main">
-    <ul class="gg-type-body">
-      {%- for item in site.data.nav-config.toc %}
-      {%- assign hdr_url = "/" | append: item.url | relative_url %}
-      <li><a href="{{ hdr_url }}"{% if page.url contains item.url %} aria-current="page"{% endif %}>{{ item.title }}</a></li>
-      {%- endfor %}
-    </ul>
-  </nav>
+{%- comment -%}
+  The masthead, navigation and the mobile menu. Reads site.data.nav-config.toc; the masthead
+  defaults to site.title.
+  Contract: _data/components/header.yml. Keeps the ids dropdown.js uses: js-dd__toggle, js-dd__pane.
+  The site's markup and styles (D-051): gg/site/template/components/component--header.
+{%- endcomment -%}
+<header id='js_header' class="header" role="banner">
+  <div class="header__text">
+    <div class="nav__masthead">
+      <h1><a href="{{ site.url }}/index.html">{{ include.masthead | default: site.title }}</a></h1>
+    </div>
+
+    <nav class="nav__menu">
+      <ul>
+        {% for item in site.data.nav-config.toc %}
+        
+          {% if page.permalink contains item.url %}             
+            <li>
+              <a class="current" href="{{ site.url }}/{{ item.url }}">{{ item.title }}</a>
+            </li>           
+          {% else %}
+            <li>
+              <a href="{{ site.url }}/{{ item.url }}">{{ item.title }}</a>
+            </li>
+          {% endif %}          
+        {% endfor %}
+        <!-- <a href="#contact" class='nav-desktop__contact-btn'>Contact</a> -->
+      </ul>
+    </nav>
+
+    <nav class="nav__mobile-menu">
+      <ul>             
+        <li id='js-dd__toggle' class='mobile-menu__toggle js-dd__toggle-closed'>Menu</li>       
+        <a href="#contact" class='nav-desktop__contact-btn'>Contact</a>
+      </ul>
+      <div id='js-dd__pane' class='mobile-menu__pane js-dd__pane-hidden'>
+        <ul>
+          {% for item in site.data.nav-config.toc %}
+            {% if page.permalink contains item.url %}             
+              <li>
+                <a class="current" href="{{ site.url }}/{{ item.url }}">{{ item.title }}</a>
+              </li>           
+            {% else %}
+              <li>
+                <a href="{{ site.url }}/{{ item.url }}">{{ item.title }}</a>
+              </li>
+            {% endif %}          
+          {% endfor %}
+        </ul>
+      </div>
+    </nav>
+  </div>
 </header>
+
+
+
+

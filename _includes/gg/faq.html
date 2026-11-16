@@ -1,9 +1,15 @@
-{%- comment -%} FAQ items from one set of site.data.faqs. Contract: _data/components/faq.yml {%- endcomment -%}
-<section class="gg-faq">
-  <h2 class="gg-type-h2">{{ include.heading | default: "FAQ" }}</h2>
-  <ul class="gg-faq__list">
-    {%- for item in site.data.faqs[include.set] %}
-    <li>{% include gg/faq-item.html question=item.q answer=item.a %}</li>
-    {%- endfor %}
+{%- comment -%}
+  The FAQ items from one set of site.data.faqs, each through gg/faq-item.html.
+  Contract: _data/components/faq.yml. Include assets/js/faq.js once on the page.
+  The site's markup and styles (D-051).
+{%- endcomment -%}
+
+<div class="faq">
+  <h2>{{ include.heading | default: "FAQ" }}</h2>
+  <ul>
+    {%- for item in site.data.faqs[include.set] -%}
+      {%- assign panel_id = include.set | append: "-" | append: forloop.index -%}
+      {% include gg/faq-item.html id=panel_id question=item.q answer=item.a %}
+    {%- endfor -%}
   </ul>
-</section>
+</div>

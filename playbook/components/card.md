@@ -5,60 +5,52 @@ title: "Card"
 
 # Card
 
-A linked card on an accent surface, for services and other pages.
+A linked card on a color, for the service pages; two to a row from 768px.
 
-Include `gg/card.html` · Figma: Card · Formats: web · Decisions: D-030, D-033
+Include `gg/card.html` · Figma: Card · Formats: web · Decisions: D-030, D-033, D-051
 
-The contract is `_data/components/card.yml` (COMP-002). Sources are explained in [Components](../../brand/system/components.md).
+The contract is `_data/components/card.yml` (COMP-002). Sources are explained in [Components](../../brand/system/components.md). This is one of the site’s own components, carried by the theme with the site’s styles (D-051); the examples show it as it renders on the site.
 
 ## Parameters
 
 | Parameter | Type | Required | Default | Source | Notes |
 |---|---|---|---|---|---|
-| `color` | enum: green, red, gold, purple | no | green | fixed |  |
+| `color` | enum: green, red, gold, purple | no |  | fixed | Leave out for the pale green card. |
 | `title` | text | yes |  | request |  |
 | `blurb` | text | yes |  | claims | What the page offers, in claims.md wording. |
 | `link` | text | yes |  | request | The link’s label. |
-| `dest` | url | yes |  | site | A path on the site, without the leading slash, as the site’s card.html takes it. |
+| `dest` | url | yes |  | site | A path on the site, without the leading slash. |
 
 ## Examples
 
-### Each color
+### Pale green
 
-<div class="pb-example"><div class="pb-example__stage">
-{% include gg/card.html title="Title" blurb="Blurb" link="Link" dest="#" %}
-</div></div>
+<div class="pb-example"><iframe class="pb-example__frame" src="../previews/card-1.html" title="Card: Pale green" height="420" loading="lazy"></iframe></div>
 
 ```liquid
 {% raw %}{% include gg/card.html title="Title" blurb="Blurb" link="Link" dest="#" %}{% endraw %}
 ```
 
-### Red
+### Purple
 
-<div class="pb-example"><div class="pb-example__stage">
-{% include gg/card.html color="red" title="Title" blurb="Blurb" link="Link" dest="#" %}
-</div></div>
+<div class="pb-example"><iframe class="pb-example__frame" src="../previews/card-2.html" title="Card: Purple" height="420" loading="lazy"></iframe></div>
 
 ```liquid
-{% raw %}{% include gg/card.html color="red" title="Title" blurb="Blurb" link="Link" dest="#" %}{% endraw %}
+{% raw %}{% include gg/card.html color="purple" title="Title" blurb="Blurb" link="Link" dest="#" %}{% endraw %}
 ```
 
 ### Gold
 
-<div class="pb-example"><div class="pb-example__stage">
-{% include gg/card.html color="gold" title="Title" blurb="Blurb" link="Link" dest="#" %}
-</div></div>
+<div class="pb-example"><iframe class="pb-example__frame" src="../previews/card-3.html" title="Card: Gold" height="420" loading="lazy"></iframe></div>
 
 ```liquid
 {% raw %}{% include gg/card.html color="gold" title="Title" blurb="Blurb" link="Link" dest="#" %}{% endraw %}
 ```
 
-### Purple
+### Red
 
-<div class="pb-example"><div class="pb-example__stage">
-{% include gg/card.html color="purple" title="Title" blurb="Blurb" link="Link" dest="#" %}
-</div></div>
+<div class="pb-example"><iframe class="pb-example__frame" src="../previews/card-4.html" title="Card: Red" height="420" loading="lazy"></iframe></div>
 
 ```liquid
-{% raw %}{% include gg/card.html color="purple" title="Title" blurb="Blurb" link="Link" dest="#" %}{% endraw %}
+{% raw %}{% include gg/card.html color="red" title="Title" blurb="Blurb" link="Link" dest="#" %}{% endraw %}
 ```

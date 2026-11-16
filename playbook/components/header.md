@@ -5,24 +5,24 @@ title: "Header"
 
 # Header
 
-The wordmark and the site navigation.
+The masthead, the navigation, and the mobile menu with its contact button.
 
-Include `gg/header.html` · Figma: Header · Formats: web · Decisions: D-033 · Reads site data: `nav-config.toc`
+Include `gg/header.html` · Figma: Header · Formats: web · Decisions: D-033, D-051 · Reads site data: `nav-config.toc`
 
-The contract is `_data/components/header.yml` (COMP-002). Sources are explained in [Components](../../brand/system/components.md).
+The contract is `_data/components/header.yml` (COMP-002). Sources are explained in [Components](../../brand/system/components.md). This is one of the site’s own components, carried by the theme with the site’s styles (D-051); the examples show it as it renders on the site.
 
 ## Parameters
 
-None.
+| Parameter | Type | Required | Default | Source | Notes |
+|---|---|---|---|---|---|
+| `masthead` | text | no | site.title | site |  |
 
 ## Examples
 
 ### From the site’s navigation
 
-<div class="pb-example"><div class="pb-example__stage">
-{% include gg/header.html %}
-</div></div>
+<div class="pb-example"><iframe class="pb-example__frame" src="../previews/header-1.html" title="Header: From the site’s navigation" height="160" loading="lazy"></iframe></div>
 
 ```liquid
-{% raw %}{% include gg/header.html %}{% endraw %}
+{% raw %}{% include gg/header.html masthead="Grow Good Gardens" %}{% endraw %}
 ```

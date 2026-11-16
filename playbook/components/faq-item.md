@@ -5,11 +5,11 @@ title: "FAQ item"
 
 # FAQ item
 
-One question that opens to its answer.
+One question that opens to its answer; faq.js handles the opening.
 
-Include `gg/faq-item.html` · Figma: FAQ item · Formats: web · Decisions: D-033
+Include `gg/faq-item.html` · Figma: FAQ item · Formats: web · Decisions: D-033, D-051
 
-The contract is `_data/components/faq-item.yml` (COMP-002). Sources are explained in [Components](../../brand/system/components.md).
+The contract is `_data/components/faq-item.yml` (COMP-002). Sources are explained in [Components](../../brand/system/components.md). This is one of the site’s own components, carried by the theme with the site’s styles (D-051); the examples show it as it renders on the site.
 
 ## Parameters
 
@@ -17,15 +17,14 @@ The contract is `_data/components/faq-item.yml` (COMP-002). Sources are explaine
 |---|---|---|---|---|---|
 | `question` | text | yes |  | request |  |
 | `answer` | text | yes |  | claims |  |
+| `id` | text | yes |  | site | Unique on the page; the answer’s id is faq- followed by it. |
 
 ## Examples
 
 ### Question and answer
 
-<div class="pb-example"><div class="pb-example__stage">
-{% include gg/faq-item.html question="Question" answer="Answer" %}
-</div></div>
+<div class="pb-example"><iframe class="pb-example__frame" src="../previews/faq-item-1.html" title="FAQ item: Question and answer" height="140" loading="lazy"></iframe></div>
 
 ```liquid
-{% raw %}{% include gg/faq-item.html question="Question" answer="Answer" %}{% endraw %}
+{% raw %}{% include gg/faq-item.html question="Question" answer="Answer" id="sample-1" %}{% endraw %}
 ```

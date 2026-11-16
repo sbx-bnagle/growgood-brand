@@ -1,0 +1,23 @@
+---
+---
+// The site's styles from the theme's site layer (D-051), in the site's import order. The
+// playbook's component previews load this; the site imports the same partials into its own
+// stylesheet instead.
+@import
+  'gg/site/z_boilerplate/plumber',
+  'gg/site/utils/mixins',
+  'gg/site/utils/functions',
+  'gg/site/config/type',
+  'gg/site/config/layout',
+  'gg/site/config/color',
+  'gg/site/config/spacing',
+  'gg/site/config/type-roles',
+  'gg/site/z_boilerplate/reset',
+  'gg/site/z_boilerplate/typography',
+  'gg/site/template/base',
+  'gg/site/template/components/component--card',
+  'gg/site/template/components/component--faq',
+  'gg/site/template/components/component--subscribe',
+  'gg/site/template/components/component--header',
+  'gg/site/template/components/component--cta',
+  'gg/site/template/components/component--footer';

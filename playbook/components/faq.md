@@ -5,11 +5,11 @@ title: "FAQ"
 
 # FAQ
 
-A list of FAQ items from one set in the site’s FAQ data.
+The FAQ items from one set of the site’s FAQ data. Needs assets/js/faq.js on the page.
 
-Include `gg/faq.html` · Formats: web · Decisions: D-033 · Reads site data: `faqs`
+Include `gg/faq.html` · Formats: web · Decisions: D-033, D-051 · Reads site data: `faqs`
 
-The contract is `_data/components/faq.yml` (COMP-002). Sources are explained in [Components](../../brand/system/components.md).
+The contract is `_data/components/faq.yml` (COMP-002). Sources are explained in [Components](../../brand/system/components.md). This is one of the site’s own components, carried by the theme with the site’s styles (D-051); the examples show it as it renders on the site.
 
 ## Parameters
 
@@ -22,9 +22,7 @@ The contract is `_data/components/faq.yml` (COMP-002). Sources are explained in 
 
 ### A sample set
 
-<div class="pb-example"><div class="pb-example__stage">
-{% include gg/faq.html set="sample" heading="Heading" %}
-</div></div>
+<div class="pb-example"><iframe class="pb-example__frame" src="../previews/faq-1.html" title="FAQ: A sample set" height="300" loading="lazy"></iframe></div>
 
 ```liquid
 {% raw %}{% include gg/faq.html set="sample" heading="Heading" %}{% endraw %}

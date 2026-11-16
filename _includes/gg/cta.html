@@ -1,10 +1,14 @@
-{%- comment -%} A call to action at the foot of a page. Contract: _data/components/cta.yml {%- endcomment -%}
-{%- assign cta_button = include.button | default: "Get in touch" -%}
-{%- assign cta_href = include.href | default: "#contact" -%}
-<section class="gg-cta">
-  <h2 class="gg-type-h2">{{ include.heading | default: "Ready to get started?" }}</h2>
-  {%- if include.body %}
-  <p class="gg-type-body">{{ include.body }}</p>
-  {%- endif %}
-  {% include gg/button.html label=cta_button href=cta_href %}
-</section>
+{%- comment -%}
+  A call to action at the foot of a page. Contract: _data/components/cta.yml
+  The site's markup and styles, carried by the theme (D-051): styled by gg/site/template/components/component--cta.
+{%- endcomment -%}
+
+<div class="cta">
+  <h2>{{ include.heading | default: "Ready to get started?" }}</h2>
+
+  <p>{{ include.body | default: "We're flexible and happy to talk through whatever you have in mind, big or small." }}</p>
+
+  <a href="{{ include.href | default: '#contact' }}" class="gg_button">
+    {{ include.button | default: "Get in touch" }}
+  </a>
+</div>
