@@ -46,6 +46,27 @@
     }
   }
 
+  // The sign-up's status line (added by newsletter.js) and reCAPTCHA's attribution sit under the
+  // form, in the form's columns.
+  .subscribe__status,
+  .subscribe__legal {
+    grid-column: 1 / -1;
+    @include respond-to(m){
+      grid-column: 7 / -1;
+    }
+  }
+
+  .subscribe__status {
+    @include typestyle($sans-sm-reg);
+    color: color(neutral, X);
+  }
+
+  .subscribe__legal {
+    @include typestyle($sans-xs-reg);
+    color: color(neutral, X);
+    opacity: .7;
+  }
+
   .subscribe__form {
     grid-column: 1 / -1;
     padding-bottom: 6px;
@@ -148,3 +169,9 @@
   }
 }
 
+
+// Google allows hiding the floating reCAPTCHA badge when the form carries its attribution
+// (.subscribe__legal above). Its FAQ asks for visibility, not display.
+.grecaptcha-badge {
+  visibility: hidden;
+}

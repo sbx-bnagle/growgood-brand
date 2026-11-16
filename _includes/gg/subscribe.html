@@ -1,7 +1,8 @@
 {%- comment -%}
   The newsletter sign-up. Contract: _data/components/subscribe.yml
   Keeps the ids newsletter.js and float-label.js use. The reCAPTCHA site key comes from
-  site.recaptcha_sitekey unless passed. The site's markup and styles (D-051).
+  site.recaptcha_sitekey unless passed. The reCAPTCHA line lets the site hide Google's
+  floating badge (Google's reCAPTCHA FAQ). The site's markup and styles (D-051).
 {%- endcomment -%}
 <div class='subscribe' id='subscribe'>
   <div id='js_subscribe__text' class='subscribe__text'>
@@ -29,6 +30,8 @@
       >Subscribe</button>
 
     </form>
+
+    <p class='subscribe__legal'>This site is protected by reCAPTCHA.</p>
 
   </div>
 </div>
