@@ -308,8 +308,7 @@ items:
     alt: Leah Fagan sitting on the edge of a raised planting bed of violets, with a garden arch behind her
     credit: ""
     rights: owned
-  - &a1
-    id: A-0022
+  - id: A-0022
     url: /assets/library/A-0022-ggg-logo-fpo.svg
     type: logo
     style: primary
@@ -323,4 +322,16 @@ items:
     credit: ""
     rights: owned
 logos:
-  - *a1
+  - id: A-0022
+    url: /assets/library/A-0022-ggg-logo-fpo.svg
+    type: logo
+    style: primary
+    subjects:
+      - wordmark
+    season: any
+    orientation: square
+    width: 723
+    height: 723
+    alt: Grow Good Gardens
+    credit: ""
+    rights: owned

@@ -32,7 +32,7 @@
 .pb-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--gg-space-sm); padding: 0; list-style: none; }
 .pb-cards li { padding: var(--gg-space-sm); border: 1px solid var(--gg-role-border-default); }
 .pb-swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: var(--gg-space-sm); padding: 0; list-style: none; }
-.pb-asset__thumb { display: block; width: 96px; height: auto; }
+.pb-asset__thumb { display: block; width: 96px; max-width: none; height: auto; }
 .pb-main td code { white-space: nowrap; }
 .pb-swatch__chip { height: 72px; border: 1px solid var(--gg-role-border-default); }
 .pb-frame { border: 1px solid var(--gg-role-border-default); background: var(--gg-role-border-default); }

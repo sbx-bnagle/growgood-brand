@@ -118,7 +118,9 @@ test('the sync copies approved rows, skips the rest, and the check passes on the
   assert.deepEqual(readdirSync(join(root, 'assets/library')).sort(), ['A-0001-spot-bee.gif', 'A-0022-ggg-logo-fpo.svg']);
   assert.ok(!calls.some((u) => u.includes('files/d2?')), 'a draft row is never downloaded');
   assert.deepEqual(r.skipped.map((s) => s.id), ['A-0003', 'A-0004']);
-  const manifest = parse(readFileSync(join(root, '_data/assets.yml'), 'utf8'));
+  const yaml = readFileSync(join(root, '_data/assets.yml'), 'utf8');
+  assert.doesNotMatch(yaml, /[&*]a\d/, 'the manifest is plain YAML, with no anchors or aliases');
+  const manifest = parse(yaml);
   assert.deepEqual(manifest.logos.map((l) => [l.id, l.style, l.width]), [['A-0022', 'primary', 300]]);
   const text = report(r);
   assert.match(text, /2 approved assets of 5 rows/);
