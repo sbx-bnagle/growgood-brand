@@ -40,6 +40,16 @@ Raised 2026-11-16 in Phase 5. Needed before `visual/imagery.md` is approved.
 Grow Good’s images will come through several channels, such as rendered gardens, photography, illustration and hand-cut illustration, each likely with its own style and rules. The channels are still being worked out. Until they are settled, the register’s `type` keeps its current values, `style` stays blank, and no rule chooses an image by channel.
 Affects: the asset register (`type`, `style`), `visual/imagery.md`, D-038.
 
+### O-20 Which checks block at launch
+Raised 2026-11-17 in Phase 6. Needed by launch (Phase 9).
+Until launch every check warns (D-054). Each rule carries a proposed level for launch: block for MECH, NAMES, component contracts, assets, accessibility failures, contrast, and print size and margin; warn for VOICE patterns and the brand judge’s style notes. Confirm or change the split, and decide whether failing checks become required on `main`.
+Affects: `checks/`, branch protection in both repos, D-047.
+
+### O-21 Black and white print
+Raised 2026-11-17 in Phase 6. Needed before the print preflight checks color.
+Flyers and postcards will change to black and white. D-006 still says RGB PDF. Settle grayscale or pure black; how the color tokens, spots, illustrations and photographs print; and whether the color print templates stay as an option. Until then, print preflight checks size, margin, fonts and image resolution, and leaves color out.
+Affects: D-006, D-007, `formats/flyer.md`, `formats/postcard.md`, `visual/color.md`, the format templates, print preflight.
+
 ### Closed
 - O-01 Figma plan: decided as D-017.
 - O-02 Figma-to-repo export method: decided as D-018.
@@ -381,3 +391,9 @@ Affects: `.github/workflows/playbook.yml`, Cloudflare (the Pages project, its cu
 The site’s brand images are the first rows of the register, A-0001 to A-0021: 13 spots, seven illustrations and one photograph, all draft. Interface icons, the `fpo.png` placeholder and the journal’s post images stay out. Brad moves the files into the Drive folders. Claude drafts each row’s alt text and Leah edits it; credit and usage rights come from Leah, and a row stays draft until she approves it. A Google service account with read-only access to Brand Assets reads the register, and a GitHub workflow copies every approved row with known rights into `assets/library/` and lists them in `_data/assets.yml`. A file over web size, 2400px on its longest edge or 2MB, is left out and named in the pull request, to be resized in Drive. Changes arrive as a pull request. Includes and agents read `_data/assets.yml`, never Drive.
 Why: the images already on the site are the brand’s best-known ones. A read-only account lets the sync, and later the brand server, run without a person in the loop, and the pull request keeps a review step between the register and the site.
 Affects: the asset register, `asset-library/README.md`, `assets/library/`, `_data/assets.yml`, `.github/workflows/`, Phases 5 and 7.
+
+### D-054 Checks warn until launch, and each one is described in `checks/`
+2026-11-17, Brad Nagle. Phase 6 answers 40 to 46.
+Phase 6 builds, in order: the `checks/` folder, the copy linter v1, stylelint for the theme Sass, accessibility checks (axe-core in a headless browser, and token contrast), print and social preflight, the brand judge, then the checks in both repos’ pull requests. Until launch every check warns: it reports on the pull request and never fails it, because the branding is still being edited. Each rule keeps a proposed level for launch (O-20). The copy linter v1 reads only visible text, and leaves words in curly quotes to the quote rules, so brand files put the words they warn against in curly quotes. Once it runs on the site, one site pull request fixes the real findings. Accessibility targets WCAG 2.2 AA: axe ‘serious’ and ‘critical’ findings, and contrast below 4.5:1 for text or 3:1 for large text and non-text, are block-level; keyboard and screen reader checks stay with the reviewer. Preflight checks each format’s exact size, keeps content inside the template’s padding, checks that fonts are embedded, and flags raster images below 150ppi at their placed size. The brand judge runs on the Claude API with a key Brad saves as a GitHub secret. A fact found in neither the request nor `claims.md` is block-level for request drafts; site pull requests get the judge’s report only, until Leah approves `claims.md`. Checks run on every pull request in both repos, with no required checks until launch (D-047). Stylelint covers the theme’s `_sass/gg`; the site’s own Sass is reported only.
+Why: rules still change while the brand is edited, and a failing check would hold up work over a rule that may not last. Reports keep every finding in view.
+Affects: `checks/`, `tools/`, `.github/workflows/` in both repos, `verbal/mechanics.md`, `system/accessibility.md`, Phases 6 to 8.

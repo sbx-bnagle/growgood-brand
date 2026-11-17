@@ -34,6 +34,12 @@ jobs:
       - name: Check the asset library against its manifest
         run: npm run assets:check
 
+      # Report only: every check warns until launch (D-054, O-20). Findings go to the run summary.
+      - name: Lint the brand files' copy
+        env:
+          LINT_COPY_TITLE: Copy in the brand files
+        run: npm run checks:copy
+
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.3'
