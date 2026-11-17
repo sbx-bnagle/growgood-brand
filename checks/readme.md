@@ -20,7 +20,7 @@ Until launch every check warns: it reports on the pull request and never fails i
 | [`assets:check`](assets-check.md) | IMG-001, IMG-002, IMG-006 | brand pull requests, the Assets sync | block | approved |
 | [`tokens:check`](tokens-check.md) | TYPE-003, TYPE-004, D-021, D-030 | brand pull requests | block | approved |
 | [`contrast`](contrast.md) | palette pairs against WCAG 2.2 AA | by hand; `a11y` from Phase 6 | block | draft |
-| [`stylelint`](stylelint.md) | TYPE-001 to TYPE-003 | brand pull requests; site report only | block in `_sass/gg` | planned |
+| [`stylelint`](stylelint.md) | TYPE-001 to TYPE-003 | brand pull requests; site pull requests | block in `_sass/gg` | draft |
 | [`a11y`](a11y.md) | A11Y, WCAG 2.2 AA | brand and site pull requests | block serious and critical | planned |
 | [`preflight`](preflight.md) | FLY, CARD, SOC | rendered formats | block size and margin | planned |
 | [`brand judge`](brand-judge.md) | CLAIM, VOICE beyond patterns, NAMES-006 | request drafts; site report only | block unmatched facts; warn the rest | planned |

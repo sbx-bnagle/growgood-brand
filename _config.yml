@@ -38,6 +38,7 @@ exclude:
   - CLAUDE.md
   - README.md
   - ROADMAP.md
+  - stylelint.config.mjs
 
 defaults:
   - scope: { path: "" }
