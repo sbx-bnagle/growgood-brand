@@ -126,7 +126,7 @@ const library = (existsSync('_data/assets.yml') ? parse(readFileSync('_data/asse
 const libraryItems = library.items || [];
 const assetTable = libraryItems.length
   ? ['| | Id | Type | Subjects | Season | Size | Alt text | Rights |', '|---|---|---|---|---|---|---|---|',
-    ...libraryItems.map((a) => `| <img class="pb-asset__thumb" src="{{ '${a.url}' | relative_url }}" alt="" loading="lazy"> | \`${a.id}\` | ${a.type}${a.style ? `, ${cell(a.style)}` : ''} | ${cell((a.subjects || []).join(', '))} | ${a.season} | ${a.width}×${a.height}px | ${cell(a.alt)} | ${a.rights}${a.credit ? `, ${cell(a.credit)}` : ''} |`)].join('\n')
+    ...libraryItems.map((a) => `| <img class="pb-asset__thumb" src="{{ '${a.url}' | relative_url }}" alt="" loading="lazy"> | \`${a.id}\` | ${a.type}${a.style && a.style !== a.type ? `, ${cell(a.style)}` : ''} | ${cell((a.subjects || []).join(', '))} | ${a.season} | ${a.width}×${a.height}px | ${cell(a.alt)} | ${a.rights}${a.credit ? `, ${cell(a.credit)}` : ''} |`)].join('\n')
   : 'No approved assets yet. Rows in the register stay drafts until Leah approves them, and the next sync brings approved rows here.';
 writeFileSync('playbook/assets.md', page({ title: 'Assets' }, `
 # Assets

@@ -49,7 +49,8 @@ export async function sync({ key, registerId = REGISTER_ID, root = '.', fetchImp
   for (const f of removed) rmSync(join(libraryDir, f));
 
   mkdirSync(join(root, '_data'), { recursive: true });
-  writeFileSync(join(root, MANIFEST), HEADER + stringify(buildManifest(items), { lineWidth: 0 }));
+  // Plain YAML: each logo is written out in full, not as an alias of its item, so every reader gets the same data.
+  writeFileSync(join(root, MANIFEST), HEADER + stringify(buildManifest(items), { lineWidth: 0, aliasDuplicateObjects: false }));
   return { rows: rows.length, items, changed, removed, skipped, waiting };
 }
 

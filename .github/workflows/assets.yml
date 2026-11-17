@@ -53,13 +53,18 @@ jobs:
         if: env.HAS_KEY == 'true'
         run: npm run assets:check
 
+      # The playbook pages are generated and committed, so the Assets page is rebuilt with the library.
+      - name: Rebuild the playbook's Assets page
+        if: env.HAS_KEY == 'true'
+        run: npm run playbook:build
+
       - name: Open a pull request with the changes
         if: env.HAS_KEY == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           REPORT: ${{ runner.temp }}/asset-sync.md
         run: |
-          if [ -z "$(git status --porcelain -- assets/library _data/assets.yml)" ]; then
+          if [ -z "$(git status --porcelain -- assets/library _data/assets.yml playbook/assets.md)" ]; then
             echo "The library already matches the register."
             exit 0
           fi
@@ -67,7 +72,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git switch -c "$branch"
-          git add -A -- assets/library _data/assets.yml
+          git add -A -- assets/library _data/assets.yml playbook/assets.md
           git commit -m "Sync the asset library from the register (D-053)"
           git push -u origin "$branch"
           gh pr create --base main --head "$branch" --title "Sync the asset library from the register" --body-file "$REPORT"
