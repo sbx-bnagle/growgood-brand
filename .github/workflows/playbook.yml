@@ -1,7 +1,9 @@
 name: Playbook
 
 # Checks every theme include against its contract (D-042) and builds the playbook site (D-044)
-# on every pull request and every push to main.
+# on every pull request and every push to main, then deploys it to Cloudflare Pages (D-052):
+# main to production, a pull request from this repo to a preview address of its own.
+# The deploy waits for the CLOUDFLARE_API_TOKEN secret and the CLOUDFLARE_ACCOUNT_ID variable.
 
 on:
   pull_request:
@@ -14,6 +16,8 @@ permissions:
 jobs:
   playbook:
     runs-on: ubuntu-latest
+    env:
+      CAN_DEPLOY: ${{ secrets.CLOUDFLARE_API_TOKEN != '' && vars.CLOUDFLARE_ACCOUNT_ID != '' && (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository) }}
     steps:
       - uses: actions/checkout@v4
 
@@ -34,3 +38,11 @@ jobs:
 
       - name: Build the playbook
         run: bundle exec jekyll build
+
+      - name: Deploy to Cloudflare Pages
+        if: env.CAN_DEPLOY == 'true'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy _site --project-name=growgood-playbook --branch=${{ github.head_ref || github.ref_name }} --commit-dirty=true
