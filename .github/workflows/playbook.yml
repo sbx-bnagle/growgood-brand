@@ -40,6 +40,11 @@ jobs:
           LINT_COPY_TITLE: Copy in the brand files
         run: npm run checks:copy
 
+      - name: Check the theme Sass against the type tokens
+        env:
+          LINT_STYLES_TITLE: The theme Sass
+        run: npm run checks:styles
+
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.3'

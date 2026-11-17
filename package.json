@@ -10,6 +10,9 @@
     "tokens:ramps": "node tools/build-ramps.mjs && node tools/render-color-review.mjs",
     "lint:copy": "node tools/lint-copy.mjs",
     "checks:copy": "node tools/lint-copy.mjs --report --docs brand checks _includes/gg _data/components",
+    "lint:styles": "node tools/lint-styles.mjs",
+    "checks:styles": "node tools/lint-styles.mjs --report _sass/gg",
+    "checks:site": "node tools/checks-site.mjs",
     "tokens:check": "node tools/check-tokens.mjs",
     "tokens:build": "node tools/build-tokens.mjs",
     "figma:build": "node tools/build-figma-plugin.mjs",
@@ -30,6 +33,8 @@
     "acorn": "^8.19.0",
     "htmlparser2": "9.1.0",
     "markdown-it": "14.3.3",
+    "postcss-scss": "4.0.9",
+    "stylelint": "17.16.0",
     "yaml": "^2.9.1"
   }
 }
