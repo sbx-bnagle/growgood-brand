@@ -4,9 +4,10 @@
 //   playbook/components/index.md and one page per contract, with every example rendered
 //   playbook/tokens.md, from tokens/build/tokens.json
 //   playbook/formats/, one page per print and social format (D-043), with placeholder content
+//   playbook/assets.md, from _data/assets.yml: the approved images in the asset library (D-053)
 // Generated files; do not edit them by hand.
 
-import { readFileSync, writeFileSync, mkdirSync, readdirSync, rmSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, readdirSync, rmSync, existsSync } from 'node:fs';
 import { parse } from 'yaml';
 import { ROLE_PAIRS, contrastRatio } from './lib/tokens.mjs';
 
@@ -120,6 +121,27 @@ ${type}
 ${space}
 `));
 
+// ---- assets ----------------------------------------------------------------------------------
+const library = (existsSync('_data/assets.yml') ? parse(readFileSync('_data/assets.yml', 'utf8')) : null) || {};
+const libraryItems = library.items || [];
+const assetTable = libraryItems.length
+  ? ['| | Id | Type | Subjects | Season | Size | Alt text | Rights |', '|---|---|---|---|---|---|---|---|',
+    ...libraryItems.map((a) => `| <img class="pb-asset__thumb" src="{{ '${a.url}' | relative_url }}" alt="" loading="lazy"> | \`${a.id}\` | ${a.type}${a.style ? `, ${cell(a.style)}` : ''} | ${cell((a.subjects || []).join(', '))} | ${a.season} | ${a.width}×${a.height}px | ${cell(a.alt)} | ${a.rights}${a.credit ? `, ${cell(a.credit)}` : ''} |`)].join('\n')
+  : 'No approved assets yet. Rows in the register stay drafts until Leah approves them, and the next sync brings approved rows here.';
+writeFileSync('playbook/assets.md', page({ title: 'Assets' }, `
+# Assets
+
+The approved images in the asset library (D-053). The register in Drive holds every row, drafts included; only rows approved with known rights reach this list and the theme. Place one with the image include and its id (IMG-001), and it carries the alt text shown here (IMG-002):
+
+\`\`\`liquid
+{% raw %}{% include gg/image.html id="A-0001" %}{% endraw %}
+\`\`\`
+
+Choosing an image: \`brand/visual/imagery.md\`. Spots: \`brand/visual/spots-and-icons.md\`. The mark: \`brand/visual/logo.md\`.
+
+${assetTable}
+`));
+
 // ---- formats ---------------------------------------------------------------------------------
 const byName = Object.fromEntries(contracts.map((c) => [c.slug, c]));
 const printEvent = byName['event-details'].examples.find((e) => !e.params.href).params;
@@ -151,4 +173,4 @@ ${FORMATS.map((f) => `| [${f.title}](${f.slug}.html) | ${f.size} | \`${f.layout}
 Print pages show 1px as 1pt (D-034): print them at 100% on Letter paper with no margins.
 `));
 
-console.log(`built the playbook pages: ${contracts.length} components, tokens, ${FORMATS.length} formats`);
+console.log(`built the playbook pages: ${contracts.length} components, tokens, ${libraryItems.length} assets, ${FORMATS.length} formats`);

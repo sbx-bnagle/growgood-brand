@@ -44,12 +44,12 @@ Keeper for every file: Leah Fagan. Maintainer for every file: Brad Nagle.
 | `verbal/names-and-dates.md` | Business name, region, event dates and times | fixed | NAMES | draft |
 | `verbal/vocabulary.md` | Preferred and banned terms | fixed | VOCAB | planned |
 | `claims.md` | Every fact allowed in public | fixed | CLAIM | draft |
-| `visual/logo.md` | Wordmark use, clear space, minimum size | fixed | LOGO | planned |
+| `visual/logo.md` | Wordmark use, clear space, minimum size | fixed | LOGO | draft |
 | `visual/color.md` | Palette, pairings, contrast | fixed | COLOR | planned |
 | `visual/typography.md` | Alegreya Sans, the type scale, the 4px baseline | fixed | TYPE | draft |
 | `visual/layout.md` | Grid, spacing, breakpoints | mixed | LAYOUT | planned |
-| `visual/imagery.md` | Choosing photos and illustrations, alt text | mixed | IMG | planned |
-| `visual/spots-and-icons.md` | Animated spot illustrations, icon font | mixed | SPOT | planned |
+| `visual/imagery.md` | Choosing photos and illustrations, alt text | mixed | IMG | draft |
+| `visual/spots-and-icons.md` | Animated spot illustrations, icon font | mixed | SPOT | draft |
 | `formats/web-page.md` | Page types and section order | mixed | WEB | planned |
 | `formats/flyer.md` | Letter flyer for an office printer | fixed | FLY | planned |
 | `formats/postcard.md` | Quarter-Letter card, four to a sheet | fixed | CARD | planned |

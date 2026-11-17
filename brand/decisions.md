@@ -35,6 +35,11 @@ Raised 2026-11-13 in Phase 3; narrowed 2026-11-14 by D-049. Needed by the Phase 
 Buttons, nav and form labels use Heading 4 (D-049). What remains are the site’s small bold labels: small at the bold weight, which has no text style. Either add a label role to the type tokens (size and line height of small, weight bold), or keep the bold override.
 Affects: `tokens/type.json`, `visual/typography.md`, the site’s xs bold labels.
 
+### O-19 Image channels
+Raised 2026-11-16 in Phase 5. Needed before `visual/imagery.md` is approved.
+Grow Good’s images will come through several channels, such as rendered gardens, photography, illustration and hand-cut illustration, each likely with its own style and rules. The channels are still being worked out. Until they are settled, the register’s `type` keeps its current values, `style` stays blank, and no rule chooses an image by channel.
+Affects: the asset register (`type`, `style`), `visual/imagery.md`, D-038.
+
 ### Closed
 - O-01 Figma plan: decided as D-017.
 - O-02 Figma-to-repo export method: decided as D-018.
@@ -370,3 +375,9 @@ Affects: `_sass/gg/site/`, `_includes/gg/`, `_data/components/`, the playbook, t
 The playbook builds in GitHub Actions, as the Playbook check already does, and deploys to the Cloudflare Pages project `growgood-playbook`, served at playbook.growgoodgardens.com: `main` to production, each pull request to a preview address of its own. The brand pages stay public. The request pages (Phase 8) live under `/request/`, behind a Cloudflare Access application that signs people in with their Google account. Who may sign in is settled in Phase 8.
 Why: growgoodgardens.com, its order Worker and its newsletter Worker already run on Cloudflare, and Access gives Google sign-in with no server of our own. GitHub Pages cannot require sign-in.
 Affects: `.github/workflows/playbook.yml`, Cloudflare (the Pages project, its custom domain, Access), Phase 8.
+
+### D-053 The asset library is seeded from the site and synced into the theme by a service account
+2026-11-16, Brad Nagle. Refines D-009, D-019, D-024 and D-038.
+The site’s brand images are the first rows of the register, A-0001 to A-0021: 13 spots, seven illustrations and one photograph, all draft. Interface icons, the `fpo.png` placeholder and the journal’s post images stay out. Brad moves the files into the Drive folders. Claude drafts each row’s alt text and Leah edits it; credit and usage rights come from Leah, and a row stays draft until she approves it. A Google service account with read-only access to Brand Assets reads the register, and a GitHub workflow copies every approved row with known rights into `assets/library/`, resized for the web, and lists them in `_data/assets.yml`. Changes arrive as a pull request. Includes and agents read `_data/assets.yml`, never Drive.
+Why: the images already on the site are the brand’s best-known ones. A read-only account lets the sync, and later the brand server, run without a person in the loop, and the pull request keeps a review step between the register and the site.
+Affects: the asset register, `asset-library/README.md`, `assets/library/`, `_data/assets.yml`, `.github/workflows/`, Phases 5 and 7.

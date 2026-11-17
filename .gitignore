@@ -7,3 +7,6 @@ _site/
 .env.*
 .bundle/
 vendor/
+
+# Files staged for upload to the Drive asset library (Phase 5); not part of the repo.
+asset-seed/

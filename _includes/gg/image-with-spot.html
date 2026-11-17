@@ -1,12 +1,18 @@
-{%- comment -%} A photograph with a spot over it (D-024). Contract: _data/components/image-with-spot.yml {%- endcomment -%}
+{%- comment -%}
+  A photograph with a spot over it (D-024). image and spot are register ids from the asset
+  library (D-053); the photo's alt text comes from the register (IMG-002) and the spot is
+  decorative. Contract: _data/components/image-with-spot.yml
+{%- endcomment -%}
 {%- assign img_position = include.position | default: "top-left" -%}
+{%- assign img_photo = site.data.assets.items | where: "id", include.image | first -%}
+{%- assign img_spot = site.data.assets.items | where: "id", include.spot | first -%}
 <figure class="gg-image-spot gg-image-spot--{{ img_position }}">
-  {%- if include.image %}
-  <img class="gg-image-spot__photo" src="{{ include.image | relative_url }}" alt="{{ include.alt }}">
+  {%- if img_photo %}
+  <img class="gg-image-spot__photo" src="{{ img_photo.url | relative_url }}" alt="{{ img_photo.alt }}" width="{{ img_photo.width }}" height="{{ img_photo.height }}">
   {%- else %}
   <div class="gg-image-spot__photo gg-image-spot__empty" role="img" aria-label="Photo placeholder"><span class="gg-type-small">Photo</span></div>
   {%- endif %}
-  {%- if include.spot %}
-  <img class="gg-image-spot__spot" src="{{ include.spot | relative_url }}" alt="">
+  {%- if img_spot %}
+  <img class="gg-image-spot__spot" src="{{ img_spot.url | relative_url }}" alt="">
   {%- endif %}
 </figure>
