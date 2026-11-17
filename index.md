@@ -11,6 +11,7 @@ The Grow Good Gardens brand system: the rules agents and people follow, the toke
 - [Tokens](playbook/tokens.md): color, type and space, with the contrast of every color role.
 - [Assets](playbook/assets.md): the approved images in the asset library, with their alt text.
 - [Formats](playbook/formats/): the flyer, postcard and social sizes.
+- [Checks](checks/readme.md): each automatic check, the rules it covers, and its level now and at launch.
 - [Decisions](brand/decisions.md): every brand and system decision, and what is still open.
 - Review pages: [color ramps](reference/color-ramps.html) and [type scales](reference/type-scales.html).
 

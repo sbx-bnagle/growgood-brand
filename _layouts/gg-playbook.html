@@ -14,9 +14,10 @@
     <nav class="pb-nav" aria-label="Playbook">
       <a href="{{ '/brand/readme.html' | relative_url }}"{% if page.url contains '/brand/' %} aria-current="page"{% endif %}>Brand</a>
       <a href="{{ '/playbook/components/' | relative_url }}"{% if page.url contains '/components/' %} aria-current="page"{% endif %}>Components</a>
-      <a href="{{ '/playbook/tokens.html' | relative_url }}"{% if page.url contains '/tokens' %} aria-current="page"{% endif %}>Tokens</a>
-      <a href="{{ '/playbook/assets.html' | relative_url }}"{% if page.url contains '/assets' %} aria-current="page"{% endif %}>Assets</a>
+      <a href="{{ '/playbook/tokens.html' | relative_url }}"{% if page.url contains '/playbook/tokens' %} aria-current="page"{% endif %}>Tokens</a>
+      <a href="{{ '/playbook/assets.html' | relative_url }}"{% if page.url contains '/playbook/assets' %} aria-current="page"{% endif %}>Assets</a>
       <a href="{{ '/playbook/formats/' | relative_url }}"{% if page.url contains '/formats/' %} aria-current="page"{% endif %}>Formats</a>
+      <a href="{{ '/checks/readme.html' | relative_url }}"{% if page.url contains '/checks/' %} aria-current="page"{% endif %}>Checks</a>
     </nav>
   </header>
   <main id="main" class="pb-main">
