@@ -1,108 +1,118 @@
 #!/usr/bin/env node
-// Copy linter, v0. Checks customer-facing copy against brand/verbal rules.
-// Usage: node tools/lint-copy.mjs [--report] <files or folders...>
-// Rules come from brand/verbal/mechanics.md (MECH-*), voice.md (VOICE-*),
-// names-and-dates.md (NAMES-*) and
-// spelling.yml. Exit code 1 when a MECH rule fails, unless --report is given.
-// v0 is line-based and heuristic. Phase 6 replaces it with a proper parser.
+// Copy linter, v1 (D-054, checks/lint-copy.md). Checks the words a reader sees against
+// brand/verbal/mechanics.md (MECH), names-and-dates.md (NAMES), voice.md (VOICE) and spelling.yml.
+// Reads visible text only (tools/lib/copy-text.mjs): no code, Liquid, tags or URLs. On the site,
+// lint the built pages in _site; a finding repeated across pages is listed once with a count.
+// Usage: node tools/lint-copy.mjs [--report] [--json] [--all] [--docs] <files or folders...>
+//   --report  exit 0 even with error-level findings (every check warns until launch, D-054)
+//   --json    print the findings as JSON
+//   --all     list every finding, not the first five per rule
+//   --docs    the files are documentation, not pieces: skip NAMES-001, which applies to a piece
+// Writes a Markdown report to $GITHUB_STEP_SUMMARY when set. Exit 1 on an error-level finding.
 
-import { readFileSync, readdirSync, statSync } from 'node:fs';
-import { join, extname, relative } from 'node:path';
+import { readFileSync, readdirSync, statSync, appendFileSync } from 'node:fs';
+import { join, extname, relative, basename } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { parse } from 'yaml';
+import { copySegments } from './lib/copy-text.mjs';
+import { buildRules, maskQuotes, firstMention } from './lib/copy-rules.mjs';
 
-const args = process.argv.slice(2);
-const report = args.includes('--report');
-const targets = args.filter((a) => a !== '--report');
 const here = new URL('..', import.meta.url).pathname;
-const spelling = parse(readFileSync(join(here, 'brand/verbal/spelling.yml'), 'utf8'));
+const SKIP_DIRS = new Set(['_site', 'node_modules', '.git', '.jekyll-cache', '.sass-cache', 'vendor', 'assets', '_sass', 'workers', 'admin', 'Z_OLD', 'tokens', 'figma-plugin']);
+const SKIP_FILES = new Set(['spelling.yml']); // the linter’s own word list
+const EXTS = new Set(['.md', '.markdown', '.html', '.htm', '.yml', '.yaml', '.txt']);
 
-const SKIP_DIRS = new Set(['_site', 'node_modules', '.git', '.jekyll-cache', 'assets', '_sass', 'workers', 'admin', 'Z_OLD']);
-const EXTS = new Set(['.md', '.markdown', '.html', '.yml', '.txt']);
-const PROPER = new Set(['Grow', 'Good', 'Gardens', 'Chicago', 'Chicagoland', 'Midwest', 'Upper', 'Leah', 'Fagan', 'DIY', 'I', 'Instagram', 'Facebook', 'TikTok', 'YouTube', 'Pinterest', 'Google', 'FAQ', 'FAQs']);
-const SMALL = new Set(['a', 'an', 'and', 'or', 'the', 'of', 'to', 'in', 'on', 'for', 'with', 'at', 'by', '&']);
+let cachedRules;
+const rules = () => (cachedRules ??= buildRules(parse(readFileSync(join(here, 'brand/verbal/spelling.yml'), 'utf8'))));
 
-const ENTITIES = { '&rsquo;': '’', '&lsquo;': '‘', '&rdquo;': '”', '&ldquo;': '“', '&mdash;': '—', '&ndash;': '–', '&hellip;': '…', '&amp;': '&', '&nbsp;': ' ', '&thinsp;': ' ', '&ensp;': ' ', '&copy;': '©' };
-const decode = (s) => s.replace(/&[a-z]+;/g, (e) => ENTITIES[e] ?? e);
-
-const rules = [
-  ['MECH-001', 'error', 'em dash or double hyphen; use an en dash only for ranges', (t) => /—|(?<!-)--(?!-)|\w – \w|\w - \w/.test(t)],
-  ['MECH-004', 'error', 'straight quote or apostrophe', (t) => /[A-Za-z]'[A-Za-z]|(^|\s)'\w|\w'(\s|[.,;:]|$)|"/.test(t)],
-  ['MECH-006', 'error', 'space between number and unit or am/pm', (t) => /\b\d+(?:[.:]\d+)?\s(?:mm|cm|ft|sq ?ft|lbs?|oz|gal|am|pm)\b/i.test(t)],
-  ['MECH-008', 'error', 'two spaces after a period', (t) => /\. {2,}\S/.test(t)],
-  ['VOICE-003', 'warn', 'hedge', (t) => /you might (want to|consider)|some gardeners prefer|you may want to/i.test(t)],
-  ['VOICE-005', 'warn', '‘don’t worry’', (t) => /don[’']t worry/i.test(t)],
-  ['MECH-012', 'error', 'exclamation mark', (t) => /\w!(\s|$|<)/.test(t)],
-  ['MECH-013', 'error', 'emoji', (t) => /(?![©®™])\p{Extended_Pictographic}/u.test(t)],
-  ['NAMES-002', 'error', 'write ‘Upper Midwest’', (t) => [...t.matchAll(/\b[Uu]pper [Mm]idwest\b/g)].some(([m]) => m !== 'Upper Midwest')],
-  ['NAMES-004', 'error', 'time format: ‘10:00am’, ‘noon’', (t) => /(?<![:\d])\d{1,2}(?:am|pm)\b|\b\d{1,2}(?::\d\d)?\s?[ap]\.m\.|\b12:00\s?pm\b/i.test(t)],
-];
-
-const headingCase = (h) => {
-  const words = h.replace(/[^\p{L}\s&'’-]/gu, ' ').split(/\s+/).filter(Boolean);
-  return words.slice(1).filter((w) => /^\p{Lu}\p{Ll}/u.test(w) && !PROPER.has(w) && !SMALL.has(w.toLowerCase()));
+const lineOf = (seg, index) => seg.line + seg.breaks.filter((b) => b <= index).length;
+const excerpt = (text, index, length) => {
+  const start = Math.max(0, index - 30);
+  const end = Math.min(text.length, index + length + 40);
+  return `${start > 0 ? '…' : ''}${text.slice(start, end).trim()}${end < text.length ? '…' : ''}`;
 };
 
-const spellingHits = (t) => {
-  const hits = [];
-  for (const { uk, us, except = [] } of spelling.stems) {
-    for (const [word] of t.matchAll(new RegExp(`\\b${uk}\\w*`, 'gi'))) {
-      if (!except.some((e) => word.toLowerCase().startsWith(e))) hits.push(['MECH-010', `UK spelling: ${word} → ${us}…`]);
+// Findings for one file’s source text.
+export function lintSource(src, ext, file = '(text)', { docs = false } = {}) {
+  const segments = copySegments(src, ext);
+  const findings = [];
+  for (const seg of segments) {
+    const masked = maskQuotes(seg.text);
+    for (const rule of rules()) {
+      if (rule.kinds && !rule.kinds.includes(seg.kind)) continue;
+      for (const hit of rule.test(rule.raw ? seg.text : masked)) {
+        findings.push({ rule: rule.id, level: rule.level, msg: hit.note ? `${rule.msg} (${hit.note})` : rule.msg, file, line: lineOf(seg, hit.index), text: excerpt(seg.text, hit.index, hit.length) });
+      }
     }
   }
-  for (const { avoid, use } of spelling.word_choice) {
-    if (new RegExp(`\\b${avoid}\\b`, 'i').test(t)) hits.push(['MECH-011', `word choice: ${avoid} → ${use}`]);
+  for (const hit of docs ? [] : firstMention(segments)) {
+    findings.push({ rule: 'NAMES-001', level: 'error', msg: 'first mention is ‘Grow Good Gardens’', file, line: lineOf(hit.segment, hit.index), text: excerpt(hit.segment.text, hit.index, hit.length) });
   }
-  return hits;
-};
-
-const files = [];
-const walk = (p) => {
-  const s = statSync(p);
-  if (s.isDirectory()) {
-    for (const f of readdirSync(p)) if (!SKIP_DIRS.has(f) && !f.startsWith('.')) walk(join(p, f));
-  } else if (EXTS.has(extname(p))) files.push(p);
-};
-targets.forEach(walk);
-
-const findings = [];
-const add = (rule, level, msg, file, line, text) => findings.push({ rule, level, msg, where: `${relative(process.cwd(), file)}:${line}`, text: text.trim().slice(0, 90) });
-
-for (const file of files) {
-  const isYml = extname(file) === '.yml';
-  let skip = false;
-  let frontMatter = 0;
-  readFileSync(file, 'utf8').split('\n').forEach((raw, i) => {
-    const n = i + 1;
-    if (/^---\s*$/.test(raw) && frontMatter < 2 && (i === 0 || frontMatter === 1)) { frontMatter++; return; }
-    if (/<(script|style)\b|{%-?\s*comment|<!--/.test(raw) && !/<\/(script|style)>|endcomment|-->/.test(raw)) { skip = true; return; }
-    if (skip) { if (/<\/(script|style)>|endcomment|-->/.test(raw)) skip = false; return; }
-    if (isYml && /^\s*#/.test(raw)) return;
-    if (frontMatter === 1 && !/^title:/.test(raw)) return;
-
-    if (frontMatter === 1) raw = raw.replace(/^title:\s*(["'])(.*)\1\s*$/, 'title: $2');
-    const headingMatch = raw.match(/^#{1,6}\s+(.*)$/) ?? raw.match(/<h[1-6][^>]*>(.*?)<\/h[1-6]>/) ?? (frontMatter === 1 ? raw.match(/^title:\s*(.*)$/) : null);
-    let text = decode(raw)
-      .replace(/<!--.*?-->/g, ' ').replace(/{%.*?%}|{{.*?}}/g, ' ')
-      .replace(/<[^>]+>/g, ' ').replace(/!?\[([^\]]*)\]\([^)]*\)/g, '$1')
-      .replace(/^\s*[-*]\s+/, '').replace(/^#{1,6}\s+/, '');
-    if (isYml) text = text.replace(/^\s*-?\s*\w+:\s*(>-?)?\s*/, '');
-    if (!text.trim() || /^[\s_*-]+$/.test(text)) return;
-
-    if (headingMatch) {
-      const caps = headingCase(decode(headingMatch[1]).replace(/<[^>]+>/g, ''));
-      if (caps.length) add('MECH-002', 'error', `title case (${caps.join(', ')})`, file, n, headingMatch[1]);
-    }
-    for (const [rule, level, msg, test] of rules) if (test(text)) add(rule, level, msg, file, n, text);
-    for (const [rule, msg] of spellingHits(text)) add(rule, 'error', msg, file, n, text);
-  });
+  return findings.sort((a, b) => a.line - b.line);
 }
 
-const byRule = {};
-for (const f of findings) (byRule[`${f.rule} ${f.msg.replace(/\s*\(.*\)|:.*/, '').trim()}`] ??= []).push(f);
-console.log(`lint-copy v0: ${files.length} files, ${findings.length} findings\n`);
-for (const [key, list] of Object.entries(byRule).sort()) {
-  console.log(`${key}: ${list.length} (${list[0].level})`);
-  for (const f of list.slice(0, 3)) console.log(`  ${f.where}  ${f.text}`);
+export function filesIn(paths) {
+  const files = [];
+  const walk = (p, top) => {
+    const s = statSync(p);
+    if (s.isDirectory()) {
+      for (const f of readdirSync(p).sort()) if (!SKIP_DIRS.has(f) && !f.startsWith('.')) walk(join(p, f), false);
+    } else if ((top || EXTS.has(extname(p))) && !SKIP_FILES.has(basename(p))) files.push(p);
+  };
+  for (const p of paths) walk(p, true);
+  return files;
 }
-const errors = findings.filter((f) => f.level === 'error').length;
-if (errors && !report) process.exit(1);
+
+// Findings for files and folders, with repeats across files folded together.
+export function lintPaths(paths, { cwd = process.cwd(), docs = false } = {}) {
+  // A path outside the working folder is shown from its target, such as _site/about/index.html.
+  const shown = (f) => {
+    const r = relative(cwd, f);
+    if (!r.startsWith('..')) return r;
+    const top = paths.find((p) => f.startsWith(p)) || f;
+    return join(basename(top), relative(top, f));
+  };
+  const files = filesIn(paths);
+  const findings = files.flatMap((f) => lintSource(readFileSync(f, 'utf8'), extname(f), shown(f), { docs }));
+  const groups = new Map();
+  for (const f of findings) {
+    const key = `${f.rule}\u0000${f.text}`;
+    if (groups.has(key)) groups.get(key).also.push(`${f.file}:${f.line}`);
+    else groups.set(key, { ...f, also: [] });
+  }
+  return { files: files.length, findings, distinct: [...groups.values()] };
+}
+
+const byRule = (list) => {
+  const out = new Map();
+  for (const f of [...list].sort((a, b) => a.rule.localeCompare(b.rule, 'en', { numeric: true }))) (out.get(f.rule) ?? out.set(f.rule, []).get(f.rule)).push(f);
+  return out;
+};
+const where = (f) => `${f.file}:${f.line}${f.also.length ? ` and ${f.also.length} more` : ''}`;
+
+export function formatText(result, { all = false } = {}) {
+  const lines = [`lint-copy v1: ${result.files} files, ${result.findings.length} findings, ${result.distinct.length} distinct`, ''];
+  for (const [rule, list] of byRule(result.distinct)) {
+    lines.push(`${rule} ${list[0].msg.replace(/\s*\(.*\)$/, '')}: ${list.length} (${list[0].level})`);
+    for (const f of all ? list : list.slice(0, 5)) lines.push(`  ${where(f)}  ${f.text}${/\(.*\)$/.test(f.msg) ? `  ${f.msg.match(/\((.*)\)$/)[1]}` : ''}`);
+  }
+  return lines.join('\n');
+}
+
+export function formatSummary(result, title = 'Copy') {
+  const rows = [...byRule(result.distinct)].map(([rule, list]) => `| ${rule} | ${list[0].msg.replace(/\s*\(.*\)$/, '')} | ${list.length} | ${list[0].level} |`);
+  if (!rows.length) return `### ${title}\n\nNo findings in ${result.files} files.\n`;
+  const detail = [...byRule(result.distinct)].map(([rule, list]) => `<details><summary>${rule}: ${list.length}</summary>\n\n${list.slice(0, 25).map((f) => `- \`${where(f)}\` ${f.text.replace(/[<>|]/g, ' ')}`).join('\n')}${list.length > 25 ? `\n- and ${list.length - 25} more` : ''}\n\n</details>`).join('\n');
+  return `### ${title}\n\n${result.distinct.length} distinct findings in ${result.files} files. Every check warns until launch (D-054).\n\n| Rule | What | Distinct | Level at launch |\n|---|---|---|---|\n${rows.join('\n')}\n\n${detail}\n`;
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  const args = process.argv.slice(2);
+  const flags = new Set(args.filter((a) => a.startsWith('--')));
+  const targets = args.filter((a) => !a.startsWith('--'));
+  if (!targets.length) { console.error('Usage: node tools/lint-copy.mjs [--report] [--json] [--all] [--docs] <files or folders...>'); process.exit(2); }
+  const result = lintPaths(targets, { docs: flags.has('--docs') });
+  console.log(flags.has('--json') ? JSON.stringify(result.distinct, null, 2) : formatText(result, { all: flags.has('--all') }));
+  if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, formatSummary(result, process.env.LINT_COPY_TITLE || 'Copy'));
+  if (!flags.has('--report') && result.findings.some((f) => f.level === 'error')) process.exit(1);
+}

@@ -54,7 +54,7 @@ Punctuation, case, units and spelling for everything a customer reads. Every rul
 **MECH-010.** US spelling, checked by stem against `spelling.yml`. A stem check catches ‘neighbours’ where a whole-word check catches only ‘neighbour’.
 *Check:* `lint-copy`.
 
-**MECH-011.** US garden word choice from `spelling.yml`: fall, not autumn; while, not whilst; toward, not towards.
+**MECH-011.** US garden word choice from `spelling.yml`: ‘fall’, not ‘autumn’; ‘while’, not ‘whilst’; ‘toward’, not ‘towards’.
 *Check:* `lint-copy`.
 
 **MECH-012.** No exclamation marks.
