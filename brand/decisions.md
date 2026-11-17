@@ -372,7 +372,7 @@ Affects: `_sass/gg/site/`, `_includes/gg/`, `_data/components/`, the playbook, t
 
 ### D-052 The playbook is hosted on Cloudflare Pages; Cloudflare Access puts the request pages behind Google sign-in
 2026-11-16, Brad Nagle. Closes O-04. Refines D-044.
-The playbook builds in GitHub Actions, as the Playbook check already does, and deploys to the Cloudflare Pages project `growgood-playbook`, served at playbook.growgoodgardens.com: `main` to production, each pull request to a preview address of its own. The brand pages stay public. The request pages (Phase 8) live under `/request/`, behind a Cloudflare Access application that signs people in with their Google account. Who may sign in is settled in Phase 8.
+The playbook builds in GitHub Actions, as the Playbook check already does, and deploys to the Cloudflare Pages project `growgood-playbook`, served at growgood-playbook.pages.dev: `main` to production, each pull request to a preview address of its own. The brand pages stay public. The request pages (Phase 8) live under `/request/`, behind a Cloudflare Access application that signs people in with their Google account. Who may sign in is settled in Phase 8. A custom domain, such as playbook.growgoodgardens.com, can be added on the Pages project later without a code change; Access can protect the `pages.dev` address as well.
 Why: growgoodgardens.com, its order Worker and its newsletter Worker already run on Cloudflare, and Access gives Google sign-in with no server of our own. GitHub Pages cannot require sign-in.
 Affects: `.github/workflows/playbook.yml`, Cloudflare (the Pages project, its custom domain, Access), Phase 8.
 
