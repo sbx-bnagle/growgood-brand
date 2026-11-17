@@ -15,6 +15,8 @@
     "test": "npm run figma:build && node --test tests/*.test.mjs",
     "playbook:build": "node tools/build-playbook.mjs",
     "components:check": "node tools/check-components.mjs",
+    "assets:check": "node tools/check-assets.mjs",
+    "assets:sync": "node tools/sync-assets.mjs",
     "playbook:serve": "node tools/build-playbook.mjs && bundle exec jekyll serve --livereload",
     "site:link": "node tools/link-site.mjs",
     "site:unlink": "node tools/link-site.mjs --unlink",

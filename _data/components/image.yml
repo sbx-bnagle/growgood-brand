@@ -1,0 +1,22 @@
+name: Image
+include: gg/image.html
+summary: An approved image from the asset library, placed by its register id, with the register’s alt text.
+formats: [web, flyer, postcard, social]
+decisions: [D-053]
+rules: [IMG-001, IMG-002, IMG-004]
+params:
+  - name: id
+    type: asset
+    required: true
+    source: assets
+    notes: The register’s asset_id. Only approved rows with known rights render.
+  - name: decorative
+    type: bool
+    required: false
+    default: false
+    source: request
+    notes: True when the text beside the image already says what it shows; gives empty alt (IMG-002).
+data: [assets.items]
+examples:
+  - title: By its register id
+    params: { id: A-0001 }

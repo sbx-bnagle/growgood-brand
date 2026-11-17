@@ -3,27 +3,25 @@ include: gg/image-with-spot.html
 figma: Image with spot
 summary: A photograph with an animated spot laid over it.
 formats: [web, flyer, postcard, social]
-decisions: [D-024, D-038]
+decisions: [D-024, D-038, D-053]
+rules: [IMG-001, IMG-002]
 params:
   - name: image
     type: asset
     required: false
     source: assets
-    notes: An approved photo or illustration row. Empty shows a placeholder until Phase 5.
-  - name: alt
-    type: text
-    required: false
-    source: assets
-    notes: The register’s alt text, never new wording.
+    notes: The register id of an approved photo or illustration. Its alt text comes from the register (IMG-002). Empty, or not yet approved, shows a placeholder.
   - name: spot
     type: asset
     required: false
     source: assets
+    notes: The register id of an approved spot. Decorative, so empty alt.
   - name: position
     type: enum
     values: [top-left, bottom-right]
     default: top-left
     source: fixed
+data: [assets.items]
 examples:
   - title: Placeholder, until the asset library is filled
     params: { position: top-left }

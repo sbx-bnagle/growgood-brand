@@ -1,0 +1,12 @@
+{%- comment -%}
+  An approved image from the asset library, placed by its register id (IMG-001, D-053), with the
+  register's alt text (IMG-002). decorative=true gives empty alt, for an image the text beside it
+  already describes. Renders nothing but a comment when the id is not an approved asset.
+  Contract: _data/components/image.yml
+{%- endcomment -%}
+{%- assign img = site.data.assets.items | where: "id", include.id | first -%}
+{%- if img -%}
+<img class="gg-image" src="{{ img.url | relative_url }}" alt="{% unless include.decorative %}{{ img.alt }}{% endunless %}" width="{{ img.width }}" height="{{ img.height }}" loading="lazy">
+{%- else -%}
+<!-- gg/image: {{ include.id }} is not an approved asset -->
+{%- endif -%}

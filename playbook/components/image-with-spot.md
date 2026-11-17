@@ -7,7 +7,7 @@ title: "Image with spot"
 
 A photograph with an animated spot laid over it.
 
-Include `gg/image-with-spot.html` · Figma: Image with spot · Formats: web, flyer, postcard, social · Decisions: D-024, D-038
+Include `gg/image-with-spot.html` · Figma: Image with spot · Formats: web, flyer, postcard, social · Decisions: D-024, D-038, D-053 · Rules: IMG-001, IMG-002 · Reads site data: `assets.items`
 
 The contract is `_data/components/image-with-spot.yml` (COMP-002). Sources are explained in [Components](../../brand/system/components.md).
 
@@ -15,9 +15,8 @@ The contract is `_data/components/image-with-spot.yml` (COMP-002). Sources are e
 
 | Parameter | Type | Required | Default | Source | Notes |
 |---|---|---|---|---|---|
-| `image` | asset | no |  | assets | An approved photo or illustration row. Empty shows a placeholder until Phase 5. |
-| `alt` | text | no |  | assets | The register’s alt text, never new wording. |
-| `spot` | asset | no |  | assets |  |
+| `image` | asset | no |  | assets | The register id of an approved photo or illustration. Its alt text comes from the register (IMG-002). Empty, or not yet approved, shows a placeholder. |
+| `spot` | asset | no |  | assets | The register id of an approved spot. Decorative, so empty alt. |
 | `position` | enum: top-left, bottom-right | no | top-left | fixed |  |
 
 ## Examples

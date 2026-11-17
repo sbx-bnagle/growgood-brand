@@ -1,0 +1,73 @@
+name: Assets
+
+# Syncs the asset library from the register (D-053): every approved row with known rights is
+# copied from Drive into assets/library/ and listed in _data/assets.yml. Changes arrive as a pull
+# request. Runs on demand and on Monday mornings. Needs the GOOGLE_SERVICE_ACCOUNT_KEY secret, a
+# read-only service account’s JSON key (asset-library/README.md).
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 14 * * 1'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: assets-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    env:
+      HAS_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY != '' }}
+    steps:
+      - name: Skip until the service account key is saved
+        if: env.HAS_KEY != 'true'
+        run: echo "::notice::No GOOGLE_SERVICE_ACCOUNT_KEY secret yet; the sync is skipped (asset-library/README.md)."
+
+      - uses: actions/checkout@v4
+        if: env.HAS_KEY == 'true'
+
+      - uses: actions/setup-node@v4
+        if: env.HAS_KEY == 'true'
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+        if: env.HAS_KEY == 'true'
+
+      - name: Sync the library from the register
+        if: env.HAS_KEY == 'true'
+        env:
+          GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
+          ASSET_SYNC_REPORT: ${{ runner.temp }}/asset-sync.md
+        run: node tools/sync-assets.mjs
+
+      # Pull requests opened by this workflow do not start the Playbook check, so the library is
+      # checked here before the pull request opens.
+      - name: Check the library against its manifest
+        if: env.HAS_KEY == 'true'
+        run: npm run assets:check
+
+      - name: Open a pull request with the changes
+        if: env.HAS_KEY == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPORT: ${{ runner.temp }}/asset-sync.md
+        run: |
+          if [ -z "$(git status --porcelain -- assets/library _data/assets.yml)" ]; then
+            echo "The library already matches the register."
+            exit 0
+          fi
+          branch="assets/sync-$(date -u +%Y%m%d-%H%M)"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch"
+          git add -A -- assets/library _data/assets.yml
+          git commit -m "Sync the asset library from the register (D-053)"
+          git push -u origin "$branch"
+          gh pr create --base main --head "$branch" --title "Sync the asset library from the register" --body-file "$REPORT"

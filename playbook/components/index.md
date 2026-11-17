@@ -20,6 +20,7 @@ Every include in the theme, rendered from its contract (D-042). Build pages, fly
   <li><a href="header.html"><strong>Header</strong></a><br><span class="gg-type-small">The masthead, the navigation, and the mobile menu with its contact button.</span></li>
   <li><a href="hero.html"><strong>Hero</strong></a><br><span class="gg-type-small">The wordmark and a deck in the lead style, at the top of the home page.</span></li>
   <li><a href="image-with-spot.html"><strong>Image with spot</strong></a><br><span class="gg-type-small">A photograph with an animated spot laid over it.</span></li>
+  <li><a href="image.html"><strong>Image</strong></a><br><span class="gg-type-small">An approved image from the asset library, placed by its register id, with the register’s alt text.</span></li>
   <li><a href="subscribe.html"><strong>Subscribe</strong></a><br><span class="gg-type-small">The newsletter sign-up, on a dark band, with reCAPTCHA’s attribution line. Needs newsletter.js and float-label.js on the page.</span></li>
   <li><a href="wordmark.html"><strong>Wordmark</strong></a><br><span class="gg-type-small">The Grow Good mark, chosen by variant from the approved logo rows of the asset register.</span></li>
 </ul>

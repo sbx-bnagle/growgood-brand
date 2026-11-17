@@ -31,6 +31,9 @@ jobs:
       - name: Check the components against their contracts
         run: npm run components:check
 
+      - name: Check the asset library against its manifest
+        run: npm run assets:check
+
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.3'
