@@ -5,7 +5,7 @@ title: "Subscribe"
 
 # Subscribe
 
-The newsletter sign-up, on a dark band. Needs newsletter.js and float-label.js on the page.
+The newsletter sign-up, on a dark band, with reCAPTCHA’s attribution line. Needs newsletter.js and float-label.js on the page.
 
 Include `gg/subscribe.html` · Figma: Subscribe · Formats: web · Decisions: D-030, D-033, D-051
 
