@@ -23,7 +23,7 @@ Until launch every check warns: it reports on the pull request and never fails i
 | [`stylelint`](stylelint.md) | TYPE-001 to TYPE-003 | brand pull requests; site pull requests | block in `_sass/gg` | draft |
 | [`a11y`](a11y.md) | A11Y-001 to A11Y-006, A11Y-008 | brand and site pull requests | block serious and critical | draft |
 | [`preflight`](preflight.md) | D-006 to D-008, D-020 | the playbook’s formats; request drafts | block size, margin, pages and fonts; warn image resolution | draft |
-| [`brand judge`](brand-judge.md) | CLAIM, VOICE beyond patterns, NAMES-006 | request drafts; site report only | block unmatched facts; warn the rest | planned |
+| [`brand judge`](brand-judge.md) | CLAIM, MECH-007, NAMES-006, VOICE beyond patterns | request drafts; changed site pages, report only | block unmatched facts; warn the rest | draft |
 
 ## How a check file is laid out
 
