@@ -10,3 +10,6 @@ vendor/
 
 # Files staged for upload to the Drive asset library (Phase 5); not part of the repo.
 asset-seed/
+
+# Formats saved by the preflight and render tools.
+formats-rendered/

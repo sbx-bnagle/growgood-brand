@@ -13,13 +13,14 @@
 // Writes a Markdown report to $GITHUB_STEP_SUMMARY when set. Exit 1 on a serious or critical
 // finding, unless --report (every check warns until launch).
 
-import { createServer } from 'node:http';
-import { readFileSync, existsSync, statSync, readdirSync, appendFileSync } from 'node:fs';
-import { join, extname, relative, resolve, sep } from 'node:path';
+import { readFileSync, appendFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { createRequire } from 'node:module';
 import { pathToFileURL } from 'node:url';
 import { availableParallelism } from 'node:os';
-import { chromium } from 'playwright-core';
+import { fileFor, pagesIn, serve, launch, routeContext } from './lib/serve-build.mjs';
+
+export { fileFor, pagesIn };
 
 const AXE = readFileSync(createRequire(import.meta.url).resolve('axe-core/axe.min.js'), 'utf8');
 export const WIDTHS = [320, 1280];
@@ -27,8 +28,6 @@ const WCAG = new Set(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22a', 'wc
 const EXTRA = new Set(['heading-order', 'page-has-heading-one', 'empty-heading']);
 // The logo and wordmark, whose text is exempt from contrast (WCAG 1.4.3).
 const LOGO = '.logo, .gg-wordmark';
-const ALLOWED_HOSTS = new Set(['fonts.googleapis.com', 'fonts.gstatic.com', 'unpkg.com']);
-const SKIP_DIRS = new Set(['admin', 'assets', 'node_modules', '.git']);
 
 // axe rule → brand rule. Anything else is A11Y-001, WCAG 2.2 AA in general.
 const RULES = {
@@ -41,55 +40,6 @@ const RULES = {
 const BRAND_RULE = Object.fromEntries(Object.entries(RULES).flatMap(([id, list]) => list.map((r) => [r, id])));
 export const brandRule = (axeId) => BRAND_RULE[axeId] || (axeId === 'reflow' ? 'A11Y-008' : 'A11Y-001');
 const levelOf = (impact) => (impact === 'serious' || impact === 'critical' ? 'error' : 'warn');
-
-const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.mjs': 'text/javascript', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif', '.webp': 'image/webp', '.ico': 'image/x-icon', '.woff': 'font/woff', '.woff2': 'font/woff2', '.ttf': 'font/ttf', '.xml': 'application/xml', '.txt': 'text/plain' };
-
-// A built file for a URL path, as GitHub Pages and Cloudflare Pages find it: /a/ → a/index.html,
-// /a → a.html or a/index.html.
-export function fileFor(root, urlPath) {
-  const clean = decodeURIComponent(urlPath.split('?')[0]).replace(/\/+$/, '/');
-  const base = resolve(root, `.${clean}`);
-  if (!base.startsWith(resolve(root))) return null;
-  const candidates = clean.endsWith('/') ? [join(base, 'index.html')] : [base, `${base}.html`, join(base, 'index.html')];
-  return candidates.find((p) => existsSync(p) && statSync(p).isFile()) || null;
-}
-
-export function pagesIn(root, skip = []) {
-  const pages = [];
-  const walk = (dir) => {
-    for (const f of readdirSync(dir).sort()) {
-      const p = join(dir, f);
-      if (statSync(p).isDirectory()) { if (!SKIP_DIRS.has(f) && !f.startsWith('.') && !skip.includes(relative(root, p).split(sep).join('/'))) walk(p); continue; }
-      if (extname(f) !== '.html' || /^google[\w-]*\.html$/.test(f)) continue;
-      const rel = relative(root, p).split(sep).join('/');
-      pages.push(`/${rel.replace(/(^|\/)index\.html$/, '$1')}`);
-    }
-  };
-  walk(root);
-  return pages;
-}
-
-const respond = (root, path) => {
-  const file = fileFor(root, path);
-  if (!file) return { status: 404, contentType: 'text/plain', body: Buffer.from('not found') };
-  return { status: 200, contentType: TYPES[extname(file).toLowerCase()] || 'application/octet-stream', body: readFileSync(file) };
-};
-
-function serve(root) {
-  const server = createServer((req, res) => {
-    const { status, contentType, body } = respond(root, new URL(req.url, 'http://x').pathname);
-    res.writeHead(status, { 'Content-Type': contentType });
-    res.end(body);
-  });
-  return new Promise((ok) => server.listen(0, '127.0.0.1', () => ok(server)));
-}
-
-async function launch() {
-  for (const opts of [{ channel: 'chrome' }, {}]) {
-    try { return await chromium.launch({ headless: true, ...opts }); } catch { /* try the next */ }
-  }
-  return null;
-}
 
 // Runs in the page at 320px: how far the page scrolls sideways, and the widest elements.
 const REFLOW = () => {
@@ -109,7 +59,6 @@ export async function checkPages(root, { origin = '', widths = WIDTHS, pages = n
   if (!browser) return { skipped: 'no Chrome or Chromium found', pages: list.length, findings: [] };
   const server = await serve(dir);
   const local = `http://127.0.0.1:${server.address().port}`;
-  const own = origin ? new URL(origin).origin : '';
   const findings = [];
   const blocked = new Set();
   const checkPage = async (page, path, width) => {
@@ -143,14 +92,7 @@ export async function checkPages(root, { origin = '', widths = WIDTHS, pages = n
   try {
     for (const width of widths) {
       const context = await browser.newContext({ viewport: { width, height: 900 } });
-      await context.route('**/*', (route) => {
-        const url = new URL(route.request().url());
-        if (url.origin === local) return route.continue();
-        if (own && url.origin === own) return route.fulfill(respond(dir, url.pathname));
-        if (ALLOWED_HOSTS.has(url.hostname)) return route.continue();
-        blocked.add(url.hostname);
-        return route.abort();
-      });
+      await routeContext(context, { dir, local, origin, blocked });
       // Several pages at once: axe’s contrast rule is slow on long pages.
       const queue = [...list];
       const worker = async () => {

@@ -39,6 +39,7 @@ exclude:
   - README.md
   - ROADMAP.md
   - stylelint.config.mjs
+  - formats-rendered
 
 defaults:
   - scope: { path: "" }
