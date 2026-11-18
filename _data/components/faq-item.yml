@@ -6,6 +6,7 @@ formats: [web]
 decisions: [D-033, D-051]
 preview: site
 preview_height: 140
+preview_wrap: '<div class="faq"><ul>{include}</ul></div>'
 params:
   - name: question
     type: text

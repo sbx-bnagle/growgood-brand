@@ -4,7 +4,8 @@
 // A and AA rules, plus heading order. At 320px it also checks for sideways scroll (A11Y-008),
 // except on print and social frames, which are fixed sizes. Findings are grouped by A11Y rule;
 // one repeated across pages, such as in the footer, is listed once.
-// Usage: node tools/a11y.mjs [--report] [--json] [--all] [--origin <site url>] <built folder>
+// Usage: node tools/a11y.mjs [--report] [--json] [--all] [--origin <site url>] [--skip <folder>]... <built folder>
+//   --skip    a folder of the build to leave out, such as reference (repeatable)
 //   --origin  the site’s own address, such as https://growgoodgardens.com: requests to it are
 //             answered from the built folder, so the check sees this build, not the live site.
 // Fonts and unpkg load; analytics, reCAPTCHA and every other outside request are blocked.
@@ -24,6 +25,8 @@ const AXE = readFileSync(createRequire(import.meta.url).resolve('axe-core/axe.mi
 export const WIDTHS = [320, 1280];
 const WCAG = new Set(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22a', 'wcag22aa']);
 const EXTRA = new Set(['heading-order', 'page-has-heading-one', 'empty-heading']);
+// The logo and wordmark, whose text is exempt from contrast (WCAG 1.4.3).
+const LOGO = '.logo, .gg-wordmark';
 const ALLOWED_HOSTS = new Set(['fonts.googleapis.com', 'fonts.gstatic.com', 'unpkg.com']);
 const SKIP_DIRS = new Set(['admin', 'assets', 'node_modules', '.git']);
 
@@ -51,12 +54,12 @@ export function fileFor(root, urlPath) {
   return candidates.find((p) => existsSync(p) && statSync(p).isFile()) || null;
 }
 
-export function pagesIn(root) {
+export function pagesIn(root, skip = []) {
   const pages = [];
   const walk = (dir) => {
     for (const f of readdirSync(dir).sort()) {
       const p = join(dir, f);
-      if (statSync(p).isDirectory()) { if (!SKIP_DIRS.has(f) && !f.startsWith('.')) walk(p); continue; }
+      if (statSync(p).isDirectory()) { if (!SKIP_DIRS.has(f) && !f.startsWith('.') && !skip.includes(relative(root, p).split(sep).join('/'))) walk(p); continue; }
       if (extname(f) !== '.html' || /^google[\w-]*\.html$/.test(f)) continue;
       const rel = relative(root, p).split(sep).join('/');
       pages.push(`/${rel.replace(/(^|\/)index\.html$/, '$1')}`);
@@ -99,9 +102,9 @@ const REFLOW = () => {
   return { over, outer };
 };
 
-export async function checkPages(root, { origin = '', widths = WIDTHS, pages = null, concurrency = Math.min(4, Math.max(1, availableParallelism() - 1)) } = {}) {
+export async function checkPages(root, { origin = '', widths = WIDTHS, pages = null, skip = [], concurrency = Math.min(4, Math.max(1, availableParallelism() - 1)) } = {}) {
   const dir = resolve(root);
-  const list = pages || pagesIn(dir);
+  const list = pages || pagesIn(dir, skip);
   const browser = await launch();
   if (!browser) return { skipped: 'no Chrome or Chromium found', pages: list.length, findings: [] };
   const server = await serve(dir);
@@ -120,12 +123,15 @@ export async function checkPages(root, { origin = '', widths = WIDTHS, pages = n
       return;
     }
     await page.addScriptTag({ content: AXE });
-    // Only the rules this check reports: WCAG 2.2 A and AA, and heading order.
-    const violations = await page.evaluate(async ({ wcag, extra }) => {
-      const ids = window.axe.getRules().filter((r) => r.tags.some((t) => wcag.includes(t)) || extra.includes(r.ruleId)).map((r) => r.ruleId);
+    // Only the rules this check reports: WCAG 2.2 A and AA, and heading order. Rules axe marks
+    // experimental stay off, as they are in axe by default.
+    const violations = await page.evaluate(async ({ wcag, extra, exempt }) => {
+      const ids = window.axe.getRules().filter((r) => !r.tags.includes('experimental') && (r.tags.some((t) => wcag.includes(t)) || extra.includes(r.ruleId))).map((r) => r.ruleId);
       const { violations: v } = await window.axe.run(document, { runOnly: { type: 'rule', values: ids }, resultTypes: ['violations'] });
-      return v.map((x) => ({ id: x.id, impact: x.impact, help: x.help, tags: x.tags, nodes: x.nodes.map((n) => ({ target: n.target.join(' '), html: n.html })) }));
-    }, { wcag: [...WCAG], extra: [...EXTRA] });
+      // Text in the logo has no contrast requirement (WCAG 1.4.3, A11Y-002).
+      const inLogo = (n) => { try { return !!document.querySelector(n.target.join(' '))?.closest(exempt); } catch { return false; } };
+      return v.map((x) => ({ id: x.id, impact: x.impact, help: x.help, tags: x.tags, nodes: x.nodes.filter((n) => x.id !== 'color-contrast' || !inLogo(n)).map((n) => ({ target: n.target.join(' '), html: n.html })) })).filter((x) => x.nodes.length);
+    }, { wcag: [...WCAG], extra: [...EXTRA], exempt: LOGO });
     for (const v of violations) {
       for (const n of v.nodes) findings.push({ axe: v.id, rule: brandRule(v.id), impact: v.impact, level: levelOf(v.impact), help: v.help, page: path, width, target: n.target, html: n.html.slice(0, 160) });
     }
@@ -208,12 +214,14 @@ export function formatSummary(result, title = 'Accessibility') {
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const args = process.argv.slice(2);
-  const flags = new Set(args.filter((a) => a.startsWith('--') && a !== '--origin'));
-  const oi = args.indexOf('--origin');
-  const origin = oi >= 0 ? args[oi + 1] : '';
-  const targets = args.filter((a, i) => !a.startsWith('--') && (oi < 0 || i !== oi + 1));
+  const valued = new Set(['--origin', '--skip']);
+  const flags = new Set(args.filter((a) => a.startsWith('--') && !valued.has(a)));
+  const valueOf = (i) => valued.has(args[i - 1]);
+  const origin = args[args.indexOf('--origin') + 1] && args.includes('--origin') ? args[args.indexOf('--origin') + 1] : '';
+  const skip = args.flatMap((a, i) => (args[i - 1] === '--skip' ? [a] : []));
+  const targets = args.filter((a, i) => !a.startsWith('--') && !valueOf(i));
   if (targets.length !== 1) { console.error('Usage: node tools/a11y.mjs [--report] [--json] [--all] [--origin <site url>] <built folder>'); process.exit(2); }
-  const result = await checkPages(targets[0], { origin });
+  const result = await checkPages(targets[0], { origin, skip });
   console.log(flags.has('--json') ? JSON.stringify(group(result.findings), null, 2) : formatText(result, { all: flags.has('--all') }));
   if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, formatSummary(result, process.env.A11Y_TITLE || 'Accessibility'));
   if (!flags.has('--report') && result.findings.some((f) => f.level === 'error')) process.exit(1);

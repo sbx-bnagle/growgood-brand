@@ -20,9 +20,10 @@
 .pb-main > h1 { font-size: var(--gg-type-h1-size); line-height: var(--gg-type-h1-line); font-weight: var(--gg-type-h1-weight); margin: var(--gg-space-md) 0 var(--gg-space-sm); }
 .pb-main > h2 { font-size: var(--gg-type-h2-size); line-height: var(--gg-type-h2-line); font-weight: var(--gg-type-h2-weight); margin-top: var(--gg-space-lg); }
 .pb-main > h3 { font-size: var(--gg-type-h3-size); line-height: var(--gg-type-h3-line); font-weight: var(--gg-type-h3-weight); margin-top: var(--gg-space-md); }
-.pb-main > table { width: 100%; border-collapse: collapse; font-size: var(--gg-type-small-size); line-height: var(--gg-type-small-line); display: block; overflow-x: auto; }
-.pb-main > table th, .pb-main > table td { text-align: left; vertical-align: top; padding: var(--gg-space-xxs) var(--gg-space-xs); border-bottom: 1px solid var(--gg-role-border-default); }
+.pb-main table { width: 100%; border-collapse: collapse; font-size: var(--gg-type-small-size); line-height: var(--gg-type-small-line); display: block; overflow-x: auto; }
+.pb-main table th, .pb-main table td { text-align: left; vertical-align: top; padding: var(--gg-space-xxs) var(--gg-space-xs); border-bottom: 1px solid var(--gg-role-border-default); }
 .pb-main code { font-size: .9em; }
+.pb-main { overflow-wrap: anywhere; } // long paths and code wrap rather than widen the page (A11Y-008)
 .pb-main pre { padding: var(--gg-space-sm); overflow-x: auto; background: var(--gg-color-neutral-200); font-size: var(--gg-type-small-size); line-height: var(--gg-type-small-line); }
 
 .pb-example { margin-top: var(--gg-space-sm); }

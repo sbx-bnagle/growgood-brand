@@ -20,6 +20,12 @@
   @include grid-child($cols: 16);
   grid-column: 1 / -1;
   @include stack(lg);
+  // One column below m, where every child spans the width anyway: 16 columns and their gaps
+  // are wider than a phone, and the page scrolled sideways (A11Y-008).
+  grid-template-columns: minmax(0, 1fr);
+  @include respond-to(m) {
+    grid-template-columns: repeat(16, 1fr);
+  }
 
   h2,
   p {

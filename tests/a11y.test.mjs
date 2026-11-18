@@ -33,7 +33,9 @@ test('fileFor finds pages as GitHub Pages and Cloudflare Pages do', () => {
 });
 
 test('pagesIn lists built pages and leaves out admin and assets', () => {
-  assert.deepEqual(pagesIn(site()), ['/about/', '/formats/flyer.html', '/', '/services.html']);
+  const root = site();
+  assert.deepEqual(pagesIn(root), ['/about/', '/formats/flyer.html', '/', '/services.html']);
+  assert.deepEqual(pagesIn(root, ['formats']), ['/about/', '/', '/services.html']);
 });
 
 test('axe rules map to A11Y rules, and repeats fold together', () => {

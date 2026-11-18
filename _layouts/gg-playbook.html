@@ -23,5 +23,14 @@
   <main id="main" class="pb-main">
     {{ content }}
   </main>
+<script>
+  // A table or code block wider than the screen scrolls inside itself; tabindex lets a keyboard
+  // reach it to scroll (A11Y-007).
+  const pbScrollers = () => document.querySelectorAll('.pb-main table, .pb-main pre').forEach((el) => {
+    if (el.scrollWidth > el.clientWidth) el.tabIndex = 0; else el.removeAttribute('tabindex');
+  });
+  pbScrollers();
+  addEventListener('resize', pbScrollers);
+</script>
 </body>
 </html>

@@ -1,11 +1,12 @@
 {%- comment -%}
   One question that opens to its answer. Contract: _data/components/faq-item.yml
-  faq.js opens and closes it by the faq_q and faq_a classes. The site's markup and styles (D-051).
+  faq.js opens and closes it by the faq_q and faq_a classes. The question is a button, so it
+  takes focus and opens from the keyboard (A11Y-001, A11Y-007). The site's markup and styles (D-051).
 {%- endcomment -%}
       <li>
-        <div class="faq_q" aria-expanded="false" aria-controls="faq-{{ include.id }}">
+        <button type="button" class="faq_q" aria-expanded="false" aria-controls="faq-{{ include.id }}">
           {{ include.question }}
-        </div>
+        </button>
         <div class="faq_a hidden" id="faq-{{ include.id }}">
           {{ include.answer }}
         </div>

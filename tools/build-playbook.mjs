@@ -46,7 +46,9 @@ for (const c of contracts) {
     let stage = `<div class="pb-example"><div class="pb-example__stage${surface}">\n${tag}\n</div></div>`;
     if (c.preview === 'site') {
       const file = `${c.slug}-${i + 1}.html`;
-      writeFileSync(`playbook/previews/${file}`, page({ title: `${c.name}: ${ex.title}`, layout: 'gg-site-preview', ...(c.preview_bare ? { bare: true } : {}) }, tag));
+      // preview_wrap places a fragment, such as a list item, in its container: {include} marks the spot.
+      const body = c.preview_wrap ? c.preview_wrap.replace('{include}', tag) : tag;
+      writeFileSync(`playbook/previews/${file}`, page({ title: `${c.name}: ${ex.title}`, layout: 'gg-site-preview', ...(c.preview_bare ? { bare: true } : {}) }, body));
       stage = `<div class="pb-example"><iframe class="pb-example__frame" src="../previews/${file}" title="${c.name}: ${ex.title}" height="${c.preview_height || 360}" loading="lazy"></iframe></div>`;
     }
     return `### ${ex.title}\n\n${stage}\n\n\`\`\`liquid\n{% raw %}${tag}{% endraw %}\n\`\`\``;

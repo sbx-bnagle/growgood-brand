@@ -17,6 +17,7 @@
   {% include gg/head.html %}
 </head>
 <body class="gg-root gg-format-body">
+  <h1 class="gg-visually-hidden">{{ page.title | default: format }}</h1>
   <div class="gg-format gg-format--{{ format }} gg-set-{{ set }}">
     {{ content }}
   </div>
