@@ -84,7 +84,7 @@
 	background-color: color(purple, XX);
 	color: color(neutral, X);
 	&:hover {
-		background-color: color-mix(in oklab, color(purple, XX), color(neutral, X) 15%);
+		background-color: color-mix(in oklab, color(purple, XX), color(neutral, X) 8%);
 	}
 	a:hover {
 		span {
@@ -97,7 +97,7 @@
 	background-color: color(gold, XX);
 	color: color(neutral, X);
 	&:hover {
-		background-color: color-mix(in oklab, color(gold, XX), color(neutral, X) 15%);
+		background-color: color-mix(in oklab, color(gold, XX), color(neutral, X) 8%);
 	}
 	a:hover {
 		span {
@@ -106,15 +106,18 @@
 	}
 }
 
+// The accent.red role, red.300 (D-030), as purple and gold use their 300s: cream on red.200
+// was 3.37:1, under the 4.5:1 body text needs (A11Y-002). Every card lightens 8% on hover, not
+// 15%, which took the red and gold cards under 4.5:1 (4.21:1 and 4.19:1).
 .card.red {
-	background-color: color(red, X);
+	background-color: color(red, XX);
 	color: color(neutral, X);
 	&:hover {
-		background-color: color-mix(in oklab, color(red, X), color(neutral, X) 15%);
+		background-color: color-mix(in oklab, color(red, XX), color(neutral, X) 8%);
 	}
 	a:hover {
 		span {
-			color: color(red, X);
+			color: color(red, XX);
 		}
 	}
 }
@@ -123,7 +126,7 @@
 	background-color: color(green, XXX);
 	color: color(neutral, X);
 	&:hover {
-		background-color: color-mix(in oklab, color(green, XXX), color(neutral, X) 15%);
+		background-color: color-mix(in oklab, color(green, XXX), color(neutral, X) 8%);
 	}
 	a:hover {
 		span {

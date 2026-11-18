@@ -141,7 +141,7 @@ export function markdownSegments(src, startLine = 1) {
 }
 
 // Keys whose values are never prose, and keys whose values read as headings.
-const NOT_PROSE = /^(id|ids|url|urls|href|link_url|src|image|img|icon|class|classes|slug|permalink|layout|path|file|files|dest|date|style|color|colour|type|variant|include|key|ref|rel|target|sitekey|token|email|phone|lat|lng|width|height|size|order|weight|status|owner|maintainer|version|lane|rule_prefix|applies_to|depends_on|decisions|last_reviewed|set|source|values|default|required|params|name_id)$/i;
+const NOT_PROSE = /^(id|ids|url|urls|href|link_url|src|image|img|icon|class|classes|slug|permalink|layout|path|file|files|dest|date|style|color|colour|type|variant|include|key|ref|rel|target|sitekey|token|email|phone|lat|lng|width|height|size|order|weight|status|owner|maintainer|version|lane|rule_prefix|applies_to|depends_on|decisions|last_reviewed|set|source|values|default|required|params|name_id|preview_wrap)$/i;
 const HEADING_KEY = /^(title|heading|headline|label|button|cta|name|link|subhead|subtitle)$/i;
 const looksLikeValue = (s) => /^(https?:|mailto:|tel:|\/|#|\.\.?\/)/.test(s) || /^[\w.-]+\.(html?|md|markdown|ya?ml|png|jpe?g|gif|svg|webp|css|scss|js|mjs|json|pdf)$/i.test(s) || /^[\w-]+$/.test(s) && !/\s/.test(s) && /[_\d]|^[a-z]+(-[a-z]+)+$/.test(s);
 

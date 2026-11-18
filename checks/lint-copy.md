@@ -2,12 +2,12 @@
 id: lint-copy
 title: Copy linter
 command: node tools/lint-copy.mjs [--report] [--json] [--all] [--docs] <files or folders>; npm run checks:copy for the brand files
-rules: [MECH-001, MECH-002, MECH-003, MECH-004, MECH-005, MECH-006, MECH-007, MECH-008, MECH-010, MECH-011, MECH-012, MECH-013, NAMES-001, NAMES-002, NAMES-003, NAMES-004, NAMES-005, VOICE-003, VOICE-005]
+rules: [MECH-001, MECH-002, MECH-003, MECH-004, MECH-005, MECH-006, MECH-008, MECH-010, MECH-011, MECH-012, MECH-013, NAMES-001, NAMES-002, NAMES-003, NAMES-004, NAMES-005, VOICE-003, VOICE-005]
 runs_on: [brand pull requests, site pull requests (the built site)]
 level_now: warn
 level_at_launch: block for MECH and NAMES, warn for VOICE (O-20)
 status: draft
-decisions: [D-013, D-054]
+decisions: [D-013, D-054, D-055]
 ---
 
 # Copy linter
@@ -25,6 +25,7 @@ On the site it reads the built pages in `_site`, so it sees what Jekyll and kram
 - Words inside curly quotes, ‘like this’, are quoted examples or someone else’s words. Only the straight-quote rule reads them.
 - A heading that starts with an ID, such as ‘D-054’ or ‘MECH-001.’, is checked from the word after the ID.
 - `brand/verbal/spelling.yml` is the linter’s own word list.
+- MECH-007, where a comma or period goes at a closing quote, depends on whether the quote is a word or a sentence someone said. Single quotes mark both, so the brand judge checks it (D-055).
 
 ## Known limits
 
