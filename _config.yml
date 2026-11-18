@@ -41,6 +41,8 @@ exclude:
   - stylelint.config.mjs
   - formats-rendered
   - mcp
+  - functions
+  - request-app
 
 defaults:
   - scope: { path: "" }

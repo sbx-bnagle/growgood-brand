@@ -38,3 +38,18 @@
 .pb-swatch__chip { height: 72px; border: 1px solid var(--gg-role-border-default); }
 .pb-frame { border: 1px solid var(--gg-role-border-default); background: var(--gg-role-border-default); }
 .pb-example__frame { display: block; width: 100%; border: 1px solid var(--gg-role-border-default); background: var(--gg-role-surface-default); }
+
+// The request pages (Phase 8, D-057).
+.rq-form fieldset { border: 0; padding: 0; margin: 0; }
+.rq-form legend { font-weight: var(--gg-font-weight-bold); margin-bottom: var(--gg-space-xs); }
+.rq-field label, .rq-field .rq-hint { display: block; }
+.rq-field label { font-weight: var(--gg-font-weight-bold); }
+.rq-hint { font-size: var(--gg-type-small-size); line-height: var(--gg-type-small-line); color: var(--gg-role-text-muted); }
+.rq-field input, .rq-field textarea { display: block; width: 100%; max-width: 640px; box-sizing: border-box; margin-top: var(--gg-space-xxs); padding: var(--gg-space-xs); border: 1px solid var(--gg-role-text-muted); font: inherit; background: var(--gg-role-surface-default); color: var(--gg-role-text-default); }
+.rq-button { min-height: 44px; padding: 0 var(--gg-space-sm); border: 2px solid var(--gg-role-action-default); border-radius: 60px; background: var(--gg-role-action-default); color: var(--gg-role-action-on-default); font: inherit; font-weight: var(--gg-font-weight-bold); cursor: pointer; }
+.rq-button--quiet { background: none; color: var(--gg-role-action-default); }
+.rq-button:disabled { opacity: .6; cursor: progress; }
+.rq-readback pre, .pb-main #rq-item pre { white-space: pre-wrap; }
+.rq-file img, .rq-file iframe { display: block; max-width: 100%; border: 1px solid var(--gg-role-border-default); }
+.rq-file iframe { width: 100%; height: 720px; }
+.rq-status:empty { display: none; }
