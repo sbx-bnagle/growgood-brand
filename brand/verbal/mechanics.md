@@ -4,13 +4,13 @@ title: Mechanics
 owner: leah-fagan
 maintainer: brad-nagle
 status: draft
-version: 0.2.0
-last_reviewed: 2026-11-13
+version: 0.3.0
+last_reviewed: 2026-11-17
 lane: fixed
 applies_to: [web, flyer, postcard, social]
 rule_prefix: MECH
 depends_on: [verbal.spelling]
-decisions: [D-013, D-022]
+decisions: [D-013, D-022, D-055]
 ---
 
 # Mechanics
@@ -42,8 +42,9 @@ Punctuation, case, units and spelling for everything a customer reads. Every rul
 *Why:* the number and unit are one value. A line break between them splits the value.
 *Check:* `lint-copy`.
 
-**MECH-007.** Commas and periods sit inside closing quotes.
-*Check:* `lint-copy`.
+**MECH-007.** A comma or period sits outside the closing quote around a word, a phrase or an example: ‘fall’, not ‘autumn’. It sits inside the closing quote when it ends a sentence someone said or wrote.
+*Why:* moving the comma inside an example changes the example (D-055).
+*Check:* brand judge; reviewer until it runs. Single quotes mark both kinds (MECH-003), so a pattern cannot tell them apart.
 
 **MECH-008.** One space after a period.
 *Check:* `lint-copy`.

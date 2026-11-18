@@ -16,12 +16,19 @@ header {
 
   .header__text {
   	@include grid-parent($grid-mobile);
+    // Below m, two columns: the menu takes what it needs and the masthead the rest. Sixteen
+    // columns with 20px gaps are wider than a 320px screen, which pushed Contact under Menu
+    // (A11Y-006, A11Y-008).
+    grid-template-columns: minmax(0, 1fr) auto;
     @include respond-to(m){
       @include grid-parent($grid-16);
     }
     
     .nav__masthead {
-    	grid-column: 1 / 7;
+    	grid-column: 1;
+      @include respond-to(m){
+        grid-column: 1 / 7;
+      }
     }
 
     .nav__menu {
@@ -112,8 +119,20 @@ header {
 
     nav {
     	color: color(neutral, XXX);
-    	grid-column: 7 / -1;
+    	grid-column: 2;
       justify-self: end;
+      @include respond-to(m){
+        grid-column: 7 / -1;
+      }
+    }
+
+    .nav__mobile-menu > ul {
+      white-space: nowrap;
+    }
+
+    // The column gap now spaces the menu from the masthead, so Menu needs no padding of its own.
+    .nav__mobile-menu > ul > li:first-child {
+      padding-left: 0;
     }
 
     nav ul {

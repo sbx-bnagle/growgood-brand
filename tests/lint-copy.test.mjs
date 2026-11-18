@@ -101,8 +101,8 @@ test('mechanics: straight quotes, dashes, units, spacing, exclamation marks and 
     ['We can help!', ['MECH-012']],
     ['A win 😎.', ['MECH-013']],
     ['In autumn.', ['MECH-011']],
-    ['Call it ‘a garden’, then plant.', ['MECH-007']],
-    ['He said “plant now”.', ['MECH-003', 'MECH-007']],
+    ['Call it ‘a garden’, then plant.', []],
+    ['He said “plant now”.', ['MECH-003']],
     ['Plants for the upper midwest.', ['NAMES-002']],
   ];
   for (const [text, expected] of cases) assert.deepEqual([...new Set(rulesIn(lintSource(text, '.md', 'x.md', { docs: true })))].sort(), expected.sort(), text);

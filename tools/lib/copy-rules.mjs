@@ -66,7 +66,7 @@ export function buildRules(spelling) {
     { id: 'MECH-004', level: 'error', msg: 'straight quote or apostrophe', raw: true, test: (t) => all(/\p{L}'\p{L}|(?:^|\s)'\p{L}|\p{L}'(?=\s|[.,;:!?)]|$)|"/gu, t) },
     { id: 'MECH-005', level: 'error', msg: 'capital am, pm or unit', test: (t) => all(/\b\d+(?:[.:]\d+)?\s?(?:AM|PM|A\.M\.|P\.M\.|MM|CM|FT|LBS?|OZ|GAL)\b/g, t) },
     { id: 'MECH-006', level: 'error', msg: 'space between number and unit, or time and am or pm', test: (t) => all(/\b\d+(?:[.:]\d+)?\s(?:mm|cm|ft|sq ?ft|lbs?|oz|gal|am|pm|a\.m\.|p\.m\.)(?!\p{L})/giu, t) },
-    { id: 'MECH-007', level: 'error', msg: 'comma or period outside a closing quote', raw: true, test: (t) => [...t.matchAll(QUOTED)].filter((m) => /[.,]/.test(t[m.index + m[0].length] || '')).map((m) => ({ index: m.index, length: m[0].length + 1 })) },
+    // MECH-007 is the brand judge’s: single quotes mark quotations and quoted words alike (D-055).
     { id: 'MECH-008', level: 'error', msg: 'two spaces after a period', raw: true, test: (t) => all(/\. {2,}(?=\S)/g, t) },
     { id: 'MECH-010', level: 'error', msg: 'UK spelling', test: (t) => stems.flatMap(({ re, us, except }) => all(re, t, (m) => `${m[0]} → ${us}…`).filter((h) => !except.some((e) => t.substr(h.index, h.length).toLowerCase().startsWith(e)))) },
     { id: 'MECH-011', level: 'error', msg: 'word choice', test: (t) => choices.flatMap(({ re, avoid, use }) => all(re, t, `${avoid} → ${use}`)) },
