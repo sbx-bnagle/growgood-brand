@@ -9,7 +9,7 @@
     "contrast": "node tools/contrast.mjs",
     "tokens:ramps": "node tools/build-ramps.mjs && node tools/render-color-review.mjs",
     "lint:copy": "node tools/lint-copy.mjs",
-    "checks:copy": "node tools/lint-copy.mjs --report --docs brand checks _includes/gg _data/components",
+    "checks:copy": "node tools/lint-copy.mjs --report --docs brand checks _includes/gg _data/components _data/request-formats.yml request",
     "lint:styles": "node tools/lint-styles.mjs",
     "checks:styles": "node tools/lint-styles.mjs --report _sass/gg",
     "checks:site": "node tools/checks-site.mjs",

@@ -20,10 +20,11 @@ import { join, extname, relative, resolve, dirname, basename } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parse as parseYaml } from 'yaml';
 import { copySegments } from './lib/copy-text.mjs';
+import { structured, MODEL as DEFAULT_MODEL } from './lib/claude.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 export const DEFAULT_REPO = resolve(HERE, '..');
-export const MODEL = process.env.BRAND_JUDGE_MODEL || 'claude-opus-5-5';
+export const MODEL = process.env.BRAND_JUDGE_MODEL || DEFAULT_MODEL;
 export const EFFORT = process.env.BRAND_JUDGE_EFFORT || 'high';
 
 // The report’s shape, enforced by structured outputs.
@@ -133,33 +134,11 @@ export function findingsFrom(report, { site = false } = {}) {
 
 // Sends one judging request. `client` is an Anthropic client; tests pass a stand-in.
 export async function judge({ drafts, request = '', site = false, repo = DEFAULT_REPO, client = null, model = MODEL, effort = EFFORT, today } = {}) {
-  if (!client) {
-    if (!process.env.ANTHROPIC_API_KEY && !process.env.ANTHROPIC_AUTH_TOKEN) return { skipped: 'no ANTHROPIC_API_KEY', drafts: drafts.length, findings: [] };
-    const { default: Anthropic } = await import('@anthropic-ai/sdk');
-    client = new Anthropic();
-  }
   const rules = judgeRules(repo);
-  const context = brandContext(repo, rules);
-  // Streamed, as thinking and a long report can run past a plain request’s timeout. Server-side
-  // fallbacks re-run the request on another model if this one declines.
-  const stream = client.beta.messages.stream({
-    model,
-    max_tokens: 32000,
-    betas: ['server-side-fallback-2026-07-01'],
-    fallbacks: 'default',
-    output_config: { effort, format: { type: 'json_schema', schema: SCHEMA } },
-    system: [{ type: 'text', text: systemPrompt(rules, context), cache_control: { type: 'ephemeral' } }],
-    messages: [{ role: 'user', content: userPrompt({ request, drafts, today }) }],
-  });
-  const message = await stream.finalMessage();
-  const usage = message.usage || {};
-  const base = { model: message.model || model, drafts: drafts.length, rules, usage: { input: usage.input_tokens, cached: usage.cache_read_input_tokens, output: usage.output_tokens } };
-  if (message.stop_reason === 'refusal') return { ...base, skipped: `the model declined (${message.stop_details?.category || 'no category'})`, findings: [] };
-  if (message.stop_reason === 'max_tokens') return { ...base, skipped: 'the report ran past its length limit', findings: [] };
-  const text = message.content.filter((b) => b.type === 'text').map((b) => b.text).join('');
-  let report;
-  try { report = JSON.parse(text); } catch { return { ...base, skipped: 'the report was not valid JSON', findings: [] }; }
-  return { ...base, report, findings: findingsFrom(report, { site }) };
+  const r = await structured({ system: systemPrompt(rules, brandContext(repo, rules)), user: userPrompt({ request, drafts, today }), schema: SCHEMA, client, model, effort });
+  const base = { model: r.model || model, drafts: drafts.length, rules, usage: r.usage || {} };
+  if (!r.ok) return { ...base, skipped: r.reason === 'the reply was not valid JSON' ? 'the report was not valid JSON' : r.reason.replace('the reply', 'the report'), findings: [] };
+  return { ...base, report: r.data, findings: findingsFrom(r.data, { site }) };
 }
 
 export function readDrafts(paths, cwd = process.cwd()) {

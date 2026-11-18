@@ -1,0 +1,40 @@
+# What a requester can ask for in the playbook’s request pages (Phase 8, D-057). Each output is
+# one rendered file: a format from mcp/render.mjs and its parts in order, as the templates in
+# playbook/formats/ compose them. The form asks for each param whose contract source is
+# ‘request’, except those in omit. A format with ladder: brief goes to Brad (LADDER-003).
+- id: flyer
+  name: Flyer
+  summary: Letter, printed in house (D-006).
+  outputs:
+    - { render: flyer, parts: [wordmark, art-placeholder, event-details] }
+  omit: [link, href]
+- id: postcard
+  name: Postcards
+  summary: Quarter Letter, four to a sheet, a sheet for the front and one for the back (D-007).
+  outputs:
+    - { render: postcard-sheet, name: front, parts: [art-placeholder, wordmark] }
+    - { render: postcard-sheet, name: back, parts: [event-details, wordmark] }
+  omit: [link, href]
+- id: social-feed
+  name: Feed post
+  summary: Instagram and Facebook, 1080×1350px (D-008).
+  outputs:
+    - { render: social-feed, parts: [wordmark, art-placeholder, event-details] }
+  omit: [href]
+- id: social-story
+  name: Story
+  summary: Instagram and Facebook, 1080×1920px (D-008).
+  outputs:
+    - { render: social-story, parts: [wordmark, art-placeholder, event-details] }
+  omit: [href]
+- id: social-cover
+  name: Event cover
+  summary: Facebook event, 1920×1005px (D-008).
+  outputs:
+    - { render: social-cover, parts: [art-placeholder, wordmark, event-details] }
+  omit: [link, href]
+- id: web-page
+  name: Web page
+  summary: A new page on the site. Brad builds it from your brief (LADDER-003).
+  ladder: brief
+  outputs: []

@@ -1,0 +1,5 @@
+---
+layout: null
+permalink: /request/formats.json
+---
+{"formats": {{ site.data.request-formats | jsonify }}, "contracts": {{ site.data.components | jsonify }}}

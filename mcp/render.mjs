@@ -20,7 +20,8 @@ export const LAYOUTS = {
   'postcard-sheet': { layout: 'gg-postcard-sheet', family: 'postcard' },
   'social-feed': { layout: 'gg-social', size: 'feed', family: 'social' },
   'social-story': { layout: 'gg-social', size: 'story', family: 'social' },
-  'social-cover': { layout: 'gg-social', size: 'cover', family: 'social' },
+  // The cover sets everything after the art in a side column, as playbook/formats/social-cover.html does.
+  'social-cover': { layout: 'gg-social', size: 'cover', family: 'social', side: 1 },
 };
 
 const run = (cmd, args, cwd) => execFileSync(cmd, args, { cwd, stdio: ['ignore', 'pipe', 'pipe'], encoding: 'utf8' });
@@ -62,7 +63,8 @@ export function pageSource(format, parts, title = 'Draft') {
   const spec = LAYOUTS[format];
   const fm = { title, layout: spec.layout, ...(spec.size ? { size: spec.size } : {}), robots: 'noindex', parts: parts.map((p) => p.params || {}) };
   // Jekyll’s include tag takes plain variables, not page.parts[0], so each part is assigned first.
-  const body = parts.map((p, i) => `{% assign gg_part_${i} = page.parts[${i}] %}{% include gg/${p.component}.html${Object.keys(p.params || {}).map((k) => ` ${k}=gg_part_${i}.${k}`).join('')} %}`).join('\n');
+  const lines = parts.map((p, i) => `{% assign gg_part_${i} = page.parts[${i}] %}{% include gg/${p.component}.html${Object.keys(p.params || {}).map((k) => ` ${k}=gg_part_${i}.${k}`).join('')} %}`);
+  const body = spec.side != null && lines.length > spec.side ? [...lines.slice(0, spec.side), '<div class="gg-social__side">', ...lines.slice(spec.side), '</div>'].join('\n') : lines.join('\n');
   return `---\n${stringify(fm)}---\n${body}\n`;
 }
 

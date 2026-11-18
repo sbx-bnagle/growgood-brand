@@ -1,0 +1,51 @@
+name: Draft a request
+
+# Drafts one request from the playbook’s request pages (Phase 8, D-057). The request app starts
+# it with the request’s id, and nothing else, through workflow_dispatch. It reads the brief from
+# the app, drafts with Claude from the brand files on main, renders with Jekyll and preflight,
+# runs the copy linter and the brand judge, and posts the draft back. This repo is public, so the
+# drafter logs only the id and the outcome, and saves nothing to the run.
+# Needs: the REQUEST_DRAFTER_SECRET and ANTHROPIC_API_KEY secrets, and the REQUEST_API variable.
+
+on:
+  workflow_dispatch:
+    inputs:
+      id:
+        description: The request id, such as R-20261117-4F2A
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: draft-${{ inputs.id }}
+  cancel-in-progress: true
+
+jobs:
+  draft:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci --no-audit --no-fund
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+
+      - name: Draft the request
+        env:
+          REQUEST_ID: ${{ inputs.id }}
+          REQUEST_API: ${{ vars.REQUEST_API }}
+          REQUEST_DRAFTER_SECRET: ${{ secrets.REQUEST_DRAFTER_SECRET }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: node tools/draft-request.mjs "$REQUEST_ID"
