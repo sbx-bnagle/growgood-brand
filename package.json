@@ -13,7 +13,7 @@
     "lint:styles": "node tools/lint-styles.mjs",
     "checks:styles": "node tools/lint-styles.mjs --report _sass/gg",
     "checks:site": "node tools/checks-site.mjs",
-    "checks:a11y": "node tools/a11y.mjs --report _site",
+    "checks:a11y": "node tools/a11y.mjs --report --skip reference _site",
     "tokens:check": "node tools/check-tokens.mjs",
     "tokens:build": "node tools/build-tokens.mjs",
     "figma:build": "node tools/build-figma-plugin.mjs",

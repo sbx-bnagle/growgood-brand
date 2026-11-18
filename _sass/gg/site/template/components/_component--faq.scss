@@ -3,6 +3,12 @@
 .faq {
 	@include grid-child($cols: 16);
 	@include stack(lg);
+	// One column below m, where every child spans the width anyway: 16 columns and their gaps
+	// are wider than a phone, and the page scrolled sideways (A11Y-008).
+	grid-template-columns: minmax(0, 1fr);
+	@include respond-to(m){
+		grid-template-columns: repeat(16, 1fr);
+	}
 
 	h2 {
 		grid-column: 1 / -1;
@@ -26,8 +32,17 @@
 	}
 
 	.faq_q {
+		// A button that looks like the block of text it replaced: full width, the same inset.
+		appearance: none;
+		background: none;
+		border: 0;
+		color: inherit;
+		text-align: left;
+		display: block;
+		width: 100%;
+		margin: 0;
+		padding: 0 0 0 bl(5);
 		@include typestyle($sans-sm-bld);
-		margin-left: bl(5);
 	}
 
 	.faq_q:hover {

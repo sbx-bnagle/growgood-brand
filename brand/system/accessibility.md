@@ -23,7 +23,7 @@ Every Grow Good piece works for people who read it with a screen reader, a keybo
 *Why:* AA is the common baseline for public sites, and the brand speaks to every neighbor.
 *Check:* `a11y`; reviewer for what a tool cannot test.
 
-**A11Y-002.** Text contrast is at least 4.5:1. Large text, 24px or 18.7px bold, and parts of the interface such as icons and field borders, at least 3:1. Use the color role pairs in the tokens, which are checked (D-030).
+**A11Y-002.** Text contrast is at least 4.5:1. Large text, 24px or 18.7px bold, and parts of the interface such as icons and field borders, at least 3:1. Use the color role pairs in the tokens, which are checked (D-030). Text in the logo is exempt, as WCAG allows.
 *Why:* low contrast is the most common barrier, and it fails outdoors on a phone first.
 *Check:* `a11y`, `contrast`, `tokens:check`.
 

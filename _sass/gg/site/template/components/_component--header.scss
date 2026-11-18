@@ -40,10 +40,21 @@ header {
     }
 
     .mobile-menu__toggle {
+      // A button that looks like the text it replaced.
+      appearance: none;
+      background: none;
+      border: 0;
+      padding: 0;
+      color: inherit;
       @include typestyle($sans-sm-bld);
       &:hover {
         cursor: pointer;
       }
+    }
+
+    // The Contact link sits in its own li now; its own margin keeps the old spacing.
+    .nav__mobile-menu > ul > li + li {
+      padding-left: 0;
     }
     
 

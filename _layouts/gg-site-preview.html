@@ -13,6 +13,8 @@
   <link rel="stylesheet" href="{{ '/assets/gg/site.css' | relative_url }}">
 </head>
 <body>
+  {%- comment -%} Each preview is a page of its own, so it has a heading of its own (A11Y-005). {%- endcomment -%}
+  <h1 style="position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap">{{ page.title }}</h1>
   {%- if page.bare %}
   {{ content }}
   {%- else %}
