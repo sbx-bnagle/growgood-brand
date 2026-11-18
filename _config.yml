@@ -40,6 +40,7 @@ exclude:
   - ROADMAP.md
   - stylelint.config.mjs
   - formats-rendered
+  - mcp
 
 defaults:
   - scope: { path: "" }

@@ -7,10 +7,10 @@ name: Tokens
 
 on:
   pull_request:
-    paths: ['tokens/**', 'tools/**', 'figma-plugin/**', 'tests/**', '_data/components/**', 'package.json', 'package-lock.json', '.github/workflows/tokens.yml']
+    paths: ['tokens/**', 'tools/**', 'mcp/**', 'figma-plugin/**', 'tests/**', '_data/components/**', 'package.json', 'package-lock.json', '.github/workflows/tokens.yml']
   push:
     branches: [main]
-    paths: ['tokens/**', 'tools/**', 'figma-plugin/**', 'tests/**', '_data/components/**', 'package.json', 'package-lock.json', '.github/workflows/tokens.yml']
+    paths: ['tokens/**', 'tools/**', 'mcp/**', 'figma-plugin/**', 'tests/**', '_data/components/**', 'package.json', 'package-lock.json', '.github/workflows/tokens.yml']
 
 permissions:
   contents: write
