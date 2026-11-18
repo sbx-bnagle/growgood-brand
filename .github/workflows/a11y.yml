@@ -1,0 +1,68 @@
+name: Accessibility
+
+# The accessibility check (D-054, checks/a11y.md) on the built playbook: axe-core in headless Chrome
+# at 320px and 1280px, against brand/system/accessibility.md. Report only until launch (O-20); the
+# findings go to the run summary. It runs when templates, styles, tokens or the playbook change,
+# beside the Playbook check, so pull requests that only change brand documents stay quick.
+
+on:
+  pull_request:
+    paths:
+      - '_includes/**'
+      - '_layouts/**'
+      - '_sass/**'
+      - 'assets/**'
+      - '_data/**'
+      - 'playbook/**'
+      - 'tokens/**'
+      - 'index.md'
+      - 'tools/a11y.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/a11y.yml'
+  push:
+    branches: [main]
+    paths:
+      - '_includes/**'
+      - '_layouts/**'
+      - '_sass/**'
+      - 'assets/**'
+      - '_data/**'
+      - 'playbook/**'
+      - 'tokens/**'
+      - 'index.md'
+      - 'tools/a11y.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/a11y.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  a11y:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+
+      - name: Build the playbook
+        run: bundle exec jekyll build
+
+      - name: Check the playbook's accessibility
+        env:
+          A11Y_TITLE: Accessibility of the playbook
+        run: npm run checks:a11y

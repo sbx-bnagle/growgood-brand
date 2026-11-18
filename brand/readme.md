@@ -55,7 +55,7 @@ Keeper for every file: Leah Fagan. Maintainer for every file: Brad Nagle.
 | `formats/postcard.md` | Quarter-Letter card, four to a sheet | fixed | CARD | planned |
 | `formats/social.md` | Feed, story and event cover | fixed | SOC | planned |
 | `system/components.md` | Include contracts and how to compose them | fixed | COMP | draft |
-| `system/accessibility.md` | WCAG 2.2 AA targets for every format | fixed | A11Y | planned |
+| `system/accessibility.md` | WCAG 2.2 AA targets for every format | mixed | A11Y | draft |
 | `system/review.md` | Review gates G1 to G3, who approves what | fixed | REV | planned |
 | `system/request-ladder.md` | Make, adapt, brief a person, stop and ask | fixed | LADDER | draft |
 | `decisions.md` | Decisions log | fixed | none | draft |
