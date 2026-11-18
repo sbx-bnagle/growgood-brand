@@ -11,7 +11,7 @@
 | 6 | Checks | Copy linter, stylelint rules, accessibility, print preflight, brand judge | Pass and fail thresholds | Threshold sign-off | done 2026-11-17: thresholds set (D-054); the copy linter v1, stylelint, the accessibility check, print and social preflight and the brand judge report on pull requests; the site’s own findings are fixed; every check warns until launch (O-20); print color waits on O-21; the judge runs once Brad saves the `ANTHROPIC_API_KEY` secret |
 | 7 | Brand MCP server | Tools for rules, templates, assets, render, checks | | Test runs | done 2026-11-17: eight tools read main on GitHub and render from a worktree of main (D-056); test runs over MCP pass for every tool, and a stdio run against GitHub rendered a social post with no preflight findings |
 | 8 | Request app | Forms per format, Google sign-in, review queue, history | Who can sign in | G1 to G3 live | built 2026-11-17: request pages in the playbook, API on Pages Functions with Access sign-in, requests in KV, drafting in GitHub Actions (D-057); Brad and Leah sign in, Leah approves; G1 to G3 pass in tests; live once Brad does the setup in `request-app/README.md` |
-| 9 | Pilot | Fresh-agent test, real requests, fixes written back, handover | Real requests | Go-live | |
+| 9 | Pilot | Fresh-agent test, real requests, fixes written back, handover | Real requests | Go-live | ready 2026-11-17: the fresh-agent test script, the real-request plan, how fixes are written back and the go-live gate are in `pilot/README.md`; `HANDOVER.md` is written; the runs wait on a fresh session, the request app setup and Leah |
 
 ## Review gates
 

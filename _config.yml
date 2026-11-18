@@ -37,6 +37,8 @@ exclude:
   - AGENTS.md
   - CLAUDE.md
   - README.md
+  - HANDOVER.md
+  - pilot
   - ROADMAP.md
   - stylelint.config.mjs
   - formats-rendered
