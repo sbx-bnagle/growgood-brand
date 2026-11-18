@@ -403,3 +403,9 @@ Affects: `checks/`, `tools/`, `.github/workflows/` in both repos, `verbal/mechan
 A comma or period sits outside the closing quote around a word, a phrase or an example, as in ‘fall’, not ‘autumn’, and inside it when it ends a sentence someone said or wrote. House style marks both with single quotes (MECH-003), so the copy linter cannot tell them apart: it drops MECH-007, and the brand judge checks it.
 Why: moving the comma inside an example changes the example. The brand files already follow this; every one of the linter’s 34 MECH-007 findings on them was an example.
 Affects: `verbal/mechanics.md`, `tools/lib/copy-rules.mjs`, `checks/lint-copy.md`, `checks/brand-judge.md`.
+
+### D-056 The brand server reads main on GitHub and renders from a worktree of main
+2026-11-17, made in Phase 7 by Claude for Brad Nagle. Carries out D-039. Replace this entry to change it.
+The brand server (`mcp/`) is an MCP server that runs where the agent runs, over stdio. Its tools read the brand files, contracts and asset manifest from `main` on GitHub, at the commit `main` points to when the tool runs; the repo is public, so no key is needed. Rendering needs Jekyll and Chrome, so it builds from a git worktree of `origin/main`, fetched fresh on each call, and saves PDF or PNG with preflight’s report. Eight tools: `brand_guide`, `get_rule`, `list_components`, `get_component`, `find_assets`, `render_format`, `check_copy`, `judge_draft`. A local folder can stand in for `main` to test a change before it merges.
+Why: an agent always gets the brand as merged, with no deploy step, and the server reuses the checks the pull requests run.
+Affects: `mcp/`, `.mcp.json`, Phase 8.
