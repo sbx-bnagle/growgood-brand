@@ -3,7 +3,7 @@
 // Settings on the Pages project: the KV binding REQUESTS; ACCESS_TEAM_DOMAIN and ACCESS_AUD for
 // sign-in; APPROVERS; DRAFTER_SECRET; GITHUB_DISPATCH_TOKEN (Actions: write on the brand repo).
 
-import { validateRequest, newId } from '../request/lib.js';
+import { validateRequest, newId, STAGES, stalled } from '../request/lib.js';
 import { HttpError, signedInEmail, isApprover, checkDrafter } from './access.mjs';
 
 export const json = (data, status = 200) => new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' } });
@@ -21,7 +21,7 @@ function kv(env) {
   return env.REQUESTS;
 }
 
-const summary = (r) => ({ id: r.id, format: r.format, formatName: r.formatName, title: r.fields?.name || r.notes?.slice(0, 60) || r.formatName, status: r.status, created: r.created, updated: r.updated });
+const summary = (r) => ({ id: r.id, format: r.format, formatName: r.formatName, title: r.fields?.name || r.notes?.slice(0, 60) || r.formatName, status: r.status, stage: r.stage || '', created: r.created, updated: r.updated });
 
 export async function getRecord(env, id) {
   if (!/^R-\d{8}-[0-9A-F]{4}$/.test(id || '')) throw new HttpError(404, 'No such request.');
@@ -36,6 +36,22 @@ export async function putRecord(env, r) {
 }
 
 const log = (r, who, what, note = '') => r.history.push({ at: new Date().toISOString(), who, what, ...(note ? { note } : {}) });
+
+// Marks a request as drafting and starts the workflow. If it cannot start, the request fails at
+// once, so the page stops waiting and offers to try again.
+async function startDraft(env, r, fetchImpl) {
+  r.status = 'drafting';
+  r.stage = 'queued';
+  r.draftingSince = new Date().toISOString();
+  await putRecord(env, r);
+  const problem = await dispatchDraft(env, r.id, { fetchImpl });
+  if (problem) {
+    r.status = 'failed';
+    delete r.stage;
+    log(r, 'system', 'drafting did not start', problem);
+    await putRecord(env, r);
+  }
+}
 
 // Starts the drafting workflow for one request. Only the id leaves Cloudflare.
 export async function dispatchDraft(env, id, { fetchImpl = fetch } = {}) {
@@ -77,13 +93,13 @@ export async function createRequest(context) {
   const now = new Date();
   const r = { id: newId(now), ...v.request, replies: [], requester: email, created: now.toISOString(), history: [], draft: null, question: '' };
   const brief = (await formatsData(context)).formats.find((f) => f.id === r.format)?.ladder === 'brief';
-  r.status = brief ? 'brief-a-person' : 'drafting';
   log(r, email, 'sent the request, confirming the brief (G1)');
-  if (brief) log(r, 'system', 'a web page is briefed to Brad (LADDER-003)');
-  await putRecord(env, r);
-  if (!brief) {
-    const problem = await dispatchDraft(env, r.id, { fetchImpl });
-    if (problem) { log(r, 'system', 'drafting did not start', problem); await putRecord(env, r); }
+  if (brief) {
+    r.status = 'brief-a-person';
+    log(r, 'system', 'a web page is briefed to Brad (LADDER-003)');
+    await putRecord(env, r);
+  } else {
+    await startDraft(env, r, fetchImpl);
   }
   return json({ id: r.id, status: r.status }, 201);
 }
@@ -110,18 +126,16 @@ export async function approveRequest({ request, env, params, fetchImpl }) {
 export async function replyToRequest({ request, env, params, fetchImpl }) {
   const email = await signedInEmail(request, env, { fetchImpl });
   const r = await getRecord(env, params.id);
-  if (!['review', 'needs-info', 'failed'].includes(r.status)) throw new HttpError(409, 'This request is not waiting on a note.');
+  if (!['review', 'needs-info', 'failed'].includes(r.status) && !stalled(r)) throw new HttpError(409, 'This request is not waiting on a note.');
   let note = '';
   try { note = String((await request.json()).note || '').trim(); } catch { /* empty */ }
   if (!note || note.length > 2000) throw new HttpError(400, 'Write a note of up to 2,000 characters.');
   const from = r.status === 'needs-info' ? 'requester' : 'reviewer';
-  r.replies.push({ from, note, at: new Date().toISOString() });
-  log(r, email, from === 'requester' ? 'answered the question' : 'sent the draft back', note);
-  r.status = 'drafting';
+  // An answer keeps its question, so the log and the next draft read them as a pair.
+  r.replies.push({ from, note, at: new Date().toISOString(), ...(from === 'requester' && r.question ? { question: r.question } : {}) });
+  log(r, email, from === 'requester' ? 'answered the question' : r.status === 'review' ? 'sent the draft back' : 'asked for another try', note);
   r.question = '';
-  await putRecord(env, r);
-  const problem = await dispatchDraft(env, r.id, { fetchImpl });
-  if (problem) { log(r, 'system', 'drafting did not start', problem); await putRecord(env, r); }
+  await startDraft(env, r, fetchImpl);
   return json({ id: r.id, status: r.status });
 }
 
@@ -140,7 +154,7 @@ export async function readFile({ request, env, params, fetchImpl }) {
 export async function drafterRead({ request, env, params }) {
   checkDrafter(request, env);
   const r = await getRecord(env, params.id);
-  return json({ id: r.id, format: r.format, formatName: r.formatName, fields: r.fields, notes: r.notes, replies: r.replies, status: r.status });
+  return json({ id: r.id, format: r.format, formatName: r.formatName, fields: r.fields, image: r.image || '', notes: r.notes, replies: r.replies, status: r.status });
 }
 
 const DRAFT_STATUSES = new Set(['review', 'needs-info', 'brief-a-person', 'failed']);
@@ -149,6 +163,14 @@ export async function drafterWrite({ request, env, params }) {
   checkDrafter(request, env);
   const r = await getRecord(env, params.id);
   const body = await request.json();
+  // A progress report: the step the drafter is on. No history line; the page shows it live.
+  if (body.stage && !body.status) {
+    if (!STAGES[body.stage]) throw new HttpError(400, 'Unknown stage.');
+    if (r.status !== 'drafting') throw new HttpError(409, 'This request is not being drafted.');
+    r.stage = body.stage;
+    await putRecord(env, r);
+    return json({ id: r.id, stage: r.stage });
+  }
   if (!DRAFT_STATUSES.has(body.status)) throw new HttpError(400, 'Unknown status.');
   const files = [];
   for (const f of body.draft?.files || []) {
@@ -158,6 +180,7 @@ export async function drafterWrite({ request, env, params }) {
     files.push({ name: f.name, type: f.type, size: bytes.length });
   }
   r.status = body.status;
+  delete r.stage;
   r.question = body.status === 'needs-info' ? String(body.question || '') : '';
   r.draft = body.draft ? { ...body.draft, files, at: new Date().toISOString() } : null;
   log(r, 'drafter', { review: 'drafted it; ready for review', 'needs-info': 'asked a question (LADDER-004)', 'brief-a-person': 'briefed Brad (LADDER-003)', failed: 'could not draft it' }[r.status], body.message || '');

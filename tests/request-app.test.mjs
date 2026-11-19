@@ -3,10 +3,11 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, writeFileSync, readFileSync } from 'node:fs';
+import { parse as parseYaml } from 'yaml';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { fieldsFor, validateRequest, briefText, newId } from '../request/lib.js';
+import { fieldsFor, validateRequest, briefText, newId, takesImage, stalled } from '../request/lib.js';
 import { signedInEmail, HttpError } from '../request-app/access.mjs';
 import * as app from '../request-app/app.mjs';
 import { loadData, draftRequest, draftSchema, partsFor } from '../tools/draft-request.mjs';
@@ -31,6 +32,29 @@ test('a request needs its required fields, notes for a web page, and the G1 conf
   assert.equal(ok.ok, true);
   assert.deepEqual(ok.request.fields, { name: 'Seed swap', what: 'Swap seeds', when: 'sat mar 6 10am', where: 'Library', cost: 'Free' });
   assert.equal(briefText({ ...ok.request, replies: [{ from: 'reviewer', note: 'Shorter.' }] }), 'Format: Flyer\nEvent name: Seed swap\nWhat it is: Swap seeds\nWhen: sat mar 6 10am\nWhere: Library\nCost: Free\nReviewer added: Shorter.');
+  assert.equal(briefText({ formatName: 'Flyer', fields: {}, replies: [{ from: 'requester', question: 'Which branch?', note: 'Rogers Park' }] }), 'Format: Flyer\nDrafter asked: Which branch?\nRequester answered: Rogers Park');
+});
+
+test('an approved image can be chosen for a format with art, and is read back with its alt text', () => {
+  assert.ok(DATA.assets.length > 0 && DATA.assets.every((a) => a.type !== 'logo'));
+  assert.equal(takesImage(fmt('flyer')), true);
+  assert.equal(takesImage(fmt('web-page')), false);
+  const base = { format: 'flyer', confirmed: true, fields: { name: 'A', what: 'B', when: 'C', where: 'D', cost: 'E' } };
+  const bee = validateRequest({ ...base, image: 'A-0001' }, DATA);
+  assert.equal(bee.request.image, 'A-0001');
+  assert.match(briefText(bee.request, DATA.assets), /^Image: A-0001, Hand-drawn bee/m);
+  assert.deepEqual(validateRequest({ ...base, image: 'A-9999' }, DATA).problems, ['Choose an image from the approved list.']);
+  const logos = parseYaml(readFileSync('_data/assets.yml', 'utf8')).items.filter((a) => a.type === 'logo');
+  assert.ok(logos.length > 0);
+  for (const logo of logos) assert.deepEqual(validateRequest({ ...base, image: logo.id }, DATA).problems, ['Choose an image from the approved list.'], 'a logo is not offered as art');
+  assert.equal(validateRequest(base, DATA).request.image, undefined);
+});
+
+test('a draft stalls after 25 minutes', () => {
+  const now = Date.parse('2026-11-19T12:00:00Z');
+  assert.equal(stalled({ status: 'drafting', draftingSince: '2026-11-19T11:40:00Z' }, now), false);
+  assert.equal(stalled({ status: 'drafting', draftingSince: '2026-11-19T11:30:00Z' }, now), true);
+  assert.equal(stalled({ status: 'review', draftingSince: '2026-11-19T10:00:00Z' }, now), false);
 });
 
 // A signing key and Access’s published certs, as Cloudflare would serve them.
@@ -73,7 +97,7 @@ test('the API: send, list, draft, approve, download, and reply', async () => {
     if (String(url).includes('/actions/workflows/draft-request.yml/dispatches')) { dispatched.push(JSON.parse(opts.body).inputs.id); return new Response(null, { status: 204 }); }
     return certsFetch(String(url));
   };
-  const env = { ...ENV, REQUESTS: memoryKV(), APPROVERS: 'leah@example.org', DRAFTER_SECRET: 's3cret', GITHUB_DISPATCH_TOKEN: 't', ASSETS: { fetch: async () => Response.json({ formats: DATA.formats, contracts: DATA.contracts }) } };
+  const env = { ...ENV, REQUESTS: memoryKV(), APPROVERS: 'leah@example.org', DRAFTER_SECRET: 's3cret', GITHUB_DISPATCH_TOKEN: 't', ASSETS: { fetch: async () => Response.json({ formats: DATA.formats, contracts: DATA.contracts, assets: DATA.assets }) } };
   const as = async (email) => ({ 'Cf-Access-Jwt-Assertion': await token({ email }) });
   const call = async (fn, { method = 'GET', path = '/api/requests', body, headers, params = {} } = {}) => {
     headers ??= await as('brad@example.org');
@@ -94,8 +118,21 @@ test('the API: send, list, draft, approve, download, and reply', async () => {
   assert.equal((await call(h(app.drafterRead), { params: { id }, headers: { Authorization: 'Bearer wrong' } })).status, 401);
   const brief = (await call(h(app.drafterRead), { params: { id }, headers: drafter })).body;
   assert.equal(brief.requester, undefined, 'the drafter never sees the requester');
+  assert.equal((await call(h(app.readRequest), { params: { id } })).body.stage, 'queued');
+  assert.equal((await call(h(app.drafterWrite), { method: 'POST', params: { id }, headers: drafter, body: { stage: 'rendering' } })).body.stage, 'rendering');
+  assert.equal((await call(h(app.listRequests))).body.requests[0].stage, 'rendering', 'the queue shows the step');
+  assert.equal((await call(h(app.drafterWrite), { method: 'POST', params: { id }, headers: drafter, body: { stage: 'dancing' } })).status, 400);
+
+  // A question, its answer, and the pair kept for the log and the next draft.
+  await call(h(app.drafterWrite), { method: 'POST', params: { id }, headers: drafter, body: { status: 'needs-info', question: 'Which library branch?' } });
+  assert.equal((await call(h(app.replyToRequest), { method: 'POST', params: { id }, body: { note: 'Rogers Park' } })).body.status, 'drafting');
+  const asked = (await call(h(app.readRequest), { params: { id } })).body;
+  assert.deepEqual(asked.replies.map((x) => [x.question, x.note]), [['Which library branch?', 'Rogers Park']]);
+  assert.equal(asked.stage, 'queued');
+  assert.equal(dispatched.length, 2, 'the answer starts drafting again');
   const pdf = Buffer.from('%PDF-1.7 test').toString('base64');
   assert.equal((await call(h(app.drafterWrite), { method: 'POST', params: { id }, headers: drafter, body: { status: 'review', draft: { ladder: 'make', note: '', files: [{ name: 'flyer.pdf', type: 'application/pdf', base64: pdf }], checks: {} } } })).body.status, 'review');
+  assert.equal((await call(h(app.readRequest), { params: { id } })).body.stage, undefined, 'a finished draft has no step');
 
   assert.equal((await call(h(app.approveRequest), { method: 'POST', params: { id } })).status, 403, 'Brad is not an approver');
   const read = await call(h(app.readRequest), { params: { id }, headers: await as('leah@example.org') });
@@ -104,11 +141,18 @@ test('the API: send, list, draft, approve, download, and reply', async () => {
   const file = await call(h(app.readFile), { path: `/api/requests/${id}/files/flyer.pdf?download`, params: { id, name: 'flyer.pdf' } });
   assert.equal(Buffer.from(file.body).toString(), '%PDF-1.7 test');
   assert.equal((await call(h(app.replyToRequest), { method: 'POST', params: { id }, body: { note: 'Again' } })).status, 409, 'an approved request takes no notes');
-  assert.match((await call(h(app.readRequest), { params: { id } })).body.history.map((x) => x.what).join(' | '), /sent the request, confirming the brief \(G1\) \| drafted it; ready for review \| approved the draft \(G2\)/);
+  assert.match((await call(h(app.readRequest), { params: { id } })).body.history.map((x) => x.what).join(' | '), /sent the request, confirming the brief \(G1\) \| asked a question \(LADDER-004\) \| answered the question \| drafted it; ready for review \| approved the draft \(G2\)/);
 
   const web = await call(h(app.createRequest), { method: 'POST', body: { format: 'web-page', confirmed: true, notes: 'A page for the spring plant sale.' } });
   assert.equal(web.body.status, 'brief-a-person');
-  assert.equal(dispatched.length, 1, 'a web page is not drafted automatically');
+  assert.equal(dispatched.length, 2, 'a web page is not drafted automatically');
+
+  // When GitHub refuses to start the draft, the request fails at once instead of waiting.
+  const refused = await call(h(app.createRequest), { method: 'POST', body: { format: 'flyer', confirmed: true, fields: { name: 'X', what: 'Y', when: 'Z', where: 'W', cost: 'V' } } });
+  assert.equal(refused.body.status, 'drafting');
+  env.GITHUB_DISPATCH_TOKEN = '';
+  const failed = await call(h(app.createRequest), { method: 'POST', body: { format: 'flyer', confirmed: true, fields: { name: 'X', what: 'Y', when: 'Z', where: 'W', cost: 'V' } } });
+  assert.equal(failed.body.status, 'failed');
   assert.equal((await call(h(app.readRequest), { params: { id: 'nope' } })).status, 404);
 });
 
@@ -130,6 +174,13 @@ test('the drafter writes the fields, renders each output, checks it and posts it
   const r = await draftRequest(brief.id, { api: 'https://playbook.test', secret: 's', fetchImpl, client: reply({ ladder: 'make', note: 'Wrote the date as NAMES-005 asks.', question: '', fields }), render, judgeFn });
   assert.equal(r.status, 'review');
   assert.deepEqual(rendered, [['postcard-sheet', ['art-placeholder:', 'wordmark:']], ['postcard-sheet', ['event-details:name,what,when,where,cost', 'wordmark:']]]);
+  assert.deepEqual(posted.filter((p) => p.stage).map((p) => p.stage), ['writing', 'rendering', 'checking'], 'the page sees each step');
+
+  rendered.length = 0;
+  brief.image = 'A-0001';
+  await draftRequest(brief.id, { api: 'https://playbook.test', secret: 's', fetchImpl, client: reply({ ladder: 'make', note: '', question: '', fields }), render, judgeFn });
+  assert.deepEqual(rendered[0], ['postcard-sheet', ['image:id', 'wordmark:']], 'a chosen image takes the art placeholder’s place');
+  delete brief.image;
   const sent = posted.at(-1);
   assert.deepEqual(sent.draft.files.map((f) => [f.name, f.type]), [['front.pdf', 'application/pdf'], ['back.pdf', 'application/pdf']]);
   assert.deepEqual(sent.draft.checks.judge, { skipped: 'no ANTHROPIC_API_KEY' });

@@ -2,4 +2,5 @@
 layout: null
 permalink: /request/formats.json
 ---
-{"formats": {{ site.data.request-formats | jsonify }}, "contracts": {{ site.data.components | jsonify }}}
+{%- assign pickable = site.data.assets.items | where_exp: "a", "a.type != 'logo'" -%}
+{"formats": {{ site.data.request-formats | jsonify }}, "contracts": {{ site.data.components | jsonify }}, "assets": {{ pickable | jsonify }}}
