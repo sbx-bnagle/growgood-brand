@@ -29,6 +29,7 @@ Brad does these once. No secret goes in this repo or in chat; each is typed into
    - Secret `REQUEST_DRAFTER_SECRET`: the same value as `DRAFTER_SECRET`.
    - Secret `ANTHROPIC_API_KEY`: the key the drafter and the brand judge use. Add it to the site repo too, for the judge on site pull requests.
    - Variable `REQUEST_API`: `https://growgood-playbook.pages.dev`.
+   - Secret `SITE_PR_TOKEN`, for journal posts (D-059): a fine-grained token for `sbx-bnagle/growgood` only, with Contents read and write, and Pull requests read and write. Without it, an approved post says it could not open the pull request.
 5. Merge to `main`, so the playbook deploys with the functions, then sign in at `/request/` and send a test request.
 
 Until each step is done the app says what is missing: ‘Sign-in is not set up yet’, ‘Request storage is not set up yet’, or a history line saying drafting did not start.
@@ -38,3 +39,4 @@ Until each step is done the app says what is missing: ‘Sign-in is not set up y
 - The drafter logs only the request id and its outcome, and saves nothing to the workflow run, because this repo is public.
 - Preview deployments of the playbook get the pages but not the sign-in, so their API refuses every call.
 - A web page request is never drafted automatically: it goes to Brad (LADDER-003), who builds it on the site.
+- A journal post is drafted like a flyer, but has no file to download. When it is approved, the workflow runs again in `publish` mode and opens a pull request on the site; merging it publishes the post (D-059).

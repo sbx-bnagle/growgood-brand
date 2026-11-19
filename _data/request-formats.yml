@@ -33,6 +33,37 @@
   outputs:
     - { render: social-cover, parts: [art-placeholder, wordmark, event-details] }
   omit: [link, href]
+- id: journal-post
+  name: Journal post
+  summary: A post for the site’s journal. Leah approves the draft here, then a pull request on the site publishes it when merged (D-059).
+  kind: post
+  image: true
+  outputs: []
+  fields:
+    - name: title
+      type: text
+      required: true
+      notes: A working title. The drafter puts it in sentence case (MECH-002).
+    - name: category
+      type: enum
+      required: true
+      values:
+        - { value: materials_practices, label: Materials & practices, folder: materials_practices }
+        - { value: advocacy, label: Advocacy, folder: advocacy }
+        - { value: events, label: Events, folder: events }
+        - { value: howto, label: How-to, folder: howtos }
+        - { value: gg_news, label: Grow Good news, folder: gg_news }
+        - { value: people_places, label: People & places, folder: people_places }
+        - { value: resources, label: Resources, folder: resources }
+        - { value: headlines, label: Headlines, folder: headlines }
+    - name: points
+      type: longtext
+      required: true
+      notes: What the post says, in order, or a rough draft. Every fact in the post comes from here or the claims register.
+    - name: links
+      type: longtext
+      required: false
+      notes: Sources to link, one address per line. The post links only to these.
 - id: web-page
   name: Web page
   summary: A new page on the site. Brad builds it from your brief (LADDER-003).

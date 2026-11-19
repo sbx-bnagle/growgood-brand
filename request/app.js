@@ -3,7 +3,7 @@
 // /api/requests on the same site, behind the same sign-in. Pages update by themselves while a
 // draft is being made, so nobody has to reload.
 
-import { STATUS, STAGES, fieldsFor, label, briefText, validateRequest, takesImage, stalled } from './lib.js';
+import { STATUS, STAGES, fieldsFor, label, briefText, validateRequest, takesImage, stalled, readable } from './lib.js';
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -36,6 +36,14 @@ function imagePicker(assets) {
   return `<fieldset class="rq-images"><legend>Image (optional)</legend><p class="rq-hint">Only approved images can be used (D-009). A small image may be flagged as too low in resolution for print.</p><label class="rq-image rq-image--none"><input type="radio" name="image" value="" checked><span>No image yet: the art placeholder holds its place</span></label><div class="rq-image-grid">${assets.map(option).join('')}</div></fieldset>`;
 }
 
+// One form control for a field: a list for a choice, a box for long text, else a line.
+function control(x) {
+  const attrs = `id="rq-f-${x.name}" name="${x.name}"${x.required ? ' required' : ''}${x.notes ? ` aria-describedby="rq-h-${x.name}"` : ''}`;
+  if (x.values) return `<select ${attrs}><option value="">Choose one</option>${x.values.map((v) => `<option value="${esc(v.value)}">${esc(v.label)}</option>`).join('')}</select>`;
+  if (x.type === 'longtext') return `<textarea ${attrs} rows="6" maxlength="4000"></textarea>`;
+  return `<input ${attrs} type="${x.type === 'url' ? 'url' : 'text'}" maxlength="500">`;
+}
+
 // A new request.
 async function newRequest() {
   const data = await formatsData();
@@ -45,7 +53,7 @@ async function newRequest() {
   const draw = () => {
     const f = chosen();
     const keep = new FormData($('rq-form')).get('image') || '';
-    $('rq-fields').innerHTML = fieldsFor(f, data.contracts).map((x) => `<p class="rq-field"><label for="rq-f-${x.name}">${esc(label(x.name))}${x.required ? '' : ' (optional)'}</label>${x.notes ? `<span class="rq-hint" id="rq-h-${x.name}">${esc(x.notes)}</span>` : ''}<input id="rq-f-${x.name}" name="${x.name}" type="${x.type === 'url' ? 'url' : 'text'}" maxlength="500"${x.required ? ' required' : ''}${x.notes ? ` aria-describedby="rq-h-${x.name}"` : ''}></p>`).join('')
+    $('rq-fields').innerHTML = fieldsFor(f, data.contracts).map((x) => `<p class="rq-field"><label for="rq-f-${x.name}">${esc(label(x.name))}${x.required ? '' : ' (optional)'}</label>${x.notes ? `<span class="rq-hint" id="rq-h-${x.name}">${esc(x.notes)}</span>` : ''}${control(x)}</p>`).join('')
       + (takesImage(f) ? imagePicker(data.assets || []) : '');
     const again = document.querySelector(`input[name="image"][value="${CSS.escape(keep)}"]`);
     if (again) again.checked = true;
@@ -63,7 +71,7 @@ async function newRequest() {
     const v = validateRequest({ ...body(), confirmed: true }, data);
     if (!v.ok) { say(v.problems.join(' ')); return; }
     say('');
-    $('rq-brief').textContent = briefText({ ...v.request, image: takesImage(chosen()) ? (v.request.image || '') : undefined }, data.assets);
+    $('rq-brief').textContent = briefText({ ...v.request, fields: readable(chosen(), v.request.fields), image: takesImage(chosen()) ? (v.request.image || '') : undefined }, data.assets);
     $('rq-confirm').checked = false;
     $('rq-form').hidden = true;
     $('rq-readback').hidden = false;
@@ -81,7 +89,7 @@ async function newRequest() {
   });
 }
 
-const statusText = (r) => (r.status === 'drafting' && r.stage ? `${STATUS.drafting}: ${STAGES[r.stage] || r.stage}` : STATUS[r.status] || r.status);
+const statusText = (r) => (r.stage && (r.status === 'drafting' || r.status === 'approved') ? `${STATUS[r.status]}: ${STAGES[r.stage] || r.stage}` : STATUS[r.status] || r.status);
 
 // Every request. Refreshes while any is being drafted.
 async function queue() {
@@ -108,7 +116,9 @@ function report(checks = {}) {
   const copy = (checks.copy || []).map((f) => `<li>${esc(f.rule)} ${esc(f.msg)}: ‘${esc(f.text)}’</li>`);
   const j = checks.judge || {};
   const judged = j.skipped ? `<p>Not run: ${esc(j.skipped)}.</p>` : `<p>${esc(j.summary)}</p>${list((j.findings || []).map((f) => `<li><strong>${esc(f.rule)}</strong>${f.level === 'error' ? ' (blocks)' : ''}: ‘${esc(f.quote)}’. ${esc(f.problem)} Fix: ${esc(f.fix)}</li>`), 'No findings.')}`;
-  return `<h3>Preflight</h3>${list(pre, 'No findings: size, padding, pages, fonts and images pass.')}<h3>Copy</h3>${list(copy, 'No findings.')}<h3>Brand judge</h3>${judged}`;
+  // A journal post has no rendered file, so no preflight (D-059).
+  const preflight = Array.isArray(checks.preflight) ? `<h3>Preflight</h3>${list(pre, 'No findings: size, padding, pages, fonts and images pass.')}` : '';
+  return `${preflight}<h3>Copy</h3>${list(copy, 'No findings.')}<h3>Brand judge</h3>${judged}`;
 }
 
 function replyForm(labelText, button) {
@@ -148,6 +158,14 @@ async function item() {
       else parts.push(`<div class="rq-state rq-state--ask"><h2>With Brad</h2><p>The drafter decided the template cannot carry this request, so it wrote a brief for Brad (LADDER-003).</p>${r.draft?.note ? `<p><strong>Its reason:</strong> ${esc(r.draft.note)}</p>` : ''}${replyForm('If the template can carry it, send it back to the drafter with a note', 'Send it back to the drafter')}</div>`);
     }
     const d = r.draft;
+    if (d?.kind === 'post' && d.post) {
+      const approved = r.status === 'approved';
+      parts.push(`<h2>The draft</h2><p>${approved ? (d.pr ? `Approved. <a href="${esc(d.pr.url)}">Pull request #${esc(d.pr.number)}</a> on the site adds it as <code>${esc(d.pr.path)}</code>; merging it publishes the post (G3).` : r.stage === 'publishing' ? 'Approved. The pull request on the site is being opened.' : 'Approved. The pull request on the site has not been opened; see the history.') : 'A draft, not yet approved. Approving it opens a pull request on the site; merging that publishes it.'}</p>`);
+      parts.push(`<article class="rq-post"><h1>${esc(d.post.title)}</h1><p class="rq-hint">${esc(d.post.description)}</p>${d.post.html}</article>`);
+      parts.push(`<details><summary>The file, as the site will keep it</summary><pre>${esc(d.post.markdown)}</pre></details>`);
+      if (d.note) parts.push(`<h3>Drafter’s note (${esc(d.ladder)})</h3><p>${esc(d.note)}</p>`);
+      parts.push(`<h2>Check report</h2>${report(d.checks)}`);
+    }
     if (d?.files?.length) {
       const approved = r.status === 'approved';
       const old = r.status === 'drafting' ? ' The previous draft, kept until the new one is ready.' : '';
@@ -169,7 +187,7 @@ async function item() {
     }
     if (r.status === 'failed') parts.push(`<h2>Drafting failed</h2><p>${esc([...r.history].reverse().find((h) => h.note)?.note || '')}</p>${replyForm('Add a note and try again', 'Try again')}`);
     parts.push(conversation(r));
-    parts.push(`<h2>The brief</h2><pre>${esc(briefText({ ...r, replies: [] }, data.assets))}</pre>`);
+    parts.push(`<h2>The brief</h2><pre>${esc(briefText({ ...r, fields: readable(data.formats?.find((f) => f.id === r.format), r.fields), replies: [] }, data.assets))}</pre>`);
     parts.push(`<h2>History</h2>${list(r.history.map((h) => `<li>${esc(when(h.at))}: ${esc(h.who)} ${esc(h.what)}${h.note ? `: ${esc(h.note)}` : ''}</li>`), 'Nothing yet.')}`);
     $('rq-item').innerHTML = parts.join('');
     $('rq-approve')?.addEventListener('click', () => act(`/${encodeURIComponent(r.id)}/approve`, null, 'Approved.'));
@@ -186,7 +204,7 @@ async function item() {
       if (was) say(statusText(r)); // tell screen readers what changed, not the first load
       if (focusNext) { focusNext = false; $('rq-summary')?.focus(); }
     }
-    return r.status === 'drafting' && !stalled(r);
+    return (r.status === 'drafting' && !stalled(r)) || (r.status === 'approved' && r.stage === 'publishing');
   }, 4000);
   const act = async (path, body, done) => {
     try {

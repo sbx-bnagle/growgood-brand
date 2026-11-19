@@ -149,27 +149,23 @@ Nothing exists yet. A suggested shape, for Brad and Leah to decide:
    - The judge checks that the phrases read naturally (VOICE).
    - Pages set `title` and `description` in their front matter. The site’s head reads them through jekyll-seo-tag (`{% seo %}` in its `_includes/head.html`).
 
-## 5. Adding a journal post to the requests
+## 5. Journal posts as requests
 
-Today a web page goes to Brad (LADDER-003). Journal posts live in the site repo as `_posts/<category>/<date>-<slug>.markdown`, with `layout: post`, a `title` and a `category`, which is one of the journal’s eight. A post differs from a flyer: it is published by merging a site pull request, not downloaded (G3).
+Built (D-059). A requester picks **Journal post** and gives:
+- a title;
+- one of the journal’s eight categories;
+- the points the post makes;
+- the links it may use;
+- optionally, an approved image.
 
-1. **Decide.**
-   - Which categories requesters may choose.
-   - Whether post images enter the asset register. D-053 left the journal’s images out.
-   - Who merges: Leah’s approval in the request page could merge it, or Brad could.
-2. **Write the contract.** A `journal-post` contract with:
-   - title, category (a list), the points to make, source links;
-   - an approved image (`source: assets`).
-   Every link comes from the request, like every fact.
-3. **Add the format.** Add `journal-post` to `_data/request-formats.yml`. The form then asks for its fields, and the read-back (G1) works as it does for a flyer.
-4. **Teach the drafter a second path.**
-   - Write the post as Markdown with Claude, under VOICE, MECH and NAMES.
-   - Run the copy linter and the judge.
-   - Open a draft pull request on the site adding the post.
-   - Post the pull request’s link and the text back to the request page.
-   It needs a new GitHub token with contents and pull request access to the site repo, saved as a secret by Brad.
-5. **Review and publish.**
-   - The site pull request runs the site’s checks, with the judge on the new post (`JUDGE_FILES`).
-   - Leah approves in the request page (G2).
-   - Merging the site pull request publishes it (G3).
-6. **Test it** with the pilot: one post through the fresh-agent test and one real request, recorded in `pilot/results.md`.
+1. **Drafting.** The drafter writes the post in Markdown under VOICE, MECH and NAMES, with a description for search.
+   - Every link is checked against the request’s links (CLAIM-001).
+   - The copy linter and the brand judge run on it.
+   - The draft stays in the request app, out of the public site repo.
+2. **Review and publish.**
+   - Leah approves it in the request page (G2).
+   - The workflow then opens a pull request on the site, adding `_posts/<category>/<date>-<slug>.markdown`. The site’s checks run on it, with the judge on the new post.
+   - Merging that pull request publishes the post (G3).
+3. **Changing it.** A note sent back before approval redrafts it. After approval, edit the pull request on GitHub.
+
+To add a field, such as a date or an author, add it to the format’s `fields` in `_data/request-formats.yml`, and write it into the front matter in `postFile` in `tools/draft-request.mjs`.

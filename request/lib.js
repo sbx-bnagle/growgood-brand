@@ -10,7 +10,7 @@ export const STATUS = {
   failed: 'Drafting failed',
 };
 
-export const LIMITS = { field: 500, notes: 2000 };
+export const LIMITS = { field: 500, longtext: 4000, notes: 2000 };
 
 // What the drafter is doing, as it reports each step (D-057).
 export const STAGES = {
@@ -18,6 +18,7 @@ export const STAGES = {
   writing: 'Writing the words',
   rendering: 'Rendering the files',
   checking: 'Running the checks',
+  publishing: 'Opening the pull request on the site',
 };
 
 // A draft taking longer than this has stalled: the workflow stops at 20 minutes.
@@ -25,7 +26,8 @@ export const STALLED_MS = 25 * 60 * 1000;
 export const stalled = (r, now = Date.now()) => r.status === 'drafting' && now - Date.parse(r.draftingSince || r.updated || 0) > STALLED_MS;
 
 // Formats whose templates hold the art placeholder can take an approved image in its place.
-export const takesImage = (format) => (format.outputs || []).some((o) => (o.parts || []).includes('art-placeholder'));
+// A post takes one too, set at its top (D-059).
+export const takesImage = (format) => format.image === true || (format.outputs || []).some((o) => (o.parts || []).includes('art-placeholder'));
 
 // The fields a format asks the requester for: each request-sourced param of its parts, in order,
 // once, except those the format omits. Required when any part’s contract requires it.
@@ -40,6 +42,8 @@ export function fieldsFor(format, contracts) {
       }
     }
   }
+  // Fields a format names itself, such as a journal post’s (D-059).
+  for (const f of format.fields || []) out.set(f.name, { name: f.name, type: f.type, notes: f.notes || '', required: !!f.required, ...(f.values ? { values: f.values } : {}) });
   return [...out.values()];
 }
 
@@ -51,7 +55,8 @@ export function validateRequest(body, data) {
   const fields = {};
   for (const f of fieldsFor(format, data.contracts || {})) {
     const v = typeof body.fields?.[f.name] === 'string' ? body.fields[f.name].trim() : '';
-    if (v.length > LIMITS.field) problems.push(`${label(f.name)} is too long.`);
+    if (v.length > (f.type === 'longtext' ? LIMITS.longtext : LIMITS.field)) problems.push(`${label(f.name)} is too long.`);
+    if (v && f.values && !f.values.some((x) => x.value === v)) problems.push(`Choose a ${label(f.name).toLowerCase()} from the list.`);
     if (f.required && !v) problems.push(`${label(f.name)} is needed.`);
     if (v) fields[f.name] = v;
   }
@@ -66,7 +71,7 @@ export function validateRequest(body, data) {
   return { ok: !problems.length, problems, request: { format: format.id, formatName: format.name, fields, notes, ...(image ? { image } : {}) } };
 }
 
-const LABELS = { name: 'Event name', what: 'What it is', when: 'When', where: 'Where', cost: 'Cost', link: 'Button label', href: 'Link' };
+const LABELS = { name: 'Event name', what: 'What it is', when: 'When', where: 'Where', cost: 'Cost', link: 'Button label', href: 'Link', title: 'Title', category: 'Category', points: 'What it says', links: 'Links' };
 export const label = (name) => LABELS[name] || name.charAt(0).toUpperCase() + name.slice(1);
 
 // The brief as the requester confirms it and the drafter reads it. `assets` adds the image’s alt
@@ -77,13 +82,20 @@ export function briefText(request, assets = []) {
   if (request.image) {
     const a = assets.find((x) => x.id === request.image);
     lines.push(`Image: ${request.image}${a ? `, ${a.alt}` : ''}`);
-  } else if (request.image === '') lines.push('Image: none yet; the art placeholder');
+  } else if (request.image === '') lines.push('Image: none');
   if (request.notes) lines.push(`Notes: ${request.notes}`);
   for (const r of request.replies || []) {
     if (r.question) lines.push(`Drafter asked: ${r.question}`, `Requester answered: ${r.note}`);
     else lines.push(`${r.from === 'reviewer' ? 'Reviewer' : 'Requester'} added: ${r.note}`);
   }
   return lines.join('\n');
+}
+
+// The fields as a person reads them: a choice shows its label, not its stored value.
+export function readable(format, fields = {}) {
+  const out = { ...fields };
+  for (const f of format?.fields || []) if (f.values && out[f.name]) out[f.name] = f.values.find((v) => v.value === out[f.name])?.label || out[f.name];
+  return out;
 }
 
 // A short, unique, readable id: R-20261117-4F2A.
