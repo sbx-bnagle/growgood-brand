@@ -34,7 +34,7 @@ params:
     type: text
     required: false
     source: request
-    notes: The link’s label. Leave out for print.
+    notes: The button’s label, such as ‘Link in bio’. With href it links there; in a social image, where nothing can be clicked, it shows as the same pill without a link. Leave out for print.
   - name: href
     type: url
     required: false
