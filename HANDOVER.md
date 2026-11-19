@@ -17,6 +17,9 @@ How to run the Grow Good brand system day to day. Keeper: Leah Fagan. Maintainer
 
 ## Common jobs
 
+Step-by-step workflows for changing the branding, the site, the playbook, the content rules and the request formats are in `WORKFLOWS.md`.
+
+
 - **Change a brand rule.** Edit the file, add a `decisions.md` entry, open a pull request. Leah approves (D-011). Agents and the request app pick it up from `main` with no release (D-039).
 - **Release the theme.** Merge to `main`, then tag: `git tag -a vX.Y.Z -m "…"` and `git push origin vX.Y.Z`. On the site, a pull request moves `remote_theme` in `_config.yml` to the new tag; its checks run against that tag.
 - **Add an approved image.** Add the row to the register in Drive with alt text and rights; Leah approves it; the Monday sync opens the pull request.

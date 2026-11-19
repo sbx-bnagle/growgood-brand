@@ -24,7 +24,7 @@ The live site is a separate repo, [sbx-bnagle/growgood](https://github.com/sbx-b
 - People: `brand/readme.md` lists every brand file, its owner and its status.
 - Agents: `AGENTS.md`.
 - Plan: `ROADMAP.md`.
-- Running it: `HANDOVER.md`. The pilot: `pilot/README.md`.
+- Running it: `HANDOVER.md`. Changing it: `WORKFLOWS.md`. The pilot: `pilot/README.md`.
 - Decisions and open questions: `brand/decisions.md`.
 
 ## See the theme on the site, locally
