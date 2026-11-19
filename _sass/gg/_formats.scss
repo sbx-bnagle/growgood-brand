@@ -34,6 +34,18 @@
   > .gg-art { flex: 1 1 auto; }
 }
 
+// A chosen image takes the art's place (D-058): it fills the art's area and is cropped to it, so
+// the words after it always fit. To be refined with the art direction (D-035).
+.gg-format > .gg-image,
+.gg-sheet__card > .gg-image,
+.gg-social > .gg-image {
+  flex: 1 1 0;
+  min-height: 0;
+  width: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+
 .gg-format--social { padding: 0; }
 .gg-social { display: flex; flex-direction: column; gap: var(--gg-space-md); padding: var(--gg-space-lg); }
 .gg-social > .gg-art { flex: 1 1 auto; }
@@ -41,6 +53,7 @@
 .gg-social--story { width: 1080px; height: 1920px; padding: var(--gg-space-xl) var(--gg-space-lg); }
 .gg-social--cover { width: 1920px; height: 1005px; flex-direction: row; align-items: stretch; }
 .gg-social--cover > .gg-art { flex: 0 0 1040px; }
+.gg-social--cover > .gg-image { flex: 0 0 1040px; width: 1040px; height: 100%; }
 .gg-social--cover > .gg-social__side { display: flex; flex-direction: column; gap: var(--gg-space-md); justify-content: center; }
 
 @media print {

@@ -152,6 +152,9 @@ async function item() {
       const approved = r.status === 'approved';
       const old = r.status === 'drafting' ? ' The previous draft, kept until the new one is ready.' : '';
       parts.push(`<h2>The draft</h2><p>${approved ? 'Approved. Download each file to print or post it (G3).' : `A draft, not yet approved. Do not print or post it.${old}`}</p>`);
+      // Words pushed outside the page are the one problem a glance at the file can miss.
+      const outside = (d.checks?.preflight || []).filter((f) => f.check === 'margin');
+      if (outside.length) parts.push(`<div class="rq-state rq-state--stalled"><p><strong>Something falls outside the page.</strong> Preflight found ${outside.length === 1 ? 'one part' : `${outside.length} parts`} outside the template’s padding, so words may be missing from the file. Send it back, or see the check report below.</p></div>`);
       for (const f of d.files) {
         const src = `/api/requests/${encodeURIComponent(r.id)}/files/${encodeURIComponent(f.name)}?v=${encodeURIComponent(d.at || '')}`;
         parts.push(`<figure class="rq-file">${f.type === 'image/png' ? `<img src="${src}" alt="Draft ${esc(f.name)}">` : `<iframe src="${src}" title="Draft ${esc(f.name)}"></iframe>`}<figcaption>${esc(f.name)}. <a href="${src}">Open</a>${approved ? `. <a href="${src}&download">Download</a>` : ''}</figcaption></figure>`);

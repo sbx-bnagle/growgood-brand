@@ -20,7 +20,7 @@ The contract is `_data/components/event-details.yml` (COMP-002). Sources are exp
 | `when` | text | yes |  | request | As NAMES-005 writes it. |
 | `where` | text | yes |  | request | As people say the place, then the address once (NAMES-006). |
 | `cost` | text | yes |  | request |  |
-| `link` | text | no |  | request | The link’s label. Leave out for print. |
+| `link` | text | no |  | request | The button’s label, such as ‘Link in bio’. With href it links there; in a social image, where nothing can be clicked, it shows as the same pill without a link. Leave out for print. |
 | `href` | url | no |  | request |  |
 
 ## Examples

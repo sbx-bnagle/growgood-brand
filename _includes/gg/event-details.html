@@ -11,5 +11,8 @@
   </dl>
   {%- if ev_link and ev_href %}
   {% include gg/button.html label=ev_link href=ev_href %}
+  {%- elsif ev_link %}
+  {%- comment -%} A social image has nothing to click: the label shows as the same pill, without a link. {%- endcomment %}
+  <span class="gg-button">{{ ev_link }}</span>
   {%- endif %}
 </div>
