@@ -53,3 +53,27 @@
 .rq-file img, .rq-file iframe { display: block; max-width: 100%; border: 1px solid var(--gg-role-border-default); }
 .rq-file iframe { width: 100%; height: 720px; }
 .rq-status:empty { display: none; }
+
+// Live progress and the image picker (D-057, D-058).
+.rq-state { padding: var(--gg-space-sm); border-left: 4px solid var(--gg-role-action-default); background: var(--gg-role-surface-tint); }
+.rq-state--stalled, .rq-state--ask { border-left-color: var(--gg-color-gold-300); }
+.rq-steps { margin: var(--gg-space-xs) 0 0; padding-left: var(--gg-space-md); }
+.rq-steps li { color: var(--gg-role-text-muted); }
+.rq-step--done { color: var(--gg-role-text-default); text-decoration: line-through; }
+.rq-step--now { color: var(--gg-role-text-default); font-weight: var(--gg-font-weight-bold); }
+.rq-spinner { display: inline-block; width: 1em; height: 1em; vertical-align: -0.15em; border: 2px solid var(--gg-role-border-default); border-top-color: var(--gg-role-action-default); border-radius: 50%; animation: rq-spin 1s linear infinite; }
+@keyframes rq-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .rq-spinner { animation: none; border-top-color: var(--gg-role-border-default); } } // A11Y-009
+.rq-qa { padding-left: var(--gg-space-md); }
+.rq-qa p { margin: 0; }
+.rq-qa li + li { margin-top: var(--gg-space-xs); }
+.rq-images { border: 0; padding: 0; margin: var(--gg-space-sm) 0 0; }
+.rq-images legend { font-weight: var(--gg-font-weight-bold); }
+.rq-image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: var(--gg-space-xs); margin-top: var(--gg-space-xs); }
+// A card: the choice and the thumbnail on top, the register’s alt text and id below.
+.rq-image { display: flex; flex-direction: column; align-items: flex-start; gap: var(--gg-space-xxs); padding: var(--gg-space-xs); border: 1px solid var(--gg-role-border-default); cursor: pointer; overflow-wrap: break-word; font-size: var(--gg-type-small-size); line-height: var(--gg-type-small-line); }
+.rq-image img { display: block; width: 100%; height: 96px; object-fit: contain; background: var(--gg-role-surface-default); }
+.rq-image--none { flex-direction: row; align-items: center; font-size: inherit; line-height: inherit; }
+.rq-image:has(input:checked) { border-color: var(--gg-role-action-default); box-shadow: inset 0 0 0 1px var(--gg-role-action-default); }
+.rq-image--none { margin-top: var(--gg-space-xs); }
+.rq-summary:focus { outline-offset: 4px; }

@@ -27,7 +27,8 @@ export function loadData(repo = REPO) {
   const formats = parseYaml(readFileSync(join(repo, '_data', 'request-formats.yml'), 'utf8'));
   const dir = join(repo, '_data', 'components');
   const contracts = Object.fromEntries(readdirSync(dir).filter((f) => f.endsWith('.yml')).map((f) => [f.replace(/\.yml$/, ''), parseYaml(readFileSync(join(dir, f), 'utf8'))]));
-  return { formats, contracts };
+  const assets = ((parseYaml(readFileSync(join(repo, '_data', 'assets.yml'), 'utf8')) || {}).items || []).filter((a) => a.type !== 'logo');
+  return { formats, contracts, assets };
 }
 
 // The reply’s shape: where the request sits on the ladder, and each field as the template shows it.
@@ -64,12 +65,14 @@ ${guideText(await guide(localSource(repo), job))}
 
 ${contracts}`;
   const today = new Date().toISOString().slice(0, 10);
-  return structured({ system, user: `Today is ${today}.\n\n<brief>\n${briefText(brief)}\n</brief>`, schema: draftSchema(fields), client, effort: 'medium', maxTokens: 16000 });
+  return structured({ system, user: `Today is ${today}.\n\n<brief>\n${briefText(brief, data.assets)}\n</brief>`, schema: draftSchema(fields), client, effort: 'medium', maxTokens: 16000 });
 }
 
-// The parts for one output: each component gets the drafted values its contract takes from the request.
-export function partsFor(output, fields, contracts) {
+// The parts for one output: each component gets the drafted values its contract takes from the
+// request. A chosen image takes the art placeholder’s place (D-058).
+export function partsFor(output, fields, contracts, image = '') {
   return output.parts.map((id) => {
+    if (id === 'art-placeholder' && image) return { component: 'image', params: { id: image } };
     const params = {};
     for (const p of contracts[id]?.params || []) if (p.source === 'request' && fields[p.name]) params[p.name] = fields[p.name];
     return { component: id, params };
@@ -82,11 +85,14 @@ export async function draftRequest(id, { api = process.env.REQUEST_API, secret =
     if (!res.ok) throw new Error(`the request app answered ${res.status}`);
     return res.json();
   };
+  // Progress the request page shows while it waits. A failed report never stops the draft.
+  const stage = (s) => call('POST', { stage: s }).catch(() => {});
   const brief = await call('GET');
   const data = loadData(repo);
   const format = data.formats.find((f) => f.id === brief.format);
   if (!format) return call('POST', { status: 'failed', message: `unknown format ${brief.format}` });
   if (format.ladder === 'brief') return call('POST', { status: 'brief-a-person', message: 'a web page is briefed to Brad (LADDER-003)', draft: { ladder: 'brief', note: briefText(brief), files: [] } });
+  await stage('writing');
   const d = await draftFields({ brief, format, data, repo, client });
   if (!d.ok) return call('POST', { status: 'failed', message: d.reason });
   const { ladder, note, question, fields } = d.data;
@@ -97,8 +103,9 @@ export async function draftRequest(id, { api = process.env.REQUEST_API, secret =
     const files = [];
     const preflight = [];
     let ref = '';
+    await stage('rendering');
     for (const output of format.outputs) {
-      const r = await render({ format: output.render, parts: partsFor(output, fields, data.contracts), title: fields.name || format.name, out, from: 'working' });
+      const r = await render({ format: output.render, parts: partsFor(output, fields, data.contracts, brief.image), title: fields.name || format.name, out, from: 'working' });
       if (!r.ok) return call('POST', { status: 'failed', message: r.problems.join('; ') });
       ref = r.ref;
       preflight.push(...r.findings.map((f) => ({ ...f, output: output.name || output.render })));
@@ -106,9 +113,10 @@ export async function draftRequest(id, { api = process.env.REQUEST_API, secret =
       const ext = file.endsWith('.pdf') ? 'pdf' : 'png';
       files.push({ name: `${output.name || format.id}.${ext}`, type: ext === 'pdf' ? 'application/pdf' : 'image/png', base64: readFileSync(file).toString('base64') });
     }
+    await stage('checking');
     const text = Object.entries(fields).filter(([, v]) => v).map(([k, v]) => (k === 'name' ? `# ${v}` : v)).join('\n');
     const copy = lintSource(text, '.md', 'draft').map(({ rule, msg, text: t }) => ({ rule, msg, text: t }));
-    const verdict = await judgeFn({ drafts: [{ file: format.name, text }], request: briefText(brief), repo });
+    const verdict = await judgeFn({ drafts: [{ file: format.name, text }], request: briefText(brief, data.assets), repo });
     const judged = verdict.skipped ? { skipped: verdict.skipped } : { summary: verdict.report.summary, findings: verdict.findings };
     return call('POST', { status: 'review', message: note, draft: { ladder, note, fields, ref, files, checks: { preflight, copy, judge: judged } } });
   } finally {
@@ -124,6 +132,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.log(`${id}: ${r.status}`);
   } catch (e) {
     console.error(`${id}: drafting failed: ${e.message}`);
+    // Tell the request app, so its page stops waiting and offers to try again.
+    await fetch(`${process.env.REQUEST_API}/api/drafter/${id}`, { method: 'POST', headers: { Authorization: `Bearer ${process.env.REQUEST_DRAFTER_SECRET}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'failed', message: 'the drafter stopped with an error; see the Draft a request run' }) }).catch(() => {});
     process.exit(1);
   }
 }
