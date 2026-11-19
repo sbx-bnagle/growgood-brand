@@ -38,6 +38,7 @@ exclude:
   - CLAUDE.md
   - README.md
   - HANDOVER.md
+  - WORKFLOWS.md
   - pilot
   - ROADMAP.md
   - stylelint.config.mjs
