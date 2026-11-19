@@ -10,7 +10,7 @@ import { join } from 'node:path';
 import { fieldsFor, validateRequest, briefText, newId, takesImage, stalled } from '../request/lib.js';
 import { signedInEmail, HttpError } from '../request-app/access.mjs';
 import * as app from '../request-app/app.mjs';
-import { loadData, draftRequest, draftSchema, partsFor } from '../tools/draft-request.mjs';
+import { loadData, draftRequest, draftSchema, partsFor, templateText } from '../tools/draft-request.mjs';
 
 const DATA = loadData();
 const fmt = (id) => DATA.formats.find((f) => f.id === id);
@@ -145,7 +145,14 @@ test('the API: send, list, draft, approve, download, and reply', async () => {
 
   const web = await call(h(app.createRequest), { method: 'POST', body: { format: 'web-page', confirmed: true, notes: 'A page for the spring plant sale.' } });
   assert.equal(web.body.status, 'brief-a-person');
+  assert.equal((await call(h(app.replyToRequest), { method: 'POST', params: { id: web.body.id }, body: { note: 'Please draft it' } })).status, 409, 'a web page stays with Brad');
   assert.equal(dispatched.length, 2, 'a web page is not drafted automatically');
+
+  // A flyer the drafter briefed to Brad can be sent back to the drafter with a note.
+  const flyer = await call(h(app.createRequest), { method: 'POST', body: { format: 'flyer', confirmed: true, fields: { name: 'X', what: 'Y', when: 'Z', where: 'W', cost: 'V' }, image: DATA.assets[0].id } });
+  await call(h(app.drafterWrite), { method: 'POST', params: { id: flyer.body.id }, headers: drafter, body: { status: 'brief-a-person', draft: { ladder: 'brief', note: 'The template has no image slot.', files: [] } } });
+  assert.equal((await call(h(app.readRequest), { params: { id: flyer.body.id } })).body.draft.note, 'The template has no image slot.');
+  assert.equal((await call(h(app.replyToRequest), { method: 'POST', params: { id: flyer.body.id }, body: { note: 'The image replaces the placeholder.' } })).body.status, 'drafting');
 
   // When GitHub refuses to start the draft, the request fails at once instead of waiting.
   const refused = await call(h(app.createRequest), { method: 'POST', body: { format: 'flyer', confirmed: true, fields: { name: 'X', what: 'Y', when: 'Z', where: 'W', cost: 'V' } } });
@@ -180,6 +187,8 @@ test('the drafter writes the fields, renders each output, checks it and posts it
   brief.image = 'A-0001';
   await draftRequest(brief.id, { api: 'https://playbook.test', secret: 's', fetchImpl, client: reply({ ladder: 'make', note: '', question: '', fields }), render, judgeFn });
   assert.deepEqual(rendered[0], ['postcard-sheet', ['image:id', 'wordmark:']], 'a chosen image takes the art placeholder’s place');
+  assert.match(templateText(fmt('postcard'), 'A-0001', DATA.assets), /^front: image A-0001 \(Hand-drawn bee[^)]*\), chosen by the requester, wordmark\nback: event-details, wordmark$/);
+  assert.equal(templateText(fmt('flyer'), '', DATA.assets), 'Flyer: wordmark, art-placeholder, event-details');
   delete brief.image;
   const sent = posted.at(-1);
   assert.deepEqual(sent.draft.files.map((f) => [f.name, f.type]), [['front.pdf', 'application/pdf'], ['back.pdf', 'application/pdf']]);

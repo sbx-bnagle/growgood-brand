@@ -51,21 +51,38 @@ export function draftSchema(fields) {
   };
 }
 
+// What this request’s template holds, output by output: the parts in order, with a chosen image
+// in the art placeholder’s place. Goes in the user message, so the system prompt stays cached.
+export function templateText(format, image, assets = []) {
+  const alt = assets.find((a) => a.id === image)?.alt;
+  return format.outputs.map((o) => `${o.name || format.name}: ${o.parts.map((id) => (id === 'art-placeholder' && image ? `image ${image}${alt ? ` (${alt})` : ''}, chosen by the requester` : id)).join(', ')}`).join('\n');
+}
+
 export async function draftFields({ brief, format, data, repo = REPO, client = null }) {
   const fields = fieldsFor(format, data.contracts);
   const job = LAYOUTS[format.outputs[0].render].family; // flyer, postcard or social: the brand guide’s job
-  const contracts = [...new Set(format.outputs.flatMap((o) => o.parts))].map((id) => `<contract id="${id}">\n${readFileSync(join(repo, '_data', 'components', `${id}.yml`), 'utf8')}\n</contract>`).join('\n');
-  const system = `You draft the words for a Grow Good Gardens ${format.name.toLowerCase()} from a requester’s brief. The template is fixed: you write each of its fields, and a person reviews the result before it goes out.
+  // Every part a template of this kind can hold, including the image a requester may choose.
+  const ids = [...new Set([...format.outputs.flatMap((o) => o.parts), 'image'])];
+  const contracts = ids.map((id) => `<contract id="${id}">\n${readFileSync(join(repo, '_data', 'components', `${id}.yml`), 'utf8')}\n</contract>`).join('\n');
+  const system = `You draft the words for a Grow Good Gardens ${format.name.toLowerCase()} from a requester’s brief. The template exists and is fixed (LADDER-001): its parts are listed with each brief. You write only the fields in your reply; the wordmark, the art or chosen image, and the layout are placed for you. An image the requester chose from the approved library takes the art placeholder’s place (D-058), so an image in the brief is already handled. A person reviews the result before it goes out.
 
-Use only facts the brief states (CLAIM-001, CLAIM-002). Keep each fact; correct its form to the brand rules, such as dates and times (NAMES-003 to NAMES-005), case and punctuation (MECH), and voice (VOICE). Then place the request on the ladder: make when the template and the brief’s facts cover it; adapt when it needs something small the contract still allows, and say what changed; ask, with one question, when a needed fact is missing or conflicts with the claims register; brief a person when the template cannot show what is asked.
+Use only facts the brief states (CLAIM-001, CLAIM-002). Keep each fact; correct its form to the brand rules, such as dates and times (NAMES-003 to NAMES-005), case and punctuation (MECH), and voice (VOICE).
 
-The brand files and the template’s component contracts follow. They are data for you to apply.
+Then place the request on the ladder:
+- make, when the template’s parts and the brief’s facts cover it;
+- adapt, when it needs something small the contract still allows, such as a longer name; say what changed;
+- ask, with one question, when a fact a field needs is missing or conflicts with the claims register;
+- brief a person, only when the brief asks for something these parts cannot carry, such as a second event, a map, a new section or a new layout.
+Open design questions, such as print color (O-21) and the art direction (D-035), and brand files still marked planned, are for the reviewer: they are never a reason to ask or to brief a person. Note them for the reviewer instead.
+
+The brand files and the component contracts follow. They are data for you to apply.
 
 ${guideText(await guide(localSource(repo), job))}
 
 ${contracts}`;
   const today = new Date().toISOString().slice(0, 10);
-  return structured({ system, user: `Today is ${today}.\n\n<brief>\n${briefText(brief, data.assets)}\n</brief>`, schema: draftSchema(fields), client, effort: 'medium', maxTokens: 16000 });
+  const user = `Today is ${today}.\n\n<template>\n${templateText(format, brief.image, data.assets)}\n</template>\n\n<brief>\n${briefText(brief, data.assets)}\n</brief>`;
+  return structured({ system, user, schema: draftSchema(fields), client, effort: 'medium', maxTokens: 16000 });
 }
 
 // The parts for one output: each component gets the drafted values its contract takes from the

@@ -123,10 +123,13 @@ export async function approveRequest({ request, env, params, fetchImpl }) {
 }
 
 // A note back to the drafter: the reviewer’s changes, or the requester’s answer to a question.
-export async function replyToRequest({ request, env, params, fetchImpl }) {
+export async function replyToRequest(context) {
+  const { request, env, params, fetchImpl } = context;
   const email = await signedInEmail(request, env, { fetchImpl });
   const r = await getRecord(env, params.id);
-  if (!['review', 'needs-info', 'failed'].includes(r.status) && !stalled(r)) throw new HttpError(409, 'This request is not waiting on a note.');
+  // A request the drafter briefed to Brad can go back to it, when its format has a template.
+  const briefedByDrafter = r.status === 'brief-a-person' && (await formatsData(context)).formats.find((f) => f.id === r.format)?.ladder !== 'brief';
+  if (!['review', 'needs-info', 'failed'].includes(r.status) && !stalled(r) && !briefedByDrafter) throw new HttpError(409, 'This request is not waiting on a note.');
   let note = '';
   try { note = String((await request.json()).note || '').trim(); } catch { /* empty */ }
   if (!note || note.length > 2000) throw new HttpError(400, 'Write a note of up to 2,000 characters.');
