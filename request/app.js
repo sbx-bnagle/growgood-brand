@@ -143,7 +143,10 @@ async function item() {
     const parts = [`<p class="rq-summary" id="rq-summary" tabindex="-1"><strong>${esc(statusText(r))}</strong>. ${esc(r.id)}, asked by ${esc(r.requester)} on ${esc(when(r.created))}.</p>`];
     if (r.status === 'drafting') parts.push(progress(r));
     if (r.status === 'needs-info') parts.push(`<div class="rq-state rq-state--ask"><h2>A question for you</h2><p>${esc(r.question)}</p>${replyForm('Your answer', 'Send the answer')}</div>`);
-    if (r.status === 'brief-a-person') parts.push('<h2>With Brad</h2><p>No template fits this request, so Brad has the brief and will build it (LADDER-003).</p>');
+    if (r.status === 'brief-a-person') {
+      if (data.formats?.find((f) => f.id === r.format)?.ladder === 'brief') parts.push('<h2>With Brad</h2><p>No template fits this request, so Brad has the brief and will build it (LADDER-003).</p>');
+      else parts.push(`<div class="rq-state rq-state--ask"><h2>With Brad</h2><p>The drafter decided the template cannot carry this request, so it wrote a brief for Brad (LADDER-003).</p>${r.draft?.note ? `<p><strong>Its reason:</strong> ${esc(r.draft.note)}</p>` : ''}${replyForm('If the template can carry it, send it back to the drafter with a note', 'Send it back to the drafter')}</div>`);
+    }
     const d = r.draft;
     if (d?.files?.length) {
       const approved = r.status === 'approved';
