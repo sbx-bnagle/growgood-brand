@@ -7,7 +7,7 @@ import { mkdtempSync, writeFileSync, readFileSync } from 'node:fs';
 import { parse as parseYaml } from 'yaml';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { fieldsFor, validateRequest, briefText, newId, takesImage, stalled } from '../request/lib.js';
+import { fieldsFor, validateRequest, briefText, newId, takesImage, stalled, readable } from '../request/lib.js';
 import { signedInEmail, HttpError } from '../request-app/access.mjs';
 import * as app from '../request-app/app.mjs';
 import { loadData, draftRequest, draftSchema, partsFor, templateText } from '../tools/draft-request.mjs';
@@ -201,4 +201,94 @@ test('the drafter writes the fields, renders each output, checks it and posts it
   const schema = draftSchema(fieldsFor(fmt('flyer'), DATA.contracts));
   assert.deepEqual(schema.properties.fields.required, ['name', 'what', 'when', 'where', 'cost']);
   assert.deepEqual(partsFor({ parts: ['wordmark', 'event-details'] }, { name: 'A', link: '' }, DATA.contracts), [{ component: 'wordmark', params: {} }, { component: 'event-details', params: { name: 'A' } }]);
+});
+
+// Journal posts (D-059).
+import { postFile, linkFindings } from '../tools/draft-request.mjs';
+
+test('a journal post asks for title, category, points and links, and takes an image', () => {
+  const post = fmt('journal-post');
+  assert.deepEqual(fieldsFor(post, DATA.contracts).map((f) => `${f.name}:${f.type}${f.required ? '*' : ''}`), ['title:text*', 'category:enum*', 'points:longtext*', 'links:longtext']);
+  assert.equal(takesImage(post), true);
+  const base = { format: 'journal-post', confirmed: true, fields: { title: 'Seed swap recap', category: 'events', points: 'Forty people came.' } };
+  assert.equal(validateRequest(base, DATA).ok, true);
+  assert.deepEqual(validateRequest({ ...base, fields: { ...base.fields, category: 'gossip' } }, DATA).problems, ['Choose a category from the list.']);
+  assert.deepEqual(validateRequest({ ...base, fields: { ...base.fields, points: 'x'.repeat(4001) } }, DATA).problems, ['What it says is too long.']);
+  assert.equal(readable(post, { category: 'howto', title: 'A' }).category, 'How-to');
+});
+
+test('a post file has the site’s front matter, the image with its alt text, and a safe preview', () => {
+  const f = postFile({ post: { title: 'Seed swap recap', description: 'How it went.', body: 'We swapped <script>x</script> [seeds](https://example.org).' }, category: 'events', image: 'A-0001', assets: DATA.assets });
+  assert.match(f.markdown, /^---\nlayout: post\ntitle: Seed swap recap\ncategory: events\ndescription: How it went.\n---\n\n!\[Hand-drawn bee[^\]]*\]\(\/assets\/library\/A-0001-spot-bee.gif\)\n\nWe swapped/);
+  assert.ok(f.html.includes('&lt;script&gt;'), 'raw HTML is shown as text in the preview');
+  assert.deepEqual(linkFindings('See https://a.org/x and https://b.org.', 'https://a.org/x/').map((x) => x.text), ['https://b.org']);
+});
+
+test('approving a post opens its site pull request; the drafter reports it back', async () => {
+  const dispatched = [];
+  const fetchImpl = async (url, opts) => {
+    if (String(url).includes('/dispatches')) { dispatched.push(JSON.parse(opts.body).inputs); return new Response(null, { status: 204 }); }
+    return certsFetch(String(url));
+  };
+  const env = { ...ENV, REQUESTS: memoryKV(), APPROVERS: 'leah@example.org', DRAFTER_SECRET: 's', GITHUB_DISPATCH_TOKEN: 't', ASSETS: { fetch: async () => Response.json({ formats: DATA.formats, contracts: DATA.contracts, assets: DATA.assets }) } };
+  const call = async (fn, { method = 'GET', body, headers, params = {} } = {}) => {
+    headers ??= { 'Cf-Access-Jwt-Assertion': await token({ email: 'leah@example.org' }) };
+    const res = await app.handle(fn)({ request: new Request('https://playbook.test/api/requests', { method, headers: { 'Content-Type': 'application/json', ...headers }, body: body && JSON.stringify(body) }), env, params, fetchImpl });
+    return { status: res.status, body: await res.json() };
+  };
+  const drafter = { Authorization: 'Bearer s' };
+  const id = (await call(app.createRequest, { method: 'POST', body: { format: 'journal-post', confirmed: true, fields: { title: 'Recap', category: 'events', points: 'It went well.' } } })).body.id;
+  assert.deepEqual(dispatched.at(-1), { id, mode: 'draft' });
+  await call(app.drafterWrite, { method: 'POST', params: { id }, headers: drafter, body: { status: 'review', draft: { kind: 'post', ladder: 'make', note: '', post: { title: 'Recap', markdown: '---\n---\n', html: '<p>x</p>' }, files: [], checks: {} } } });
+  assert.equal((await call(app.drafterWrite, { method: 'POST', params: { id }, headers: drafter, body: { pr: { url: 'https://github.com/a/b/pull/1', number: 1 } } })).status, 409, 'no pull request before approval');
+  assert.equal((await call(app.approveRequest, { method: 'POST', params: { id } })).body.status, 'approved');
+  assert.deepEqual(dispatched.at(-1), { id, mode: 'publish' });
+  assert.equal((await call(app.readRequest, { params: { id } })).body.stage, 'publishing');
+  assert.equal((await call(app.drafterRead, { params: { id }, headers: drafter })).body.draft.post.title, 'Recap', 'publishing reads the approved post');
+  assert.equal((await call(app.drafterWrite, { method: 'POST', params: { id }, headers: drafter, body: { pr: { url: 'javascript:alert(1)', number: 1 } } })).status, 400);
+  await call(app.drafterWrite, { method: 'POST', params: { id }, headers: drafter, body: { pr: { url: 'https://github.com/sbx-bnagle/growgood/pull/42', number: 42, path: '_posts/events/2026-11-19-recap.markdown' } } });
+  const r = (await call(app.readRequest, { params: { id } })).body;
+  assert.equal(r.draft.pr.number, 42);
+  assert.equal(r.stage, undefined);
+  assert.match(r.history.at(-1).what, /opened site pull request #42; merging it publishes the post \(G3\)/);
+});
+
+test('the drafter writes a post, then publishes it as a site pull request', async () => {
+  const posted = [];
+  let brief = { id: 'R-20261119-00AA', format: 'journal-post', formatName: 'Journal post', fields: { title: 'recap', category: 'howto', points: 'Plant in fall.', links: 'https://example.org/fall' }, image: '', notes: '', replies: [], status: 'drafting' };
+  const appFetch = async (url, opts) => {
+    if (opts.method === 'GET') return Response.json(brief);
+    posted.push(JSON.parse(opts.body));
+    return Response.json({ ok: true });
+  };
+  const post = { title: 'Plant in the fall', description: 'Why fall planting works.', slug: 'plant_in_fall', body: 'Plant in fall. See [this](https://example.org/fall) and [that](https://other.org).' };
+  const client = { beta: { messages: { stream: () => ({ finalMessage: async () => ({ model: 'm', stop_reason: 'end_turn', usage: {}, content: [{ type: 'text', text: JSON.stringify({ ladder: 'make', note: 'Sentence case.', question: '', post }) }] }) }) } } };
+  await draftRequest(brief.id, { api: 'https://p.test', secret: 's', fetchImpl: appFetch, client, judgeFn: async () => ({ skipped: 'no key', findings: [] }) });
+  const sent = posted.at(-1);
+  assert.equal(sent.status, 'review');
+  assert.equal(sent.draft.post.folder, 'howtos', 'the how-to category lives in the howtos folder');
+  assert.match(sent.draft.post.markdown, /\ncategory: howto\n/);
+  assert.deepEqual(sent.draft.checks.copy.filter((c) => c.rule === 'CLAIM-001').map((c) => c.text), ['https://other.org']);
+  assert.deepEqual(posted.filter((p) => p.stage).map((p) => p.stage), ['writing', 'checking']);
+
+  // Publishing, against a stand-in GitHub that already has the branch.
+  brief = { ...brief, status: 'approved', draft: sent.draft };
+  const gh = [];
+  const both = async (url, opts) => {
+    if (!String(url).startsWith('https://api.github.com/')) return appFetch(url, opts);
+    const path = String(url).replace('https://api.github.com/repos/sbx-bnagle/growgood', '');
+    gh.push(`${opts.method} ${path.replace(/\?.*/, '')}`);
+    if (path === '/git/ref/heads/main') return Response.json({ object: { sha: 'abc' } });
+    if (path === '/git/refs') return Response.json({}, { status: 422 });
+    if (path.startsWith('/git/refs/heads/')) return Response.json({}, { status: 200 });
+    if (path.startsWith('/contents/')) { assert.match(Buffer.from(JSON.parse(opts.body).content, 'base64').toString(), /^---\nlayout: post/); return Response.json({}, { status: 201 }); }
+    if (path.startsWith('/pulls?')) return Response.json([]);
+    if (path === '/pulls') return Response.json({ html_url: 'https://github.com/sbx-bnagle/growgood/pull/7', number: 7 }, { status: 201 });
+    return Response.json({}, { status: 404 });
+  };
+  await draftRequest(brief.id, { mode: 'publish', api: 'https://p.test', secret: 's', token: 'tok', fetchImpl: both });
+  assert.deepEqual(gh, ['GET /git/ref/heads/main', 'POST /git/refs', 'PATCH /git/refs/heads/request/r-20261119-00aa', `PUT /contents/_posts/howtos/${new Date().toISOString().slice(0, 10)}-plant_in_fall.markdown`, 'GET /pulls', 'POST /pulls']);
+  assert.equal(posted.at(-1).pr.number, 7);
+  await draftRequest(brief.id, { mode: 'publish', api: 'https://p.test', secret: 's', token: '', fetchImpl: both });
+  assert.equal(posted.at(-1).publishError, 'SITE_PR_TOKEN is not set');
 });

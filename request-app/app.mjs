@@ -53,13 +53,14 @@ async function startDraft(env, r, fetchImpl) {
   }
 }
 
-// Starts the drafting workflow for one request. Only the id leaves Cloudflare.
-export async function dispatchDraft(env, id, { fetchImpl = fetch } = {}) {
+// Starts the drafting workflow for one request. Only the id, and the mode, leave Cloudflare:
+// ‘draft’ writes the draft; ‘publish’ opens the site pull request for an approved post (D-059).
+export async function dispatchDraft(env, id, { fetchImpl = fetch, mode = 'draft' } = {}) {
   if (!env.GITHUB_DISPATCH_TOKEN) return 'GITHUB_DISPATCH_TOKEN is not set';
   const res = await fetchImpl(`https://api.github.com/repos/${env.GITHUB_REPO || 'sbx-bnagle/growgood-brand'}/actions/workflows/draft-request.yml/dispatches`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${env.GITHUB_DISPATCH_TOKEN}`, Accept: 'application/vnd.github+json', 'User-Agent': 'growgood-request-app', 'Content-Type': 'application/json' },
-    body: JSON.stringify({ ref: 'main', inputs: { id } }),
+    body: JSON.stringify({ ref: 'main', inputs: { id, mode } }),
   });
   return res.status === 204 ? '' : `GitHub answered ${res.status}`;
 }
@@ -110,7 +111,8 @@ export async function readRequest({ request, env, params, fetchImpl }) {
   return json({ ...r, canApprove: isApprover(email, env) });
 }
 
-// Review gate G2: an approver approves a draft that is ready for review.
+// Review gate G2: an approver approves a draft that is ready for review. An approved journal
+// post goes back to the workflow, which opens the site pull request that publishes it (D-059).
 export async function approveRequest({ request, env, params, fetchImpl }) {
   const email = await signedInEmail(request, env, { fetchImpl });
   if (!isApprover(email, env)) throw new HttpError(403, 'Only an approver can approve.');
@@ -118,6 +120,12 @@ export async function approveRequest({ request, env, params, fetchImpl }) {
   if (r.status !== 'review') throw new HttpError(409, 'Only a draft ready for review can be approved.');
   r.status = 'approved';
   log(r, email, 'approved the draft (G2)');
+  if (r.draft?.kind === 'post') {
+    r.stage = 'publishing';
+    await putRecord(env, r);
+    const problem = await dispatchDraft(env, r.id, { fetchImpl, mode: 'publish' });
+    if (problem) { delete r.stage; log(r, 'system', 'the site pull request did not start', problem); }
+  }
   await putRecord(env, r);
   return json({ id: r.id, status: r.status });
 }
@@ -157,7 +165,8 @@ export async function readFile({ request, env, params, fetchImpl }) {
 export async function drafterRead({ request, env, params }) {
   checkDrafter(request, env);
   const r = await getRecord(env, params.id);
-  return json({ id: r.id, format: r.format, formatName: r.formatName, fields: r.fields, image: r.image || '', notes: r.notes, replies: r.replies, status: r.status });
+  const draft = r.draft ? { ...r.draft, files: undefined } : null;
+  return json({ id: r.id, format: r.format, formatName: r.formatName, fields: r.fields, image: r.image || '', notes: r.notes, replies: r.replies, status: r.status, draft });
 }
 
 const DRAFT_STATUSES = new Set(['review', 'needs-info', 'brief-a-person', 'failed']);
@@ -167,9 +176,24 @@ export async function drafterWrite({ request, env, params }) {
   const r = await getRecord(env, params.id);
   const body = await request.json();
   // A progress report: the step the drafter is on. No history line; the page shows it live.
+  // The site pull request for an approved post, or why it could not be opened (D-059).
+  if ((body.pr || body.publishError) && !body.status) {
+    if (r.status !== 'approved' || r.draft?.kind !== 'post') throw new HttpError(409, 'Only an approved post gets a pull request.');
+    delete r.stage;
+    if (body.pr) {
+      const pr = { url: String(body.pr.url || ''), number: Number(body.pr.number) || 0, path: String(body.pr.path || '') };
+      if (!/^https:\/\/github\.com\/[\w.-]+\/[\w.-]+\/pull\/\d+$/.test(pr.url)) throw new HttpError(400, 'Bad pull request address.');
+      r.draft.pr = pr;
+      log(r, 'drafter', `opened site pull request #${pr.number}; merging it publishes the post (G3)`);
+    } else {
+      log(r, 'drafter', 'could not open the site pull request', String(body.publishError));
+    }
+    await putRecord(env, r);
+    return json({ id: r.id, status: r.status });
+  }
   if (body.stage && !body.status) {
     if (!STAGES[body.stage]) throw new HttpError(400, 'Unknown stage.');
-    if (r.status !== 'drafting') throw new HttpError(409, 'This request is not being drafted.');
+    if (r.status !== 'drafting' && !(r.status === 'approved' && body.stage === 'publishing')) throw new HttpError(409, 'This request is not being drafted.');
     r.stage = body.stage;
     await putRecord(env, r);
     return json({ id: r.id, stage: r.stage });

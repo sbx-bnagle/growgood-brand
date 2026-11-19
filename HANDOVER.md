@@ -35,6 +35,7 @@ Names only. Each value is typed into the service by Brad, never into this repo o
 | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | this repo’s Actions | the playbook deploy |
 | `ANTHROPIC_API_KEY` | Actions in both repos | the brand judge and the drafter |
 | `REQUEST_DRAFTER_SECRET`, `REQUEST_API` | this repo’s Actions | the drafter |
+| `SITE_PR_TOKEN` | this repo’s Actions | the drafter, to open a journal post’s pull request on the site (D-059) |
 | `DRAFTER_SECRET`, `GITHUB_DISPATCH_TOKEN`, `ACCESS_TEAM_DOMAIN`, `ACCESS_AUD`, `APPROVERS`, KV binding `REQUESTS` | the Pages project | the request app |
 | The Google service account key | this repo’s Actions | the asset sync, read-only on Brand Assets |
 | The newsletter Worker’s MailerLite token and reCAPTCHA secret | the site’s Cloudflare Worker | sign-ups |

@@ -5,7 +5,8 @@ name: Draft a request
 # the app, drafts with Claude from the brand files on main, renders with Jekyll and preflight,
 # runs the copy linter and the brand judge, and posts the draft back. This repo is public, so the
 # drafter logs only the id and the outcome, and saves nothing to the run.
-# Needs: the REQUEST_DRAFTER_SECRET and ANTHROPIC_API_KEY secrets, and the REQUEST_API variable.
+# Needs: the REQUEST_DRAFTER_SECRET and ANTHROPIC_API_KEY secrets, and the REQUEST_API variable;
+# opening a journal post's pull request (mode publish, D-059) also needs the SITE_PR_TOKEN secret.
 
 on:
   workflow_dispatch:
@@ -13,12 +14,16 @@ on:
       id:
         description: The request id, such as R-20261117-4F2A
         required: true
+      mode:
+        description: draft writes the draft; publish opens the site pull request for an approved journal post
+        required: false
+        default: draft
 
 permissions:
   contents: read
 
 concurrency:
-  group: draft-${{ inputs.id }}
+  group: draft-${{ inputs.id }}-${{ inputs.mode }}
   cancel-in-progress: true
 
 jobs:
@@ -45,7 +50,9 @@ jobs:
       - name: Draft the request
         env:
           REQUEST_ID: ${{ inputs.id }}
+          MODE: ${{ inputs.mode || 'draft' }}
           REQUEST_API: ${{ vars.REQUEST_API }}
           REQUEST_DRAFTER_SECRET: ${{ secrets.REQUEST_DRAFTER_SECRET }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: node tools/draft-request.mjs "$REQUEST_ID"
+          SITE_PR_TOKEN: ${{ secrets.SITE_PR_TOKEN }}
+        run: node tools/draft-request.mjs "$REQUEST_ID" "$MODE"
